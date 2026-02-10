@@ -25,9 +25,6 @@
         public int CategoryId { get; set; }
 
         [Required]
-        public bool IsDigital { get; set; }
-
-        [Required]
         [Column(TypeName = PriceColumnType)]
         public decimal Price { get; set; }
 
@@ -42,8 +39,6 @@
 
         [Required]
         public bool IsPublished { get; set; }
-        [Required]
-        public bool StockTracked { get; set; }
 
         public virtual Category Category { get; set; } = null!;
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new HashSet<ProductVariant>();

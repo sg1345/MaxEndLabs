@@ -19,7 +19,7 @@
 
 
         [Column(TypeName = PriceColumnType)]
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
 
         public virtual ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
     }
