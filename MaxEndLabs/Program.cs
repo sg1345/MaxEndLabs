@@ -2,6 +2,7 @@ using MaxEndLabs.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MaxEndLabs.Services.Core;
+using MaxEndLabs.Services.Core.Contracts;
 
 
 namespace MaxEndLabs
@@ -14,8 +15,10 @@ namespace MaxEndLabs
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            
             builder.Services.AddDbContext<MaxEndLabsDbContext>(options =>
                 options.UseSqlServer(connectionString));
+            
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
@@ -28,7 +31,9 @@ namespace MaxEndLabs
                 })
                 .AddEntityFrameworkStores<MaxEndLabsDbContext>();
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IProductService, ProductService>();
+
+			builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 

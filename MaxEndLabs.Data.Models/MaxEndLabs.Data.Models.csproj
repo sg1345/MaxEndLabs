@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MaxEndLabs.Common\MaxEndLabs.Common.csproj" />
+    <ProjectReference Include="..\MaxEndLabs.GCommon\MaxEndLabs.GCommon.csproj" />
   </ItemGroup>
 
 </Project>

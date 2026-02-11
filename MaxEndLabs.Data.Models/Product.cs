@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    using static MaxEndLabs.Common.EntityValidation.Product;
+    using static MaxEndLabs.GCommon.EntityValidation.Product;
     public class Product
     {
         [Key]
@@ -32,10 +32,10 @@
         public string? MainImageUrl { get; set; }
 
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateOnly CreatedAt { get; set; }
 
         [Required]
-        public DateTime UpdatedAt { get; set; }
+        public DateOnly UpdatedAt { get; set; }
 
         [Required]
         public bool IsPublished { get; set; }

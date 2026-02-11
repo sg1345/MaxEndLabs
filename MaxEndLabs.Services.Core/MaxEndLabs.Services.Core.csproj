@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MaxEndLabs.Common\MaxEndLabs.Common.csproj" />
     <ProjectReference Include="..\MaxEndLabs.Data\MaxEndLabs.Data.csproj" />
+    <ProjectReference Include="..\MaxEndLabs.GCommon\MaxEndLabs.GCommon.csproj" />
     <ProjectReference Include="..\MaxEndLabs.ViewModels\MaxEndLabs.ViewModels.csproj" />
   </ItemGroup>
 

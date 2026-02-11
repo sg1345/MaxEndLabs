@@ -1,0 +1,20 @@
+﻿@model MaxEndLabs.ViewModels.ProductsPageViewModel
+@{
+	ViewBag.Title = "Products in " + Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<div class="row">
+	@foreach (var product in Model.Products)
+	{
+		<div class="col-md-3 mb-3">
+			<div class="card h-100">
+				<img src="@product.MainImageUrl" class="card-img-top" alt="@product.Name" />
+				<div class="card-body">
+					<h5 class="card-title">@product.Name</h5>
+					<p class="card-text fw-bold">$@product.Price</p>
+				</div>
+			</div>
+		</div>
+	}
+</div>

@@ -4,7 +4,7 @@ namespace MaxEndLabs.Data.Models
 {
     using System.ComponentModel.DataAnnotations.Schema;
     using System.ComponentModel.DataAnnotations;
-     using static MaxEndLabs.Common.EntityValidation.ShoppingCart;
+     using static MaxEndLabs.GCommon.EntityValidation.ShoppingCart;
 
     public class ShoppingCart
     {

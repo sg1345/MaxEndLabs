@@ -4,6 +4,7 @@ using MaxEndLabs.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MaxEndLabs.Data.Migrations
 {
     [DbContext(typeof(MaxEndLabsDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260210211832_FixAdminUserAndChangeProductModel")]
+    partial class FixAdminUserAndChangeProductModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,10 +68,16 @@ namespace MaxEndLabs.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -76,6 +85,8 @@ namespace MaxEndLabs.Data.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -676,7 +687,7 @@ namespace MaxEndLabs.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LABS.COM",
                             NormalizedUserName = "ADMIN@LABS.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFEKH5aZ0qe3tFK9cLImCHALiYzGxF1yY5pgyZL+/Y/Bk+ECrm50ZCVOty0ohKiuxw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDeNUYMTsaz6jxiBG/ArPf9+DwC9M6GINzbW7TMwHjJ4VyjOzaur3xS4tT6+2jdQ+Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "c0142471-6ffd-44b4-b430-8b3c7acf8fbf",
                             TwoFactorEnabled = false,
@@ -803,6 +814,15 @@ namespace MaxEndLabs.Data.Migrations
                     b.Navigation("ShoppingCart");
                 });
 
+            modelBuilder.Entity("MaxEndLabs.Data.Models.Category", b =>
+                {
+                    b.HasOne("MaxEndLabs.Data.Models.Category", "ParentCategory")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("ParentCategoryId");
+
+                    b.Navigation("ParentCategory");
+                });
+
             modelBuilder.Entity("MaxEndLabs.Data.Models.Product", b =>
                 {
                     b.HasOne("MaxEndLabs.Data.Models.Category", "Category")
@@ -888,6 +908,8 @@ namespace MaxEndLabs.Data.Migrations
             modelBuilder.Entity("MaxEndLabs.Data.Models.Category", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("Subcategories");
                 });
 
             modelBuilder.Entity("MaxEndLabs.Data.Models.Product", b =>

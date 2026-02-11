@@ -71,17 +71,20 @@ namespace MaxEndLabs.Data
             var adminUser = new IdentityUser
             {
                 Id = "06313180-fa45-42b5-ac33-1333f673455d",
-                UserName = "admin",
-                NormalizedUserName = "ADMIN",
-                Email = "admin@maxendlabs.com",
-                NormalizedEmail = "ADMIN@MAXENDLABS.COM",
+                UserName = "admin@labs.com",
+                NormalizedUserName = "ADMIN@LABS.COM",
+                Email = "admin@labs.com",
+                NormalizedEmail = "ADMIN@LABS.COM",
                 EmailConfirmed = true,
-                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(
-                    new IdentityUser { UserName = "admin" },
-                    "admin")
-            };
+                ConcurrencyStamp = "4bfdb153-a446-4968-a40f-34adc37a6f28",
+                SecurityStamp = "c0142471-6ffd-44b4-b430-8b3c7acf8fbf"
 
-            builder.Entity<IdentityUser>().HasData(adminUser);
+			};
+
+            adminUser.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(adminUser, "admin");
+
+
+			builder.Entity<IdentityUser>().HasData(adminUser);
 
             builder.Entity<IdentityUserRole<string>>().HasData(
                 new IdentityUserRole<string>
@@ -111,8 +114,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 1,
                     Price = 40m,
                     MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/WBN1.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -124,8 +127,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 1,
                     Price = 45m,
                     MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/6_155b8e55-8336-438c-a966-fdec261cd0cb.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -137,8 +140,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 1,
                     Price = 30m,
                     MainImageUrl = "https://karlosnasar.com/storage/products/371146981.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -150,8 +153,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 2,
                     Price = 62.95m,
                     MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/18_75ea3d05-1e8b-4fbc-af35-a41fb16930b3.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -163,8 +166,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 2,
                     Price = 70m,
                     MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/13_2144736c-1165-42a7-87f7-c90db6a3c274.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -176,8 +179,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 3,
                     Price = 195m,
                     MainImageUrl = "https://luxiaojun.com/cdn/shop/files/LUXIAOJUN_PowerPro_Weightlifting_Shoes_Karlos_Edition_Pair.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -189,8 +192,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 4,
                     Price = 99.99m,
                     MainImageUrl = "https://www.optimumnutrition.com/cdn/shop/files/on-1101490_Image_01.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -202,8 +205,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 4,
                     Price = 30m,
                     MainImageUrl = "https://www.optimumnutrition.com/cdn/shop/files/on-1102271_Image_01.png",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 },
                 new Product
@@ -215,8 +218,8 @@ namespace MaxEndLabs.Data
                     CategoryId = 5,
                     Price = 26m,
                     MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/nasar_house_1.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
                 }
             );

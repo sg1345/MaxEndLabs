@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    using static MaxEndLabs.Common.EntityValidation.ProductVariant;
+    using static MaxEndLabs.GCommon.EntityValidation.ProductVariant;
     public class ProductVariant
     {
         [Key]
