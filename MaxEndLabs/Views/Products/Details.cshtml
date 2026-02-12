@@ -1,0 +1,62 @@
+﻿@model MaxEndLabs.ViewModels.ProductDetailsViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+
+<div class="row mt-4">
+    <div class="col-md-5">
+        <img src="@Model.MainImageUrl" class="img-fluid rounded" alt="@Model.Name" />
+    </div>
+
+    <div class="col-md-7">
+	    <h2>@Model.Name</h2>
+	    @if (!string.IsNullOrEmpty(Model.Description))
+	    {
+		    <p>@Model.Description</p>
+	    }
+
+	    <h4 class="fw-bold">Price: $<span id="productPrice">@Model.Price</span></h4>
+
+	    @if (Model.ProductVariants.Any())
+	    {
+		    <div class="mb-3">
+			    <label for="variantSelect" class="form-label">Options</label>
+			    <select id="variantSelect" class="form-select">
+				    @foreach (var variant in Model.ProductVariants)
+				    {
+					    <option value="@variant.Id" data-price="@variant.Price">
+						    @variant.VariantName
+					    </option>
+				    }
+			    </select>
+		    </div>
+	    }
+
+	    <div class="d-flex gap-2 mt-3">
+		    <button class="btn btn-primary">Order</button>
+
+		    @if (User.IsInRole("Admin"))
+		    {
+			    <a asp-action="Edit" asp-route-slug="@Model.ProductSlug" class="btn btn-warning">Edit</a>
+			    <form asp-action="Delete" asp-route-slug="@Model.ProductSlug" method="post" class="d-inline">
+				    <button type="submit" class="btn btn-danger">Delete</button>
+			    </form>
+		    }
+	    </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            const variantSelect = document.getElementById('variantSelect');
+            const priceSpan = document.getElementById('productPrice');
+
+            if (variantSelect) {
+                variantSelect.addEventListener('change', function() {
+                    const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+                    const variantPrice = selectedOption.dataset.price;
+                    priceSpan.textContent = variantPrice;
+                });
+            }
+        </script>
+}

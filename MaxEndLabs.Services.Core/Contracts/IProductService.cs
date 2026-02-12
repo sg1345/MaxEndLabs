@@ -12,5 +12,7 @@ namespace MaxEndLabs.Services.Core.Contracts
 		Task<IEnumerable<ProductIndexViewModel>> GetAllCategoriesAsync();
 		Task<ProductsPageViewModel> GetAllProductsAsync();
 		Task<ProductsPageViewModel> GetProductsByCategoryAsync(string categorySlug);
+
+		Task<ProductDetailsViewModel> GetProductDetailsAsync(string categorySlug, string productSlug);
 	}
 }

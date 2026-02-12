@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MaxEndLabs.Services.Core;
 using MaxEndLabs.Services.Core.Contracts;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 namespace MaxEndLabs
@@ -21,7 +23,7 @@ namespace MaxEndLabs
             
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireDigit = false;
@@ -29,7 +31,12 @@ namespace MaxEndLabs
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                 })
-                .AddEntityFrameworkStores<MaxEndLabsDbContext>();
+                .AddEntityFrameworkStores<MaxEndLabsDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.AddRazorPages();
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddScoped<IProductService, ProductService>();
 
@@ -54,7 +61,9 @@ namespace MaxEndLabs
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.MapControllerRoute(
                 name: "default",

@@ -47,10 +47,11 @@ namespace MaxEndLabs.Controllers
         }
 
 
-        // GET: ProductController/Details/5
-        public ActionResult Details(int id)
+		[Route("Products/ByCategory/{categorySlug}/{productSlug}")]
+		public async Task<IActionResult> Details(string categorySlug, string productSlug)
         {
-            return Ok("Details works");
+            var productDetails = await _productService.GetProductDetailsAsync(categorySlug, productSlug);
+			return  View(productDetails);
         }
 
         // GET: ProductController/Create

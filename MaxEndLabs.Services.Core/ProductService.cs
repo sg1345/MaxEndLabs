@@ -43,9 +43,9 @@ namespace MaxEndLabs.Services.Core
 					Id = p.Id,
 					Name = p.Name,
 					Slug = p.Slug,
-					CategoryId = p.CategoryId,
 					Price = p.Price,
-					MainImageUrl = p.MainImageUrl
+					MainImageUrl = p.MainImageUrl,
+					CategorySlug = p.Category.Slug
 				})
 				.ToListAsync();
 
@@ -73,9 +73,9 @@ namespace MaxEndLabs.Services.Core
 					Id = p.Id,
 					Name = p.Name,
 					Slug = p.Slug,
-					CategoryId = p.CategoryId,
 					Price = p.Price,
-					MainImageUrl = p.MainImageUrl
+					MainImageUrl = p.MainImageUrl,
+					CategorySlug = p.Category.Slug
 				})
 				.ToListAsync();
 
@@ -83,6 +83,41 @@ namespace MaxEndLabs.Services.Core
 			{
 				Title = category.Name,
 				Products = products
+			};
+		}
+
+		public async Task<ProductDetailsViewModel> GetProductDetailsAsync(string categorySlug, string productSlug)
+		{
+			var product = await _context.Products
+				.AsNoTracking()
+				.Include(p => p.Category)
+				.Include(p => p.ProductVariants)
+				.FirstOrDefaultAsync(p => p.Slug == productSlug && p.Category.Slug == categorySlug);
+
+			if (product == null)
+				return null;
+
+			var productVariant = await _context.ProductVariants
+				.AsNoTracking()
+				.Where(pv => pv.ProductId == product.Id)
+				.Select(pv => new ProductVariantViewModel()
+				{
+					Id = pv.Id,
+					VariantName = pv.VariantName,
+					Price = pv.Price ?? product.Price
+				})
+				.ToArrayAsync();
+
+			return new ProductDetailsViewModel
+			{
+				Id = product.Id,
+				Name = product.Name,
+				ProductSlug = product.Slug,
+				CategorySlug = product.Category.Slug,
+				Description = product.Description,
+				Price = product.Price,
+				MainImageUrl = product.MainImageUrl,
+				ProductVariants = productVariant
 			};
 		}
 	}
