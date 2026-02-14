@@ -13,10 +13,11 @@
 		    @for (int i = 0; i < Model.Variants.Count; i++)
 		    {
 			    <div class="row mb-3 variant-row">
+				    <input type="hidden" name="Variants.Index" value="@i" />
 				    <input type="hidden" name="Variants[@i].Id" value="@Model.Variants[i].Id"/>
 
 				    <div class="col-md-5">
-					    <input name="Variants[@i].Name" value="@Model.Variants[i].Name" class="form-control"/>
+							<input name="Variants[@i].Name" value="@Model.Variants[i].Name" class="form-control"/>
 				    </div>
 				    <div class="col-md-5">
 					    <input name="Variants[@i].Price" value="@Model.Variants[i].Price" type="number" step="0.01" class="form-control"/>
@@ -33,26 +34,28 @@
 </form>
 
 @section Scripts {
-        <script>          
-            let index = @Model.Variants.Count;
+		<script>          
+	    let index = @Model.Variants.Count;
 
-            document.getElementById('addBtn').addEventListener('click', function() {
-                const container = document.getElementById('variantContainer');
-                const html = `
-                    <div class="row mb-3 variant-row">
-                        <input type="hidden" name="Variants[${index}].Id" value="0" />
-                        <div class="col-md-5">
-                            <input name="Variants[${index}].Name" class="form-control" placeholder="New Name" />
-                        </div>
-                        <div class="col-md-5">
-                            <input name="Variants[${index}].Price" type="number" step="0.01" class="form-control" placeholder="New Price" />
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-danger" onclick="this.closest('.row').remove()">Remove</button>
-                        </div>
-                    </div>`;
-                container.insertAdjacentHTML('beforeend', html);
-                index++;
-            });
-        </script>
+	    document.getElementById('addBtn').addEventListener('click', function() {
+	        const container = document.getElementById('variantContainer');
+	        const html = `
+	            <div class="row mb-3 variant-row">
+	                <input type="hidden" name="Variants.Index" value="${index}" />
+	                
+	                <input type="hidden" name="Variants[${index}].Id" value="0" />
+	                <div class="col-md-5">
+	                    <input name="Variants[${index}].Name" class="form-control" placeholder="New Name" />
+	                </div>
+	                <div class="col-md-5">
+	                    <input name="Variants[${index}].Price" type="number" step="0.01" class="form-control" placeholder="New Price" />
+	                </div>
+	                <div class="col-md-2">
+	                    <button type="button" class="btn btn-danger" onclick="this.closest('.row').remove()">Remove</button>
+	                </div>
+	            </div>`;
+	        container.insertAdjacentHTML('beforeend', html);
+	        index++;
+	    });
+	</script>
 }

@@ -79,16 +79,17 @@ namespace MaxEndLabs.Controllers
                 return View(model);
             }
 
-            int productId = await _productService.CreateProductAsync(model);
+            string productSlug = await _productService.CreateProductAsync(model);
 
-            return RedirectToAction("VariantManager", new { productId = productId });
+            return RedirectToAction("VariantManager", new { productSlug = productSlug });
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> VariantManager(int productId)
+        [Route("Products/VariantManager/{productSlug}")]
+        public async Task<IActionResult> VariantManager(string productSlug)
         {
-            ManageVariantsViewModel model = await _productService.GetProductByIdAsync(productId);
+            ManageVariantsViewModel model = await _productService.GetProductBySlugAsync(productSlug);
 
             return View(model);
         }
@@ -100,7 +101,7 @@ namespace MaxEndLabs.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model = await _productService.GetProductByIdAsync(model.ProductId);
+                model = await _productService.GetProductBySlugAsync(model.ProductSlug);
 
                 return View(model);
             }

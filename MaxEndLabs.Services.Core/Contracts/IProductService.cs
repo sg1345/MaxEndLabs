@@ -14,8 +14,8 @@ namespace MaxEndLabs.Services.Core.Contracts
 		Task<ProductsPageViewModel> GetProductsByCategoryAsync(string categorySlug);
 		Task<ProductDetailsViewModel> GetProductDetailsAsync(string categorySlug, string productSlug);
         Task<ProductCreateViewModel> GetProductCreateViewModelAsync();
-        Task<int> CreateProductAsync(ProductCreateViewModel model);
-        Task<ManageVariantsViewModel> GetProductByIdAsync(int productId);
+        Task<string> CreateProductAsync(ProductCreateViewModel model);
+        Task<ManageVariantsViewModel> GetProductBySlugAsync(string productSlug);
         Task ManageProductVariantsAsync(ManageVariantsViewModel model);
 
     }

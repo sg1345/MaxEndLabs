@@ -143,7 +143,7 @@ namespace MaxEndLabs.Services.Core
             return model;
         }
 
-        public async Task<int> CreateProductAsync(ProductCreateViewModel model)
+        public async Task<string> CreateProductAsync(ProductCreateViewModel model)
         {
             var slug = GenerateSlug(model.Name);
 
@@ -163,16 +163,16 @@ namespace MaxEndLabs.Services.Core
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return product.Id;
+            return product.Slug;
         }
 
-        public async Task<ManageVariantsViewModel> GetProductByIdAsync(int productId)
+        public async Task<ManageVariantsViewModel> GetProductBySlugAsync(string productSlug)
         {
             var model = await _context.Products
                 .AsNoTracking()
                 .Include(p => p.ProductVariants)
                 .Include(p => p.Category)
-                .Where(p => p.Id == productId)
+                .Where(p => p.Slug == productSlug)
                 .Select(p => new ManageVariantsViewModel()
                 {
                     ProductId = p.Id,
@@ -194,17 +194,23 @@ namespace MaxEndLabs.Services.Core
 
         public async Task ManageProductVariantsAsync(ManageVariantsViewModel model)
         {
-            var existingVariants = await _context.ProductVariants
+            var productVariantExistingInDatabase = await _context.ProductVariants
                 .Where(pv => pv.ProductId == model.ProductId)
                 .ToListAsync();
+
+            var incomingIdList = model.Variants.Select(v => v.Id).ToList();
+            var toDeleteList = productVariantExistingInDatabase
+	            .Where(pv => !incomingIdList.Contains(pv.Id)).ToList();
+
+            _context.ProductVariants.RemoveRange(toDeleteList);
 
             foreach (var variant in model.Variants)
             {
                 if (variant.Id > 0)
                 {
-                    var existing = existingVariants!.FirstOrDefault(ev => ev.Id == variant.Id);
+                    var existing = productVariantExistingInDatabase!.FirstOrDefault(ev => ev.Id == variant.Id);
 
-                    if (existingVariants is not null)
+                    if (existing != null)
                     {
                         existing.VariantName = variant.Name;
                         existing.Price = variant.Price;
@@ -220,10 +226,10 @@ namespace MaxEndLabs.Services.Core
                     };
                     await _context.AddAsync(newVariant);
                 }
-
-                await _context.SaveChangesAsync();
             }
-        }
+
+            await _context.SaveChangesAsync();
+		}
 
         private static string GenerateSlug(string name)
         {
