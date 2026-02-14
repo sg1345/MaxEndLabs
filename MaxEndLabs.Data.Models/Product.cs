@@ -17,9 +17,8 @@
         [MaxLength(SlugMaxLength)]
         public string Slug { get; set; } = null!;
 
-        [Required]
         [MaxLength(DescriptionMaxLength)]
-        public string Description { get; set; } = null!;
+        public string? Description { get; set; }
 
         [ForeignKey(nameof(Category))]
         public int CategoryId { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MaxEndLabs.ViewModels
 {
-	public class ProductVariantViewModel
+	public class VariantDisplayViewModel
 	{
 		public int Id { get; set; }
 		public string VariantName { get; set; } = null!;

@@ -1,6 +1,8 @@
 ﻿using MaxEndLabs.Data;
 using MaxEndLabs.Services.Core;
 using MaxEndLabs.Services.Core.Contracts;
+using MaxEndLabs.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +20,7 @@ namespace MaxEndLabs.Controllers
 			_productService = productService;
 		}
 
-        // GET: ProductController
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var categories = await _productService.GetAllCategoriesAsync();
@@ -26,6 +28,7 @@ namespace MaxEndLabs.Controllers
 			return View(categories);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> AllProducts()
         {
             var products = await _productService.GetAllProductsAsync();
@@ -33,6 +36,7 @@ namespace MaxEndLabs.Controllers
             return View("ProductsPage", products);
         }
 
+        [AllowAnonymous]
         [Route("Products/ByCategory/{slug}")]
         public async Task<IActionResult> ByCategory(string slug)
         {
@@ -46,7 +50,7 @@ namespace MaxEndLabs.Controllers
 			return View("ProductsPage", products);
         }
 
-
+        [AllowAnonymous]
 		[Route("Products/ByCategory/{categorySlug}/{productSlug}")]
 		public async Task<IActionResult> Details(string categorySlug, string productSlug)
         {
@@ -54,25 +58,56 @@ namespace MaxEndLabs.Controllers
 			return  View(productDetails);
         }
 
-        // GET: ProductController/Create
-        public ActionResult Create()
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create()
         {
-            return Ok("Create works");
+            ProductCreateViewModel model = await _productService.GetProductCreateViewModelAsync();
+
+            return View(model);
         }
 
-        // POST: ProductController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(ProductCreateViewModel model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                model = await _productService.GetProductCreateViewModelAsync();
+                return View(model);
             }
-            catch
+
+            int productId = await _productService.CreateProductAsync(model);
+
+            return RedirectToAction("VariantManager", new { productId = productId });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> VariantManager(int productId)
+        {
+            ManageVariantsViewModel model = await _productService.GetProductByIdAsync(productId);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> VariantManager(ManageVariantsViewModel model)
+        {
+            if (!ModelState.IsValid)
             {
-                return Ok();
+                model = await _productService.GetProductByIdAsync(model.ProductId);
+
+                return View(model);
             }
+
+            await _productService.ManageProductVariantsAsync(model);
+
+            return RedirectToAction("Details", new {categorySlug = model.CategorySlug, productSlug = model.ProductSlug});
         }
 
         // GET: ProductController/Edit/5

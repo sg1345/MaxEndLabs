@@ -16,7 +16,7 @@ namespace MaxEndLabs.ViewModels
 		public decimal Price { get; set; }
 		public string? MainImageUrl { get; set; }
 
-		public IEnumerable<ProductVariantViewModel> ProductVariants { get; set; } = [];
+		public IEnumerable<VariantDisplayViewModel> ProductVariants { get; set; } = [];
 
 	}
 }
