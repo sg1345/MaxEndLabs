@@ -50,6 +50,7 @@ namespace MaxEndLabs.Services.Core
         {
             var products = await _context.Products
                 .AsNoTracking()
+                .Where(p => p.IsPublished)
                 .OrderBy(p => p.Name)
                 .Select(p => new ProductListViewModel()
                 {
@@ -75,11 +76,11 @@ namespace MaxEndLabs.Services.Core
                 .FirstOrDefaultAsync(c => c.Slug == categorySlug);
 
             if (category == null)
-                return null;
+                throw new ArgumentException("Category Not Found");
 
             var products = await _context.Products
                 .AsNoTracking()
-                .Where(p => p.CategoryId == category.Id)
+                .Where(p => p.CategoryId == category.Id && p.IsPublished)
                 .OrderBy(p => p.Name)
                 .Select(p => new ProductListViewModel()
                 {
@@ -105,10 +106,13 @@ namespace MaxEndLabs.Services.Core
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.ProductVariants)
-                .FirstOrDefaultAsync(p => p.Slug == productSlug && p.Category.Slug == categorySlug);
+                .FirstOrDefaultAsync(p => 
+	                p.Slug == productSlug && 
+	                p.Category.Slug == categorySlug && 
+	                p.IsPublished);
 
             if (product == null)
-                return null;
+	            throw new ArgumentException("Product Not Found");
 
             var productVariant = await _context.ProductVariants
                 .AsNoTracking()
@@ -146,6 +150,7 @@ namespace MaxEndLabs.Services.Core
                 })
                 .ToArrayAsync();
 
+
             ProductFormViewModel model = new ProductFormViewModel
             {
                 Categories = categories
@@ -177,13 +182,13 @@ namespace MaxEndLabs.Services.Core
             return product.Slug;
         }
 
-        public async Task<ManageVariantsViewModel> GetProductBySlugAsync(string productSlug)
+        public async Task<ManageVariantsViewModel> GetProductAsync(string productSlug)
         {
             var model = await _context.Products
                 .AsNoTracking()
                 .Include(p => p.ProductVariants)
                 .Include(p => p.Category)
-                .Where(p => p.Slug == productSlug)
+                .Where(p => p.Slug == productSlug && p.IsPublished)
                 .Select(p => new ManageVariantsViewModel()
                 {
                     ProductId = p.Id,
@@ -200,7 +205,10 @@ namespace MaxEndLabs.Services.Core
                 })
                 .FirstOrDefaultAsync();
 
-            return model!;
+            if (model == null)
+	            throw new ArgumentException("Product Not Found");
+
+            return model;
         }
 
         public async Task ManageProductVariantsAsync(ManageVariantsViewModel model)
@@ -324,6 +332,21 @@ namespace MaxEndLabs.Services.Core
 			await _context.SaveChangesAsync();
 
 			return (categorySlug!, product.Slug);
+		}
+
+        public async Task DeleteProductAsync(string productSlug)
+        {
+			var product = await _context.Products
+				.FirstOrDefaultAsync(p => p.Slug == productSlug && p.IsPublished);
+
+			if (product == null)
+				throw new ArgumentException("Product Not Found");
+
+			product.IsPublished = false;
+            product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+            product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmm}";
+
+	        await _context.SaveChangesAsync();
 		}
 
         private static string GenerateSlug(string name)

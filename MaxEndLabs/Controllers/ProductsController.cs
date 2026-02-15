@@ -11,12 +11,10 @@ namespace MaxEndLabs.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly MaxEndLabsDbContext _context;
         private readonly IProductService _productService;
 
-		public ProductsController(MaxEndLabsDbContext context, IProductService productService)
+		public ProductsController(IProductService productService)
         {
-            _context = context;
 			_productService = productService;
 		}
 
@@ -55,6 +53,7 @@ namespace MaxEndLabs.Controllers
 		public async Task<IActionResult> Details(string categorySlug, string productSlug)
         {
             var productDetails = await _productService.GetProductDetailsAsync(categorySlug, productSlug);
+
 			return  View(productDetails);
         }
 
@@ -93,7 +92,7 @@ namespace MaxEndLabs.Controllers
         [Route("Products/VariantManager/{productSlug}")]
         public async Task<IActionResult> VariantManager(string productSlug)
         {
-            ManageVariantsViewModel model = await _productService.GetProductBySlugAsync(productSlug);
+            ManageVariantsViewModel model = await _productService.GetProductAsync(productSlug);
 
             return View(model);
         }
@@ -105,7 +104,7 @@ namespace MaxEndLabs.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model = await _productService.GetProductBySlugAsync(model.ProductSlug);
+                model = await _productService.GetProductAsync(model.ProductSlug);
 
                 return View(model);
             }
@@ -125,7 +124,6 @@ namespace MaxEndLabs.Controllers
             return View(model);
         }
 
-        // POST: ProductController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -148,30 +146,15 @@ namespace MaxEndLabs.Controllers
 
 		}
 
-		// GET: ProductController/Delete/5
-		[HttpGet]
-		[Authorize(Roles = "Admin")]
-		[Route("Products/Delete/{productSlug}")]
-		public ActionResult Delete(string productSlug)
-        {
-            return Ok("Delete works");
-        }
-
-        // POST: ProductController/Delete/5
-        [HttpPost]
+		//We have onclick confirmation for delete, so I am skipping the GET method
+		[HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-		public ActionResult Delete(int id, IFormCollection collection)
+		public async Task<IActionResult> Delete(string slug)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return Ok();
-            }
-        }
+            await _productService.DeleteProductAsync(slug);
+			return RedirectToAction("Index");
+		}
 
     }
 }

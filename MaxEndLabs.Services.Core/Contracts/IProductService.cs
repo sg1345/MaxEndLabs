@@ -12,11 +12,11 @@ namespace MaxEndLabs.Services.Core.Contracts
 		Task<ProductDetailsViewModel> GetProductDetailsAsync(string categorySlug, string productSlug);
         Task<ProductFormViewModel> GetProductCreateViewModelAsync();
         Task<string> AddProductAsync(ProductFormViewModel model);
-        Task<ManageVariantsViewModel> GetProductBySlugAsync(string productSlug);
+        Task<ManageVariantsViewModel> GetProductAsync(string productSlug);
         Task ManageProductVariantsAsync(ManageVariantsViewModel model);
         Task<ProductFormViewModel> GetProductEditViewModelAsync(string productSlug);
         Task<ProductFormViewModel> GetProductEditViewModelAsync(int productId);
 		Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormViewModel model);
-
+		Task DeleteProductAsync(string productSlug);
 	}
 }
