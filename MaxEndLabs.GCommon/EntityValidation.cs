@@ -13,8 +13,9 @@
             public const int NameMaxLength = 200;
             public const int NameMinLength = 3;
             public const int SlugMaxLength = 200;
+            public const int SlugMinLength = 3;
 
-            public const int DescriptionMaxLength = 500;
+			public const int DescriptionMaxLength = 500;
 
             public const string PriceColumnType = "decimal(10, 2)";
             public const double PriceMinValue = 0.01;

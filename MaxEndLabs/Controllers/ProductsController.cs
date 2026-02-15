@@ -62,7 +62,7 @@ namespace MaxEndLabs.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
-            ProductCreateViewModel model = await _productService.GetProductCreateViewModelAsync();
+            ProductFormViewModel model = await _productService.GetProductCreateViewModelAsync();
 
             return View(model);
         }
@@ -70,8 +70,12 @@ namespace MaxEndLabs.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(ProductCreateViewModel model)
+        public async Task<IActionResult> Create(ProductFormViewModel model)
         {
+	        if (await _productService.ProductExistsAsync(model.Name))
+	        {
+                ModelState.AddModelError("Name","Product with this name Already exists.");
+	        }
 
             if (!ModelState.IsValid)
             {
@@ -79,7 +83,7 @@ namespace MaxEndLabs.Controllers
                 return View(model);
             }
 
-            string productSlug = await _productService.CreateProductAsync(model);
+            string productSlug = await _productService.AddProductAsync(model);
 
             return RedirectToAction("VariantManager", new { productSlug = productSlug });
         }
@@ -111,29 +115,44 @@ namespace MaxEndLabs.Controllers
             return RedirectToAction("Details", new {categorySlug = model.CategorySlug, productSlug = model.ProductSlug});
         }
 
-        // GET: ProductController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return Ok("Edit works");
+		// GET: ProductController/Edit/5
+		[HttpGet]
+		[Authorize(Roles = "Admin")]
+		[Route("Products/Edit/{productSlug}")]
+		public async Task<IActionResult> Edit(string productSlug)
+		{
+			ProductFormViewModel model = await _productService.GetProductEditViewModelAsync(productSlug);
+            return View(model);
         }
 
         // POST: ProductController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return Ok();
-            }
-        }
+        [Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Edit(int id, ProductFormViewModel model)
+		{
+			if (await _productService.ProductExistsAsync(model.Name, model.Id)) 
+			{
+				ModelState.AddModelError("Name", "Product with this name Already exists.");
+			}
 
-        // GET: ProductController/Delete/5
-        public ActionResult Delete(int id)
+			if (!ModelState.IsValid)
+			{
+				model = await _productService.GetProductEditViewModelAsync(model.Id);
+
+				return View(model);
+			}
+
+			(string CategorySlug, string ProductSlug) result = await _productService.EditProductAsync(model);
+			return RedirectToAction("Details", new { categorySlug = result.CategorySlug, productSlug = result.ProductSlug });
+
+		}
+
+		// GET: ProductController/Delete/5
+		[HttpGet]
+		[Authorize(Roles = "Admin")]
+		[Route("Products/Delete/{productSlug}")]
+		public ActionResult Delete(string productSlug)
         {
             return Ok("Delete works");
         }
@@ -141,7 +160,8 @@ namespace MaxEndLabs.Controllers
         // POST: ProductController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [Authorize(Roles = "Admin")]
+		public ActionResult Delete(int id, IFormCollection collection)
         {
             try
             {

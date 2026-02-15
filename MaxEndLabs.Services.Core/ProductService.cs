@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using MaxEndLabs.Data;
 using MaxEndLabs.Data.Models;
 using MaxEndLabs.Services.Core.Contracts;
@@ -20,6 +15,22 @@ namespace MaxEndLabs.Services.Core
         {
             _context = context;
         }
+
+        public async Task<bool> ProductExistsAsync(string productName, int productId)
+        {
+			var productSlug = GenerateSlug(productName);
+
+			return await _context.Products
+		        .AnyAsync(p => p.Slug == productSlug && p.Id != productId);
+        }
+
+        public async Task<bool> ProductExistsAsync(string productName)
+        {
+			var productSlug = GenerateSlug(productName);
+
+			return await _context.Products
+				.AnyAsync(p => p.Slug == productSlug);
+		}
 
         public async Task<IEnumerable<ProductIndexViewModel>> GetAllCategoriesAsync()
         {
@@ -123,7 +134,7 @@ namespace MaxEndLabs.Services.Core
             };
         }
 
-        public async Task<ProductCreateViewModel> GetProductCreateViewModelAsync()
+        public async Task<ProductFormViewModel> GetProductCreateViewModelAsync()
         {
             IEnumerable<CategoryViewModel> categories = await _context.Categories
                 .AsNoTracking()
@@ -135,7 +146,7 @@ namespace MaxEndLabs.Services.Core
                 })
                 .ToArrayAsync();
 
-            ProductCreateViewModel model = new ProductCreateViewModel
+            ProductFormViewModel model = new ProductFormViewModel
             {
                 Categories = categories
             };
@@ -143,7 +154,7 @@ namespace MaxEndLabs.Services.Core
             return model;
         }
 
-        public async Task<string> CreateProductAsync(ProductCreateViewModel model)
+        public async Task<string> AddProductAsync(ProductFormViewModel model)
         {
             var slug = GenerateSlug(model.Name);
 
@@ -229,6 +240,90 @@ namespace MaxEndLabs.Services.Core
             }
 
             await _context.SaveChangesAsync();
+		}
+
+        public async Task<ProductFormViewModel> GetProductEditViewModelAsync(string productSlug)
+        {
+	        var product = await _context.Products
+				.AsNoTracking()
+				.FirstOrDefaultAsync(p => p.Slug == productSlug && p.IsPublished);
+
+            if (product == null)
+				throw new ArgumentException("Product Not Found");
+
+            return new ProductFormViewModel
+			{
+				Id = product.Id,
+				Name = product.Name,
+				Description = product.Description,
+				Price = product.Price,
+				MainImageUrl = product.MainImageUrl,
+				CategoryId = product.CategoryId,
+				Categories = await _context.Categories
+					.AsNoTracking()
+					.OrderBy(c => c.Name)
+					.Select(c => new CategoryViewModel
+					{
+						Id = c.Id,
+						Name = c.Name,
+					})
+					.ToArrayAsync()
+			};
+		}
+
+        public async Task<ProductFormViewModel> GetProductEditViewModelAsync(int productId)
+        {
+			var product = await _context.Products
+				.AsNoTracking()
+				.FirstOrDefaultAsync(p => p.Id == productId && p.IsPublished);
+
+			if (product == null)
+				throw new ArgumentException("Product Not Found");
+
+			return new ProductFormViewModel
+			{
+				Id = product.Id,
+				Name = product.Name,
+				Description = product.Description,
+				Price = product.Price,
+				MainImageUrl = product.MainImageUrl,
+				CategoryId = product.CategoryId,
+				Categories = await _context.Categories
+					.AsNoTracking()
+					.OrderBy(c => c.Name)
+					.Select(c => new CategoryViewModel
+					{
+						Id = c.Id,
+						Name = c.Name,
+					})
+					.ToArrayAsync()
+			};
+		}
+
+        public async Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormViewModel model)
+        {
+	        var product = await _context.Products
+				.FirstOrDefaultAsync(p => p.Id == model.Id && p.IsPublished);
+
+			if (product == null)
+				throw new ArgumentException("Product Not Found");
+
+            var categorySlug = await _context.Categories
+				.Where(c => c.Id == model.CategoryId)
+				.Select(c => c.Slug)
+				.FirstOrDefaultAsync();
+
+			product.Name = model.Name;
+			product.Description = model.Description;
+			product.Price = model.Price;
+			product.MainImageUrl = model.MainImageUrl;
+			product.CategoryId = model.CategoryId;
+			product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+			product.Slug = GenerateSlug(model.Name);
+
+			await _context.SaveChangesAsync();
+
+			return (categorySlug!, product.Slug);
 		}
 
         private static string GenerateSlug(string name)

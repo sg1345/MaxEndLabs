@@ -9,13 +9,17 @@ using static MaxEndLabs.GCommon.EntityValidation.Product;
 
 namespace MaxEndLabs.ViewModels
 {
-    public class ProductCreateViewModel
+    public class ProductFormViewModel
     {
+	    public int Id { get; set; }
+
         [Required(ErrorMessage = "Please enter a product name")]
         [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessage = "Name must be between {2} and {1} characters")]
         public string Name { get; set; } = null!;
 
-        public string? Description { get; set; }
+
+        [StringLength(DescriptionMaxLength, ErrorMessage = "Description cannot be more than {1} characters")]
+		public string? Description { get; set; }
 
         [Required(ErrorMessage = "Please pick a Category")]
         [Range(CategoryIdMinValue,CategoryIdMaxValue)]
