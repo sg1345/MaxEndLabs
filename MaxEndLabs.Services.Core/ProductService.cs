@@ -176,7 +176,7 @@ namespace MaxEndLabs.Services.Core
                 IsPublished = true,
             };
 
-            _context.Products.Add(product);
+            await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
             return product.Slug;

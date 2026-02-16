@@ -102,7 +102,12 @@ namespace MaxEndLabs.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> VariantManager(ManageVariantsViewModel model)
         {
-            if (!ModelState.IsValid)
+	        if (model.Variants == null || !model.Variants.Any())
+	        {
+		        ModelState.AddModelError("Variants", "You must add at least one variant before finishing.");
+	        }
+
+			if (!ModelState.IsValid)
             {
                 model = await _productService.GetProductAsync(model.ProductSlug);
 

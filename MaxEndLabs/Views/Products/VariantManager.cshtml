@@ -2,35 +2,36 @@
 
 
 <form asp-action="VariantManager" method="post">
-	<input type="hidden" asp-for="ProductId" />
-	<input type="hidden" asp-for="ProductId" />
-	<input type="hidden" asp-for="ProductName" />
-	<input type="hidden" asp-for="ProductSlug" />
-	<input type="hidden" asp-for="CategorySlug" />
+	<div asp-validation-summary="All" class="text-danger mb-3 font-weight-bold"></div>
+	<input type="hidden" asp-for="ProductId"/>
+	<input type="hidden" asp-for="ProductId"/>
+	<input type="hidden" asp-for="ProductName"/>
+	<input type="hidden" asp-for="ProductSlug"/>
+	<input type="hidden" asp-for="CategorySlug"/>
 
-    <div id="variantContainer">
-	    
-		    @for (int i = 0; i < Model.Variants.Count; i++)
-		    {
-			    <div class="row mb-3 variant-row">
-				    <input type="hidden" name="Variants.Index" value="@i" />
-				    <input type="hidden" name="Variants[@i].Id" value="@Model.Variants[i].Id"/>
+	<div id="variantContainer">
 
-				    <div class="col-md-5">
-							<input name="Variants[@i].Name" value="@Model.Variants[i].Name" class="form-control"/>
-				    </div>
-				    <div class="col-md-5">
-					    <input name="Variants[@i].Price" value="@Model.Variants[i].Price" type="number" step="0.01" class="form-control"/>
-				    </div>
-				    <div class="col-md-2">
-					    <button type="button" class="btn btn-outline-danger" onclick="this.closest('.row').remove()">Remove</button>
-				    </div>
-			    </div>
-		    }
-    </div>
+		@for (int i = 0; i < Model.Variants.Count; i++)
+		{
+			<div class="row mb-3 variant-row">
+				<input type="hidden" name="Variants.Index" value="@i"/>
+				<input type="hidden" name="Variants[@i].Id" value="@Model.Variants[i].Id"/>
 
-    <button type="button" class="btn btn-primary" id="addBtn">Add New Variant</button>
-    <button type="submit" class="btn btn-success">Save All Changes</button>
+				<div class="col-md-5">
+					<input name="Variants[@i].Name" value="@Model.Variants[i].Name" class="form-control"/>
+				</div>
+				<div class="col-md-5">
+					<input name="Variants[@i].Price" value="@Model.Variants[i].Price" type="number" step="0.01" class="form-control"/>
+				</div>
+				<div class="col-md-2">
+					<button type="button" class="btn btn-outline-danger" onclick="this.closest('.row').remove()">Remove</button>
+				</div>
+			</div>
+		}
+	</div>
+
+	<button type="button" class="btn btn-primary" id="addBtn">Add New Variant</button>
+	<button type="submit" class="btn btn-success">Save All Changes</button>
 </form>
 
 @section Scripts {

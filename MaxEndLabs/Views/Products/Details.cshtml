@@ -1,4 +1,6 @@
 ﻿@model MaxEndLabs.ViewModels.ProductDetailsViewModel
+@Html.ValidationMessage("ProductVariantId", "", new { @class = "text-danger" })
+@Html.ValidationMessage("Quantity", "", new { @class = "text-danger" })
 @{
 	ViewBag.Title = Model.Name;
 }
@@ -23,35 +25,45 @@
 		}
 
 		<h4 class="fw-bold">Price: €<span id="productPrice" data-original-price="@Model.Price">@Model.Price</span></h4>
+		
+		<form asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
+			<input type="hidden" name="productSlug" value="@Model.ProductSlug"/>
+			<input type="hidden" name="categorySlug" value="@Model.CategorySlug"/>
+			<input type="hidden" name="productId" value="@Model.Id"/>
 
-		@if (Model.ProductVariants.Any())
-		{
+			@if (Model.ProductVariants.Any())
+			{
+				<div class="mb-3">
+					<label for="variantSelect" class="form-label">Options</label>
+						<select id="variantSelect" name="ProductVariantId" class="form-select">
+						<option value="0">-- Select an Option --</option>
+						@foreach (var variant in Model.ProductVariants)
+						{
+							<option value="@variant.Id" data-price="@variant.Price">
+								@variant.VariantName
+							</option>
+						}
+					</select>
+				</div>
+			}
+			
 			<div class="mb-3">
-				<label for="variantSelect" class="form-label">Options</label>
-				<select id="variantSelect" class="form-select">
-					<option value="">-- Select an Option --</option>
-				@foreach (var variant in Model.ProductVariants)
-				{
-					<option value="@variant.Id" data-price="@variant.Price">
-						@variant.VariantName
-					</option>
-				}
-				</select>
+				<label for="quantity" class="form-label">Quantity</label>
+				<div class="input-group" style="width: 130px;">
+					<button class="btn btn-outline-secondary" type="button" onclick="stepDown()">-</button>
+					<input type="number" name="Quantity" id="quantity" class="form-control text-center" value="1" min="1" max="99">
+					<button class="btn btn-outline-secondary" type="button" onclick="stepUp()">+</button>
+				</div>
 			</div>
-		}
-		<div class="mt-4">
-			<form onclick="alert('Product Added To Cart')"
-				  asp-controller="ShoppingCart"
-			      asp-route-productSlug="@Model.ProductSlug" 
-			      asp-route-categorySlug="@Model.CategorySlug" 
-			      asp-action="AddToCart" 
-			      method="post">
+
+			<div class="mt-4">
 				<div class="d-flex gap-2 mt-3">
-					<button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill">
+					<button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill" onclick="alert('Item added')">
 						<i class="bi bi-cart-fill me-2"></i> Order Now
 					</button>
 				</div>
-			</form>
+			</div>
+		</form>
 
 			<div class="mt-5 pt-4 border-top">
 				@if (User.IsInRole("Admin"))
@@ -84,7 +96,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+
 
 @section Scripts {
 	<script>
@@ -98,6 +110,13 @@
 				const variantPrice = selectedOption.dataset.price;
 				priceSpan.textContent = variantPrice ? variantPrice : originalPrice;
 			});
+		}
+
+		function stepUp() {
+			document.getElementById('quantity').stepUp();
+		}
+		function stepDown() {
+			document.getElementById('quantity').stepDown();
 		}
 	</script>
 }

@@ -39,7 +39,7 @@ namespace MaxEndLabs.Data
                 .HasOne(ci => ci.ProductVariant)
                 .WithMany(pv => pv.CartItems)
                 .HasForeignKey(ci => ci.ProductVariantId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             //Category
             builder

@@ -18,6 +18,7 @@
 
         [ForeignKey(nameof(ProductVariant))]
         public int ProductVariantId { get; set; }
+
         public virtual ProductVariant ProductVariant { get; set; } = null!;
 
         [Required]
