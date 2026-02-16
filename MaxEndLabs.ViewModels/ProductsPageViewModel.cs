@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 
 namespace MaxEndLabs.ViewModels
 {
-	public class ProductsPageViewModel : IEnumerable
+	public class ProductsPageViewModel
 	{
 		public string Title { get; set; } = null!;
 		public IEnumerable<ProductListViewModel> Products { get; set; } = [];
-		public IEnumerator GetEnumerator()
-		{
-			throw new NotImplementedException();
-		}
+
 	}
 }

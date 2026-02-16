@@ -5,7 +5,14 @@
 
 <div class="row mt-4">
 	<div class="col-md-5">
-		<img src="@Model.MainImageUrl" class="img-fluid rounded" alt="@Model.Name" />
+		@if (string.IsNullOrEmpty(Model.MainImageUrl))
+		{
+			<img src = "~/images/default_product_image.jpg" class="img-fluid rounded"/>
+		}
+		else
+		{
+			<img src="@Model.MainImageUrl" class="img-fluid rounded" alt="@Model.Name"/>
+		}
 	</div>
 
 	<div class="col-md-7">
@@ -15,7 +22,7 @@
 			<p>@Model.Description</p>
 		}
 
-		<h4 class="fw-bold">Price: $<span id="productPrice">@Model.Price</span></h4>
+		<h4 class="fw-bold">Price: €<span id="productPrice" data-original-price="@Model.Price">@Model.Price</span></h4>
 
 		@if (Model.ProductVariants.Any())
 		{
@@ -33,11 +40,18 @@
 			</div>
 		}
 		<div class="mt-4">
-			<div class="d-flex gap-2 mt-3">
-				<button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill">
-					<i class="bi bi-cart-fill me-2"></i> Order Now
-				</button>
-			</div>
+			<form onclick="alert('Product Added To Cart')"
+				  asp-controller="ShoppingCart"
+			      asp-route-productSlug="@Model.ProductSlug" 
+			      asp-route-categorySlug="@Model.CategorySlug" 
+			      asp-action="AddToCart" 
+			      method="post">
+				<div class="d-flex gap-2 mt-3">
+					<button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill">
+						<i class="bi bi-cart-fill me-2"></i> Order Now
+					</button>
+				</div>
+			</form>
 
 			<div class="mt-5 pt-4 border-top">
 				@if (User.IsInRole("Admin"))
@@ -66,7 +80,7 @@
 							</form>
 						</div>
 					</div>
-				 }
+				}
 			</div>
 		</div>
 	</div>
@@ -76,12 +90,13 @@
 	<script>
 		const variantSelect = document.getElementById('variantSelect');
 		const priceSpan = document.getElementById('productPrice');
+		const originalPrice = priceSpan.getAttribute('data-original-price');
 
 		if (variantSelect) {
 			variantSelect.addEventListener('change', function() {
 				const selectedOption = variantSelect.options[variantSelect.selectedIndex];
 				const variantPrice = selectedOption.dataset.price;
-				priceSpan.textContent = variantPrice;
+				priceSpan.textContent = variantPrice ? variantPrice : originalPrice;
 			});
 		}
 	</script>

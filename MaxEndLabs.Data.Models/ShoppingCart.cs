@@ -11,12 +11,13 @@ namespace MaxEndLabs.Data.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]
         [ForeignKey(nameof(User))]
         [MaxLength(UserIdMaxLength)]
-        public string? UserId { get; set; }
-        public virtual IdentityUser? User { get; set; }
+        public string UserId { get; set; } = null!;
+		public virtual IdentityUser User { get; set; } = null!;
 
-        [Required]
+		[Required]
         public DateTime CreatedAt { get; set; }
         
         public virtual ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();

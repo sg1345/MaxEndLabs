@@ -16,21 +16,17 @@
 <div class="row">
 	@foreach (var category in Model)
 	{
-		<div class="col-md-3 mb-3">
+		<div class="col-md-4 mb-4">
 			<div class="card h-100">
-				<div class="card-body text-center">
-					<h5 class="card-title">@category.Name</h5>
-					<a class="btn btn-primary" asp-controller="Products" asp-action="ByCategory" asp-route-slug="@category.Slug">View Products</a>
-				</div>
+				<img src="~/images/@(category.Slug).jpg" class="card-img h-100" style="object-fit"/>
+				<a class="stretched-link" asp-controller="Products" asp-action="ByCategory" asp-route-slug="@category.Slug"></a>
 			</div>
 		</div>
 	}
-	<div class="col-md-3 mb-3">
+	<div class="col-md-4 mb-4">
 		<div class="card h-100">
-			<div class="card-body text-center">
-				<h5 class="card-title">All</h5>
-				<a class="btn btn-primary" asp-controller="Products" asp-action="AllProducts">View Products</a>
-			</div>
+			<img src="~/images/all-products.jpg" class="card-img h-100" style="object-fit"/>
+			<a class="stretched-link" asp-controller="Products" asp-action="AllProducts"></a>
 		</div>
 	</div>
 </div>

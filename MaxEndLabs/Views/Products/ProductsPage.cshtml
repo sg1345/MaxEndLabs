@@ -13,13 +13,21 @@
 			   asp-action="Details"
 			   asp-route-categorySlug="@product.CategorySlug"
 			   asp-route-productSlug="@product.Slug">
-			<div class="card h-100">
-				<img src="@product.MainImageUrl" class="card-img-top" alt="@product.Name"/>
-				<div class="card-body">
-					<h5 class="card-title">@product.Name</h5>
-					<p class="card-text fw-bold">$@product.Price</p>
+				<div class="card h-100">
+					@if (string.IsNullOrEmpty(product.MainImageUrl))
+					{
+						<img src = "~/images/default_product_image.jpg" class="card-img-top"/>
+					}
+					else
+					{
+						<img src="@product.MainImageUrl" class="card-img-top" alt="@product.Name"/>
+					}
+					
+					<div class="card-body">
+						<h5 class="card-title">@product.Name</h5>
+						<p class="card-text fw-bold">$@product.Price</p>
+					</div>
 				</div>
-			</div>
 			</a>
 		</div>
 	}
