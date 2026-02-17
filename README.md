@@ -126,14 +126,14 @@ After starting the application:
 
 ### 🔐 Administrative access
 
-Creating, editing and deleting products and product variants is
-restricted to users with the Admin role.
+**Creating, editing and deleting** products and product variants is
+restricted to users with the **Admin role**.
 
-The application contains a pre-seeded administrator account. To access
+The application contains a **pre-seeded administrator account**. To access
 the product and variant management functionality, log in with:
 
--   Email: admin@labs.com
--   Password: admin
+-   **Email: admin@labs.com**
+-   **Password: admin**
 
 The admin account is seeded automatically when the application starts.
 
