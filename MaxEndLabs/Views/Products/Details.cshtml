@@ -58,7 +58,7 @@
 
 			<div class="mt-4">
 				<div class="d-flex gap-2 mt-3">
-					<button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill" onclick="alert('Item added')">
+					<button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill">
 						<i class="bi bi-cart-fill me-2"></i> Order Now
 					</button>
 				</div>
@@ -84,7 +84,7 @@
 								Edit
 							</a>
 
-							<form asp-action="Delete" asp-route-slug="@Model.ProductSlug" method="post" class="d-inline">
+							<form asp-action="Delete" asp-route-productSlug="@Model.ProductSlug" method="post" class="d-inline">
 								<button type="submit" class="btn btn-sm btn-outline-danger px-3"
 								        onclick="return confirm('Delete permanently?')">
 									Delete

@@ -1,8 +1,67 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "MaxEndLabs News";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-1 fw-bold border-bottom d-inline-block pb-2">MaxEndLabs</h1>
+        <p class="text-muted text-uppercase tracking-widest">Strength | Performance | Gear</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <article class="mb-5 pb-5 border-bottom">
+                <img src="https://usastore.weightliftinghouse.com/cdn/shop/articles/bahrain_2024-783_d89c1ea8-c7d8-4b95-9639-1e08f883dae1_1200x.jpg?v=1741191082" class="img-fluid rounded mb-3" alt="Weightlifting">
+                <div class="category-badge mb-2 text-primary fw-bold">ELITE PERFORMANCE</div>
+                <h2 class="display-5 fw-bold mb-3">The Rise of Carlos Nasar: A New Era of Weightlifting</h2>
+                <p class="lead">At just 21 years old, Carlos Nasar is shattering world records and redefining what is possible in the 89kg category. His explosive power and mental resilience have made him a global icon...</p>
+                <p>Nasar's journey from a small gym in Bulgaria to the top of the Olympic podium is a testament to the "Maximum Effort" philosophy we celebrate at MaxEndLabs. His technique isn't just about strength; it's a masterpiece of biomechanics.</p>
+                <a asp-controller="Home" asp-action="KarlosNasarStory" class="btn btn-outline-dark">Read Full Article</a>
+            </article>
+
+            <article class="mb-5">
+                <div class="row">
+                    <div class="col-md-5">
+                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600" class="img-fluid rounded" alt="Clean and Jerk">
+                    </div>
+                    <div class="col-md-7">
+                        <div class="category-badge mb-2 text-danger fw-bold">GUIDES & TUTORIALS</div>
+                        <h3 class="fw-bold">How to Clean and Jerk: A Quick Guide</h3>
+                        <p>The Clean and Jerk is the ultimate test of total body power. Follow these three phases to perfect your form:</p>
+                        <ul class="list-unstyled">
+                            <li><strong>1. The Pull:</strong> Keep the bar close. Explode through the hips.</li>
+                            <li><strong>2. The Catch:</strong> Drop under the bar fast into a front squat.</li>
+                            <li><strong>3. The Jerk:</strong> Use your legs to drive the bar overhead while splitting your feet.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 20px;">
+                <div class="p-4 bg-light rounded shadow-sm text-center">
+                    <h4 class="fw-bold mb-3">SHOP OUR GEAR</h4>
+                    <p class="small text-muted mb-4">Support your training with professional grade equipment used by the best.</p>
+
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-primary btn-lg w-100 rounded-pill shadow">
+                        Go to Store
+                    </a>
+
+                    <div class="mt-4 pt-4 border-top">
+	                    <h6>The Athlete's Checklist:</h6>
+	                    <ul class="list-unstyled small text-start">
+		                    <li class="mb-2">💊 <strong>Elite Whey & Creatine</strong> - Pure Recovery</li>
+		                    <li class="mb-2">👟 <strong>MaxStability Lifters</strong> - For Heavy Days</li>
+		                    <li class="mb-2">👕 <strong>Oversized Pump Covers</strong> - Breathable Cotton</li>
+		                    <li class="mb-2">🩳 <strong>Mesh Training Shorts</strong> - Zero Restriction</li>
+		                    <li class="mb-2">🎗️ <strong>Figure-8 Lifting Straps</strong> - Locked-in Grip</li>
+	                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

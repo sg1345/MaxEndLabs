@@ -75,9 +75,6 @@ namespace MaxEndLabs.Services.Core
             var category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Slug == categorySlug);
 
-            if (category == null)
-                throw new ArgumentException("Category Not Found");
-
             var products = await _context.Products
                 .AsNoTracking()
                 .Where(p => p.CategoryId == category.Id && p.IsPublished)
@@ -150,6 +147,8 @@ namespace MaxEndLabs.Services.Core
                 })
                 .ToArrayAsync();
 
+            if (!categories.Any())
+                throw new ArgumentException("Categories Not Found");
 
             ProductFormViewModel model = new ProductFormViewModel
             {
@@ -339,10 +338,19 @@ namespace MaxEndLabs.Services.Core
 			var product = await _context.Products
 				.FirstOrDefaultAsync(p => p.Slug == productSlug && p.IsPublished);
 
-			if (product == null)
-				throw new ArgumentException("Product Not Found");
+            if (product == null)
+                throw new ArgumentException("Product Not Found");
 
-			product.IsPublished = false;
+            var cartItemsForRemoving = await _context.CartItems
+                .Where(ci => ci.Product.Slug == productSlug)
+                .ToListAsync();
+
+            if (cartItemsForRemoving.Any())
+            {
+                _context.CartItems.RemoveRange(cartItemsForRemoving);
+            }
+
+            product.IsPublished = false;
             product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
             product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmm}";
 

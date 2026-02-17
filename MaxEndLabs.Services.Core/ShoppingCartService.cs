@@ -47,9 +47,6 @@ namespace MaxEndLabs.Services.Core
 				})
 				.ToListAsync();
 
-			if (shoppingCartItemList == null)
-                throw new ArgumentException("Product Not Found");
-
             var model = new ShoppingCartIndexViewModel
             {
                 TotalPrice = shoppingCartItemList.Sum(item => item.UnitPrice * item.Quantity),

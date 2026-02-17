@@ -1,10 +1,11 @@
 using MaxEndLabs.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MaxEndLabs.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
@@ -13,12 +14,26 @@ namespace MaxEndLabs.Controllers
             _logger = logger;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult KarlosNasarStory()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult AboutUs()
         {
             return View();
         }

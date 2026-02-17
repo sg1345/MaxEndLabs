@@ -1,8 +1,8 @@
-﻿using MaxEndLabs.Services.Core;
-using MaxEndLabs.Services.Core.Contracts;
+﻿using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MaxEndLabs.Controllers
 {
@@ -21,17 +21,16 @@ namespace MaxEndLabs.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Index()
 		{
-			string? userId = GetUserId();
-			if (string.IsNullOrEmpty(userId))
-			{
-				return RedirectToPage("/Account/Login", new { area = "Identity" });
-			}
+				string? userId = GetUserId();
+				if (string.IsNullOrEmpty(userId))
+				{
+					return RedirectToPage("/Account/Login", new { area = "Identity" });
+				}
 
-			var model = await _shoppingCartService.GetAllCartItemsAsync(userId);
-			return View(model);
+				var model = await _shoppingCartService.GetAllCartItemsAsync(userId);
+				return View(model);
 		}
 
-		[AllowAnonymous]
 		[HttpPost]
 		public async Task<IActionResult> AddToCart(CartItemCreateViewModel model)
 		{
@@ -61,28 +60,44 @@ namespace MaxEndLabs.Controllers
 		[HttpPost]
 		public async Task<IActionResult> RemoveFromCart(CartItemRemoveViewModel model)
 		{
-            string? userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
-            }
+			try
+			{
+				string? userId = GetUserId();
+				if (string.IsNullOrEmpty(userId))
+				{
+					return RedirectToPage("/Account/Login", new { area = "Identity" });
+				}
 
-            await _shoppingCartService.RemoveCartItemFromShoppingCartAsync(model);
+				await _shoppingCartService.RemoveCartItemFromShoppingCartAsync(model);
 
-            return RedirectToAction("Index");
+				return RedirectToAction("Index");
+			}
+			catch (ArgumentException e)
+			{
+				return NotFound(e.Message);
+			}
+
         }
 
+		[HttpPost]
 		public async Task<IActionResult> Checkout(int cartId)
 		{
-            string? userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToPage("/Account/Login", new { area = "Identity" });
-            }
+			try
+			{
+				string? userId = GetUserId();
+				if (string.IsNullOrEmpty(userId))
+				{
+					return RedirectToPage("/Account/Login", new { area = "Identity" });
+				}
 
-			await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(cartId);
+				await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(cartId);
 
-            return View();
+				return View();
+			}
+			catch (ArgumentException e)
+			{
+				return NotFound(e.Message);
+			}
         }
 	}
 }

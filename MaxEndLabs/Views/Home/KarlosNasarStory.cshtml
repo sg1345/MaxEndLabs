@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Karlos Nasar: The Olympic Journey";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">News</a></li>
+                    <li class="breadcrumb-item active">Athletes</li>
+                </ol>
+            </nav>
+
+            <h1 class="display-3 fw-bold mb-4">The Bulgarian Prodigy: Karlos Nasar’s Road to Olympic Gold</h1>
+
+            <div class="d-flex align-items-center mb-4 text-muted">
+                <span class="me-3">By MaxEndLabs Editorial</span>
+                <span class="me-3">|</span>
+                <span>February 2026</span>
+            </div>
+
+            <img src="https://bnrnews.bg/api/media/32fc2fcc-1b7f-437a-9011-a607404af980?Size=large" 
+                 class="img-fluid rounded-4 shadow-lg mb-5" alt="Karlos Nasar Paris 2024">
+
+            <div class="article-content fs-5 lh-lg">
+                <p class="lead fw-normal text-secondary mb-4">
+                    In the world of Olympic Weightlifting, names like Suleymanoglu and Dimas are spoken of with reverence. Today, a new name has joined that pantheon: <strong>Karlos Nasar.</strong>
+                </p>
+
+                <h2 class="fw-bold mt-5 mb-3">The Paris 2024 Explosion</h2>
+                <p>
+                    The atmosphere inside the South Paris Arena was electric. Going into the 89kg category, the world knew Nasar was the favorite, but nobody expected the clinical precision he displayed. With a successful 180kg Snatch, he set the stage for his signature move: the Clean & Jerk.
+                </p>
+
+                <blockquote class="blockquote border-start border-4 border-primary ps-4 my-5 py-2 bg-light italic">
+                    "I don't just lift for myself; I lift for the history of Bulgaria and for everyone who believes that limits are meant to be broken."
+                    <footer class="blockquote-footer mt-2">Karlos Nasar after his 224kg lift</footer>
+                </blockquote>
+
+                <p>
+                    When the weight was loaded to 224kg—a world record attempt—the room went silent. Nasar approached the bar with a calm that defied his 20 years of age. The clean was effortless; the jerk was a masterpiece of power and stability. When the three white lights flashed, a new Olympic and World Record was born.
+                </p>
+
+                <h2 class="fw-bold mt-5 mb-3">Recent Wins & Dominance</h2>
+                <p>
+                    Nasar’s journey hasn't been without hurdles. After a freak injury in 2023 that threatened his career, his comeback has been nothing short of miraculous. 
+                </p>
+                <ul>
+                    <li><strong>2025 World Championships:</strong> Claimed his third World Title in a third weight class (94kg) with a 395kg Total, featuring a stunning 222kg World Record Clean & Jerk.</li>
+	                <li><strong>2025 European Championships:</strong> Continued his undefeated streak with a Triple Gold sweep in the Snatch, Clean & Jerk, and Total.</li>
+	                <li><strong>2024 Paris Olympics:</strong> Gold Medal & World Record (404kg Total).</li>
+	                <li><strong>2024 European Championships:</strong> Gold in Snatch and Clean & Jerk.</li>
+	                <li><strong>World Cup Dominance:</strong> Consistent podium finishes, establishing him as the pound-for-pound king of the 89kg class.</li>
+                </ul>
+
+                <p class="mt-5">
+                    At <strong>MaxEndLabs</strong>, we draw inspiration from this level of dedication. Whether it's the footwear that provides the platform for a 200kg+ jerk or the supplements that fuel recovery after 6-hour training sessions, we strive to match the standard set by champions like Nasar.
+                </p>
+            </div>
+
+            <div class="mt-5 pt-5 border-top text-center">
+                <h4 class="mb-4">Inspired by Karlos?</h4>
+                <a asp-controller="Products" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-5">
+                    Shop Performance Gear
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .article-content p { margin-bottom: 1.5rem; }
+    .breadcrumb-item a { color: #6c757d; }
+    .breadcrumb-item.active { color: #000; font-weight: bold; }
+</style>

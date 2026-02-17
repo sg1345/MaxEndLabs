@@ -14,14 +14,16 @@
 </div>
 
 <div class="row">
-	@foreach (var category in Model)
-	{
-		<div class="col-md-4 mb-4">
-			<div class="card h-100">
-				<img src="~/images/@(category.Slug).jpg" class="card-img h-100" style="object-fit"/>
-				<a class="stretched-link" asp-controller="Products" asp-action="ByCategory" asp-route-slug="@category.Slug"></a>
+	@if(Model.Any()){
+		@foreach (var category in Model)
+		{
+			<div class="col-md-4 mb-4">
+				<div class="card h-100">
+					<img src="~/images/@(category.Slug).jpg" class="card-img h-100" style="object-fit"/>
+					<a class="stretched-link" asp-controller="Products" asp-action="ByCategory" asp-route-slug="@category.Slug"></a>
+				</div>
 			</div>
-		</div>
+		}
 	}
 	<div class="col-md-4 mb-4">
 		<div class="card h-100">

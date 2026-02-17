@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "About MaxEndLabs";
+}
+
+<div class="container my-5">
+    <div class="row align-items-center py-5">
+        <div class="col-md-6">
+            <h1 class="display-4 fw-bold mb-4">Maximum Effort.<br><span class="text-primary">Zero Excuses.</span></h1>
+            <p class="lead text-muted">
+                At MaxEndLabs, we don't believe in "casual" training. We believe in the grind, the sweat, and the heavy iron. 
+            </p>
+            <p>
+                Founded in 2026, our mission has always been simple: to provide athletes with the tools they need to push past their limits. Whether it's the supplements that fuel your recovery or the straps that hold your heaviest deadlift, we build for performance.
+            </p>
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800" class="img-fluid rounded-4 shadow-lg" alt="MaxEndLabs Training">
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <div class="row text-center mb-5">
+        <h2 class="fw-bold mb-5">The MaxEnd Standard</h2>
+        <div class="col-md-3">
+            <div class="p-3">
+                <i class="bi bi-capsule text-primary display-4 mb-3"></i>
+                <h5>Supplements</h5>
+                <p class="small text-muted">Pure ingredients. No fillers. Engineered for maximum recovery.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3">
+                <i class="bi bi-person-arms-up text-primary display-4 mb-3"></i>
+                <h5>Apparel</h5>
+                <p class="small text-muted">From pump covers to squat-proof pants, designed for the athlete's physique.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3">
+                <i class="bi bi-lightning-charge text-primary display-4 mb-3"></i>
+                <h5>Training Gear</h5>
+                <p class="small text-muted">Professional grade straps and footwear built to withstand world-record loads.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3">
+                <i class="bi bi-shield-check text-primary display-4 mb-3"></i>
+                <h5>Quality First</h5>
+                <p class="small text-muted">Every product is tested by lifters, for lifters. If it's not elite, we don't sell it.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-dark text-white rounded-4 p-5 text-center shadow">
+        <h2 class="fw-bold mb-3">Ready to Join the Team?</h2>
+        <p class="mb-4">Explore our full collection of supplements, shoes, and apparel.</p>
+        <a asp-controller="Products" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-5">
+            Shop the Collection
+        </a>
+    </div>
+</div>
+
+<style>
+    .display-4 { letter-spacing: -1px; }
+    .text-primary { color: #0d6efd !important; }
+    .rounded-4 { border-radius: 1.5rem; }
+</style>
