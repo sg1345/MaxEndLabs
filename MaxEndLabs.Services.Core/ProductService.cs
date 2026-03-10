@@ -1,6 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using MaxEndLabs.Data;
 using MaxEndLabs.Data.Models;
+using MaxEndLabs.Data.Repository;
+using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -10,26 +12,25 @@ namespace MaxEndLabs.Services.Core
     public class ProductService : IProductService
     {
         private readonly MaxEndLabsDbContext _context;
-
-        public ProductService(MaxEndLabsDbContext context)
+        private readonly IProductRepository _productRepository;
+		public ProductService(MaxEndLabsDbContext context, IProductRepository productRepository)
         {
             _context = context;
-        }
+			_productRepository = productRepository;
+		}
 
         public async Task<bool> ProductExistsAsync(string productName, int productId)
         {
 			var productSlug = GenerateSlug(productName);
 
-			return await _context.Products
-		        .AnyAsync(p => p.Slug == productSlug && p.Id != productId);
+			return await _productRepository.SlugExistsAsync(productSlug, productId);
         }
 
         public async Task<bool> ProductExistsAsync(string productName)
         {
 			var productSlug = GenerateSlug(productName);
 
-			return await _context.Products
-				.AnyAsync(p => p.Slug == productSlug);
+			return await _productRepository.SlugExistsAsync(productSlug);
 		}
 
         public async Task<IEnumerable<ProductIndexViewModel>> GetAllCategoriesAsync()

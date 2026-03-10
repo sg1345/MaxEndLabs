@@ -1,13 +1,13 @@
 using MaxEndLabs.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using MaxEndLabs.Data.Repository;
+using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Services.Core;
 using MaxEndLabs.Services.Core.Contracts;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
-
-namespace MaxEndLabs
+namespace MaxEndLabs.Web
 {
     public class Program
     {
@@ -39,6 +39,7 @@ namespace MaxEndLabs
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 

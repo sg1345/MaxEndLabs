@@ -21,8 +21,4 @@
     <ProjectReference Include="..\MaxEndLabs.GCommon\MaxEndLabs.GCommon.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repository\" />
-  </ItemGroup>
-
 </Project>
