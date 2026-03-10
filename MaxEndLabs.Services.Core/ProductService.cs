@@ -50,7 +50,6 @@ namespace MaxEndLabs.Services.Core
         {
             var products = await _context.Products
                 .AsNoTracking()
-                .Where(p => p.IsPublished)
                 .OrderBy(p => p.Name)
                 .Select(p => new ProductListViewModel()
                 {
@@ -77,7 +76,7 @@ namespace MaxEndLabs.Services.Core
 
             var products = await _context.Products
                 .AsNoTracking()
-                .Where(p => p.CategoryId == category.Id && p.IsPublished)
+                .Where(p => p.CategoryId == category.Id)
                 .OrderBy(p => p.Name)
                 .Select(p => new ProductListViewModel()
                 {

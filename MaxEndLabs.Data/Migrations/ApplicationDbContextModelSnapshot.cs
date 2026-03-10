@@ -54,7 +54,7 @@ namespace MaxEndLabs.Data.Migrations
                     b.HasIndex("CartId", "ProductId", "ProductVariantId")
                         .IsUnique();
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("MaxEndLabs.Data.Models.Category", b =>
@@ -80,7 +80,7 @@ namespace MaxEndLabs.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -162,7 +162,7 @@ namespace MaxEndLabs.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
 
                     b.HasData(
                         new
@@ -307,7 +307,7 @@ namespace MaxEndLabs.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductVariants");
+                    b.ToTable("ProductVariants", (string)null);
 
                     b.HasData(
                         new
@@ -538,7 +538,7 @@ namespace MaxEndLabs.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ShoppingCarts");
+                    b.ToTable("ShoppingCarts", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

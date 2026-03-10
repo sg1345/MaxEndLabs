@@ -19,6 +19,7 @@ namespace MaxEndLabs.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		public async Task<IActionResult> Index()
 		{
 				string? userId = GetUserId();
@@ -32,12 +33,14 @@ namespace MaxEndLabs.Controllers
 		}
 
 		[HttpPost]
+		[AllowAnonymous]
 		public async Task<IActionResult> AddToCart(CartItemCreateViewModel model)
 		{
 			string? userId = GetUserId();
 			if (string.IsNullOrEmpty(userId))
 			{
 				return RedirectToPage("/Account/Login", new {area = "Identity"});
+
 			}
 
 			if (!ModelState.IsValid)
@@ -79,7 +82,7 @@ namespace MaxEndLabs.Controllers
 
         }
 
-		[HttpPost]
+		[HttpGet]
 		public async Task<IActionResult> Checkout(int cartId)
 		{
 			try
