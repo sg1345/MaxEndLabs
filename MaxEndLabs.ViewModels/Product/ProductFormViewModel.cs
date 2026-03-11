@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using static MaxEndLabs.GCommon.EntityValidation.Product;
 
-namespace MaxEndLabs.ViewModels
+namespace MaxEndLabs.ViewModels.Product
 {
     public class ProductFormViewModel
     {
-	    public int Id { get; set; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Please enter a product name")]
         [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessage = "Name must be between {2} and {1} characters")]
@@ -19,10 +19,10 @@ namespace MaxEndLabs.ViewModels
 
 
         [StringLength(DescriptionMaxLength, ErrorMessage = "Description cannot be more than {1} characters")]
-		public string? Description { get; set; }
+        public string? Description { get; set; }
 
         [Required(ErrorMessage = "Please pick a Category")]
-        [Range(CategoryIdMinValue,CategoryIdMaxValue)]
+        [Range(CategoryIdMinValue, CategoryIdMaxValue)]
         public int CategoryId { get; set; }
 
         [Required(ErrorMessage = "Please enter a product price")]
@@ -31,6 +31,6 @@ namespace MaxEndLabs.ViewModels
 
         public string? MainImageUrl { get; set; }
 
-        public IEnumerable<CategoryViewModel> Categories { get; set; } = [];
+        public IEnumerable<CategorySelectViewModel> Categories { get; set; } = [];
     }
 }

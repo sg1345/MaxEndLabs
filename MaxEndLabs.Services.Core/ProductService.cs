@@ -3,8 +3,10 @@ using MaxEndLabs.Data;
 using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Repository;
 using MaxEndLabs.Data.Repository.Contracts;
+using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels;
+using MaxEndLabs.ViewModels.Product;
 using Microsoft.EntityFrameworkCore;
 
 namespace MaxEndLabs.Services.Core
@@ -33,26 +35,31 @@ namespace MaxEndLabs.Services.Core
 			return await _productRepository.SlugExistsAsync(productSlug);
 		}
 
-        public async Task<IEnumerable<ProductIndexViewModel>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
-            return await _context.Categories
-                .AsNoTracking()
-                .OrderByDescending(c => c.Name)
-                .Select(c => new ProductIndexViewModel
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Slug = c.Slug
-                })
-                .ToListAsync();
+            var categories = await _productRepository
+		            .GetAllCategoriesAsync();
+
+            var categoryDtoList = categories
+	            .OrderByDescending(c => c.Name)
+	            .Select(c => new CategoryDto
+	            {
+		            Id = c.Id,
+		            Name = c.Name,
+		            Slug = c.Slug
+	            })
+	            .ToList();
+
+            return categoryDtoList;
         }
 
-        public async Task<ProductsPageViewModel> GetAllProductsAsync()
+        public async Task<ProductsPageDto> GetAllProductsAsync()
         {
-            var products = await _context.Products
-                .AsNoTracking()
+            var products = await _productRepository.GetAllProductsAsync();
+
+                var productDtoList = products
                 .OrderBy(p => p.Name)
-                .Select(p => new ProductListViewModel()
+                .Select(p => new ProductDto()
                 {
                     Id = p.Id,
                     Name = p.Name,
@@ -61,25 +68,28 @@ namespace MaxEndLabs.Services.Core
                     MainImageUrl = p.MainImageUrl,
                     CategorySlug = p.Category.Slug
                 })
-                .ToListAsync();
+                .ToList();
 
-            return new ProductsPageViewModel
+            return new ProductsPageDto
             {
                 Title = "All Products",
-                Products = products
+                Products = productDtoList
             };
         }
 
-        public async Task<ProductsPageViewModel> GetProductsByCategoryAsync(string categorySlug)
+        public async Task<ProductsPageDto> GetProductsByCategoryAsync(string categorySlug)
         {
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(c => c.Slug == categorySlug);
+            var category = await _productRepository.GetCategoryBySlugAsync(categorySlug);
 
-            var products = await _context.Products
-                .AsNoTracking()
+            if (category == null)
+                throw new ArgumentException("Category Not Found");
+
+            var products = await _productRepository.GetAllProductsAsync();
+
+                var productsListDto = products
                 .Where(p => p.CategoryId == category.Id)
                 .OrderBy(p => p.Name)
-                .Select(p => new ProductListViewModel()
+                .Select(p => new ProductDto()
                 {
                     Id = p.Id,
                     Name = p.Name,
@@ -88,45 +98,36 @@ namespace MaxEndLabs.Services.Core
                     MainImageUrl = p.MainImageUrl,
                     CategorySlug = p.Category.Slug
                 })
-                .ToListAsync();
+                .ToList();
 
-            return new ProductsPageViewModel
+            return new ProductsPageDto
             {
                 Title = category.Name,
-                Products = products
+                Products = productsListDto
             };
         }
 
-        public async Task<ProductDetailsViewModel> GetProductDetailsAsync(string categorySlug, string productSlug)
+        public async Task<ProductDetailsDto> GetProductDetailsAsync(string productSlug)
         {
-            var product = await _context.Products
-                .AsNoTracking()
-                .Include(p => p.Category)
-                .Include(p => p.ProductVariants)
-                .FirstOrDefaultAsync(p => 
-	                p.Slug == productSlug && 
-	                p.Category.Slug == categorySlug && 
-	                p.IsPublished);
+            var product = await _productRepository.GetProductBySlugAsync(productSlug);
 
             if (product == null)
 	            throw new ArgumentException("Product Not Found");
 
-            var productVariant = await _context.ProductVariants
-                .AsNoTracking()
-                .Where(pv => pv.ProductId == product.Id)
-                .Select(pv => new VariantDisplayViewModel()
+            var productVariant = product.ProductVariants
+                .Select(pv => new ProductVariantDto()
                 {
                     Id = pv.Id,
                     VariantName = pv.VariantName,
                     Price = pv.Price ?? product.Price
                 })
-                .ToArrayAsync();
+                .ToArray();
 
-            return new ProductDetailsViewModel
-            {
+            return new ProductDetailsDto
+			{
                 Id = product.Id,
                 Name = product.Name,
-                ProductSlug = product.Slug,
+                Slug = product.Slug,
                 CategorySlug = product.Category.Slug,
                 Description = product.Description,
                 Price = product.Price,
@@ -135,30 +136,32 @@ namespace MaxEndLabs.Services.Core
             };
         }
 
-        public async Task<ProductFormViewModel> GetProductCreateViewModelAsync()
+        public async Task<ProductFormDto> GetProductCreateViewModelAsync()
         {
-            IEnumerable<CategoryViewModel> categories = await _context.Categories
-                .AsNoTracking()
-                .OrderBy(c => c.Name)
-                .Select(c => new CategoryViewModel
+            var categories = await _productRepository
+		            .GetAllCategoriesAsync();
+
+            if (!categories.Any())
+	            throw new ArgumentException("Categories Not Found");
+
+			var categoryDtoList = categories
+				.OrderBy(c => c.Name)
+                .Select(c => new CategorySelectDto()
                 {
                     Id = c.Id,
                     Name = c.Name,
                 })
-                .ToArrayAsync();
+                .ToList();
 
-            if (!categories.Any())
-                throw new ArgumentException("Categories Not Found");
-
-            ProductFormViewModel model = new ProductFormViewModel
+            var model = new ProductFormDto
             {
-                Categories = categories
+                Categories = categoryDtoList
             };
 
             return model;
         }
 
-        public async Task<string> AddProductAsync(ProductFormViewModel model)
+        public async Task<string> AddProductAsync(ProductCreateDto model)
         {
             var slug = GenerateSlug(model.Name);
 
@@ -175,10 +178,14 @@ namespace MaxEndLabs.Services.Core
                 IsPublished = true,
             };
 
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
+			bool successAdd = await _productRepository.AddProductAsync(product);
 
-            return product.Slug;
+			if (!successAdd)
+			{
+				throw new ArgumentException();
+			}
+
+			return product.Slug;
         }
 
         public async Task<ManageVariantsViewModel> GetProductAsync(string productSlug)
@@ -269,7 +276,7 @@ namespace MaxEndLabs.Services.Core
 				Categories = await _context.Categories
 					.AsNoTracking()
 					.OrderBy(c => c.Name)
-					.Select(c => new CategoryViewModel
+					.Select(c => new CategorySelectViewModel
 					{
 						Id = c.Id,
 						Name = c.Name,
@@ -298,7 +305,7 @@ namespace MaxEndLabs.Services.Core
 				Categories = await _context.Categories
 					.AsNoTracking()
 					.OrderBy(c => c.Name)
-					.Select(c => new CategoryViewModel
+					.Select(c => new CategorySelectViewModel
 					{
 						Id = c.Id,
 						Name = c.Name,

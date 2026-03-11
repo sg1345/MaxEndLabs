@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace MaxEndLabs.Controllers
+namespace MaxEndLabs.Web.Controllers
 {
 	public class ShoppingCartController : BaseController
 	{
@@ -22,14 +22,14 @@ namespace MaxEndLabs.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> Index()
 		{
-				string? userId = GetUserId();
-				if (string.IsNullOrEmpty(userId))
-				{
-					return RedirectToPage("/Account/Login", new { area = "Identity" });
-				}
+			string? userId = GetUserId();
+			if (string.IsNullOrEmpty(userId))
+			{
+				return RedirectToPage("/Account/Login", new { area = "Identity" });
+			}
 
-				var model = await _shoppingCartService.GetAllCartItemsAsync(userId);
-				return View(model);
+			var model = await _shoppingCartService.GetAllCartItemsAsync(userId);
+			return View(model);
 		}
 
 		[HttpPost]
@@ -39,13 +39,13 @@ namespace MaxEndLabs.Controllers
 			string? userId = GetUserId();
 			if (string.IsNullOrEmpty(userId))
 			{
-				return RedirectToPage("/Account/Login", new {area = "Identity"});
+				return RedirectToPage("/Account/Login", new { area = "Identity" });
 
 			}
 
 			if (!ModelState.IsValid)
 			{
-				var productDetails = await _productService.GetProductDetailsAsync(model.CategorySlug, model.ProductSlug);
+				var productDetails = await _productService.GetProductDetailsAsync(model.ProductSlug);
 				return View("/Views/Products/Details.cshtml", productDetails);
 			}
 
@@ -57,7 +57,7 @@ namespace MaxEndLabs.Controllers
 
 			await _shoppingCartService.AddProductToShoppingCartAsync(model, cartId);
 
-			return RedirectToAction("Details","Products", new { model.CategorySlug, model.ProductSlug });
+			return RedirectToAction("Details", "Products", new { model.CategorySlug, model.ProductSlug });
 		}
 
 		[HttpPost]
@@ -80,7 +80,7 @@ namespace MaxEndLabs.Controllers
 				return NotFound(e.Message);
 			}
 
-        }
+		}
 
 		[HttpGet]
 		public async Task<IActionResult> Checkout(int cartId)
@@ -101,6 +101,6 @@ namespace MaxEndLabs.Controllers
 			{
 				return NotFound(e.Message);
 			}
-        }
+		}
 	}
 }

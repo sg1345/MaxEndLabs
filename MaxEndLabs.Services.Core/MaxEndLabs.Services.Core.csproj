@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MaxEndLabs.Data\MaxEndLabs.Data.csproj" />
     <ProjectReference Include="..\MaxEndLabs.GCommon\MaxEndLabs.GCommon.csproj" />
+    <ProjectReference Include="..\MaxEndLabs.Service.Models\MaxEndLabs.Service.Models.csproj" />
     <ProjectReference Include="..\MaxEndLabs.ViewModels\MaxEndLabs.ViewModels.csproj" />
   </ItemGroup>
 

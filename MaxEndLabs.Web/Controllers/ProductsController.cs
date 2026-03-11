@@ -1,15 +1,14 @@
-﻿using MaxEndLabs.Data;
-using MaxEndLabs.Services.Core;
+﻿using MaxEndLabs.Service.Models.Product;
+using MaxEndLabs.Web.Controllers;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels;
+using MaxEndLabs.ViewModels.Product;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace MaxEndLabs.Controllers
+namespace MaxEndLabs.Web.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductsController : BaseController
     {
         private readonly IProductService _productService;
 
@@ -21,7 +20,16 @@ namespace MaxEndLabs.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var categories = await _productService.GetAllCategoriesAsync();
+            var categoryDtoList = await _productService.GetAllCategoriesAsync();
+
+			var categories = categoryDtoList
+				.Select(c => new ProductIndexViewModel()
+				{
+					Id = c.Id,
+					Name = c.Name,
+					Slug = c.Slug
+				})
+				.ToList();
 
 			return View(categories);
         }
@@ -29,7 +37,23 @@ namespace MaxEndLabs.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AllProducts()
         {
-            var products = await _productService.GetAllProductsAsync();
+            var productsPageDto = await _productService.GetAllProductsAsync();
+
+            var products = new ProductsPageViewModel()
+            {
+	            Title = productsPageDto.Title,
+	            Products = productsPageDto.Products
+		            .Select(p => new ProductListViewModel()
+		            {
+			            Id = p.Id,
+			            Name = p.Name,
+			            Slug = p.Slug,
+			            Price = p.Price,
+			            MainImageUrl = p.MainImageUrl,
+			            CategorySlug = p.CategorySlug
+		            })
+		            .ToList()
+            };
 
             return View("ProductsPage", products);
         }
@@ -38,7 +62,23 @@ namespace MaxEndLabs.Controllers
         [Route("Products/ByCategory/{slug}")]
         public async Task<IActionResult> ByCategory(string slug)
         {
-                var products = await _productService.GetProductsByCategoryAsync(slug);
+                var productsPageDto = await _productService.GetProductsByCategoryAsync(slug);
+
+                var products = new ProductsPageViewModel()
+                {
+	                Title = productsPageDto.Title,
+	                Products = productsPageDto.Products
+		                .Select(p => new ProductListViewModel()
+		                {
+			                Id = p.Id,
+			                Name = p.Name,
+			                Slug = p.Slug,
+			                Price = p.Price,
+			                MainImageUrl = p.MainImageUrl,
+			                CategorySlug = p.CategorySlug
+		                })
+		                .ToList()
+                };
 
                 return View("ProductsPage", products);
         }
@@ -49,9 +89,28 @@ namespace MaxEndLabs.Controllers
         {
             try
             {
-                var productDetails = await _productService.GetProductDetailsAsync(categorySlug, productSlug);
+                var productDetailsDto = await _productService.GetProductDetailsAsync(productSlug);
 
-                return View(productDetails);
+                var productDetails = new ProductDetailsViewModel()
+				{
+					Id = productDetailsDto.Id,
+					Name = productDetailsDto.Name,
+					ProductSlug = productDetailsDto.Slug,
+					CategorySlug = productDetailsDto.CategorySlug,
+					Description = productDetailsDto.Description,
+					Price = productDetailsDto.Price,
+					MainImageUrl = productDetailsDto.MainImageUrl,
+					ProductVariants = productDetailsDto.ProductVariants
+						.Select(v => new VariantDisplayViewModel()
+						{
+							Id = v.Id,
+							VariantName = v.VariantName,
+							Price = v.Price
+						})
+						.ToList()
+				};
+
+				return View(productDetails);
             }
             catch (ArgumentException e)
             {
@@ -65,7 +124,17 @@ namespace MaxEndLabs.Controllers
         {
             try
             {
-                ProductFormViewModel model = await _productService.GetProductCreateViewModelAsync();
+                var productFormDto = await _productService.GetProductCreateViewModelAsync();
+
+                var model = new ProductFormViewModel()
+                {
+                    Categories = productFormDto.Categories.Select(c => new CategorySelectViewModel()
+					{
+						Id = c.Id,
+						Name = c.Name
+					})
+						.ToList()
+				};
 
                 return View(model);
             }
@@ -80,20 +149,29 @@ namespace MaxEndLabs.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(ProductFormViewModel model)
         {
-            try
+
+	        if (await _productService.ProductExistsAsync(model.Name))
+	        {
+		        ModelState.AddModelError("Name", "Product with this name Already exists.");
+	        }
+
+	        if (!ModelState.IsValid)
+	        {
+		        return View(model);
+	        }
+
+			try
             {
-                if (await _productService.ProductExistsAsync(model.Name))
-                {
-                    ModelState.AddModelError("Name", "Product with this name Already exists.");
-                }
+                var productCreateDto = new ProductCreateDto()
+				{
+					Name = model.Name,
+					Description = model.Description,
+					Price = model.Price,
+					CategoryId = model.CategoryId,
+                    MainImageUrl = model.MainImageUrl,
+				};
 
-                if (!ModelState.IsValid)
-                {
-                    model = await _productService.GetProductCreateViewModelAsync();
-                    return View(model);
-                }
-
-                string productSlug = await _productService.AddProductAsync(model);
+				string productSlug = await _productService.AddProductAsync(productCreateDto);
 
                 return RedirectToAction("VariantManager", new { productSlug = productSlug });
             }

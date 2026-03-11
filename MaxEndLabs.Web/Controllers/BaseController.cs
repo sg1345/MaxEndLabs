@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MaxEndLabs.Controllers
+namespace MaxEndLabs.Web.Controllers
 {
 	[Authorize]
 	public class BaseController : Controller

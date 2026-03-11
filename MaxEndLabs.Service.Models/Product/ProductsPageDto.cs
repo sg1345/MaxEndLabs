@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MaxEndLabs.ViewModels
+namespace MaxEndLabs.Service.Models.Product
 {
-	public class ProductsPageViewModel
+	public class ProductsPageDto
 	{
 		public string Title { get; set; } = null!;
-		public IEnumerable<ProductListViewModel> Products { get; set; } = [];
-
+		public IEnumerable<ProductDto> Products { get; set; } = [];
 	}
 }

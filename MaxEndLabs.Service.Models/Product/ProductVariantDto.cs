@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MaxEndLabs.ViewModels
+namespace MaxEndLabs.Service.Models.Product
 {
-	public class VariantDisplayViewModel
+	public class ProductVariantDto
 	{
 		public int Id { get; set; }
 		public string VariantName { get; set; } = null!;
