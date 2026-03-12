@@ -11,10 +11,8 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	{
 		Task<bool> SlugExistsAsync(string slug, int productId);
 		Task<bool> SlugExistsAsync(string slug);
-		Task<IEnumerable<Category>> GetAllCategoriesAsync();
 		Task<IEnumerable<Product>> GetAllProductsAsync();
 		Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId);
-		Task<Category?> GetCategoryBySlugAsync(string slug);
 		Task<Product?> GetProductAsync(string slug);
 		Task<Product?> GetProductAsync(int id);
 		Task AddProductAsync(Product product);

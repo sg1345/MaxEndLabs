@@ -1,29 +1,26 @@
 ﻿using System.Text.RegularExpressions;
-using MaxEndLabs.Data;
+
 using MaxEndLabs.Data.Models;
 
 using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
 
-using MaxEndLabs.ViewModels.Product;
-using Microsoft.EntityFrameworkCore;
-
 namespace MaxEndLabs.Services.Core
 {
     public class ProductService : IProductService
     {
-        private readonly MaxEndLabsDbContext _context;
         private readonly IProductRepository _productRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly ICategoryRepository _categoryRepository;
 		public ProductService(
-			MaxEndLabsDbContext context, 
 			IProductRepository productRepository,
-			IShoppingCartRepository shoppingCartRepository)
+			IShoppingCartRepository shoppingCartRepository,
+			ICategoryRepository categoryRepository)
         {
 			_shoppingCartRepository = shoppingCartRepository;
-			_context = context;
 			_productRepository = productRepository;
+			_categoryRepository = categoryRepository;
 		}
 
         public async Task<bool> ProductExistsAsync(string productName, int productId)
@@ -42,7 +39,7 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
-            var categories = await _productRepository
+            var categories = await _categoryRepository
 		            .GetAllCategoriesAsync();
 
             var categoryDtoList = categories
@@ -84,7 +81,7 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<ProductsPageDto> GetProductsByCategoryAsync(string categorySlug)
         {
-            var category = await _productRepository.GetCategoryBySlugAsync(categorySlug);
+            var category = await _categoryRepository.GetCategoryBySlugAsync(categorySlug);
 
             if (category == null)
                 throw new ArgumentException("Category Not Found");
@@ -142,7 +139,7 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<ProductFormDto> GetProductCreateDtoAsync()
         {
-            var categories = await _productRepository
+            var categories = await _categoryRepository
 		            .GetAllCategoriesAsync();
 
             if (!categories.Any())
@@ -226,11 +223,9 @@ namespace MaxEndLabs.Services.Core
             var productVariantExistingInDatabase = 
 	            await _productRepository.GetProductVariantsByProductIdAsync(dto.ProductId);
 
-            var pvExistingInDatabaseList = productVariantExistingInDatabase.ToList();
-
 			var incomingIdList = dto.Variants.Select(v => v.Id).ToList();
 			
-			var pvToDeleteList = pvExistingInDatabaseList
+			var pvToDeleteList = productVariantExistingInDatabase
 	            .Where(pv => !incomingIdList.Contains(pv.Id)).ToList();
 
             _productRepository.RemoveRangeProductVariantAsync(pvToDeleteList);
@@ -239,7 +234,7 @@ namespace MaxEndLabs.Services.Core
             {
                 if (variant.Id > 0)
                 {
-                    var existing = pvExistingInDatabaseList!.FirstOrDefault(ev => ev.Id == variant.Id);
+                    var existing = productVariantExistingInDatabase!.FirstOrDefault(ev => ev.Id == variant.Id);
 
                     if (existing != null)
                     {
@@ -266,7 +261,7 @@ namespace MaxEndLabs.Services.Core
         public async Task<ProductFormDto> GetProductEditDtoAsync(string productSlug)
         {
 	        var product = await _productRepository.GetProductAsync(productSlug);
-            var categories = await _productRepository.GetAllCategoriesAsync();
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
 
 			if (product == null)
 				throw new ArgumentException("Product Not Found");
@@ -293,7 +288,7 @@ namespace MaxEndLabs.Services.Core
         public async Task<ProductFormDto> GetProductEditDtoAsync(int productId)
         {
 			var product = await _productRepository.GetProductAsync(productId);
-			var categories = await _productRepository.GetAllCategoriesAsync();
+			var categories = await _categoryRepository.GetAllCategoriesAsync();
 
 			if (product == null)
 				throw new ArgumentException("Product Not Found");
@@ -324,15 +319,10 @@ namespace MaxEndLabs.Services.Core
 			if (product == null)
 				throw new ArgumentException("Product Not Found");
 
-			var category = dto.Categories
-				.Where(c => c.Id == dto.CategoryId)
-				.Select(c => c.Name)
-				.FirstOrDefault();
+			var categorySlug = await _categoryRepository.GetCategorySlugAsync(dto.CategoryId);
 
-			if (category == null)
+			if (categorySlug == null)
 				throw new ArgumentException("Category Not Found");
-
-			var categorySlug = GenerateSlug(category);
 
             product.Name = dto.Name;
             product.Description = dto.Description;
@@ -344,7 +334,7 @@ namespace MaxEndLabs.Services.Core
 
 			await _productRepository.SaveChangesAsync();
 
-			return (categorySlug!, product.Slug);
+			return (categorySlug, product.Slug);
 		}
 
         public async Task DeleteProductAsync(string productSlug)

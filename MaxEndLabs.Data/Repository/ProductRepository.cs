@@ -28,13 +28,6 @@ namespace MaxEndLabs.Data.Repository
 				.AnyAsync(p => p.Slug == slug);
 		}
 
-		public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
-		{
-			return await DbContext.Categories
-				.AsNoTracking()
-				.ToArrayAsync();
-		}
-
 		public async Task<IEnumerable<Product>> GetAllProductsAsync()
 		{
 			return await DbContext.Products
@@ -50,12 +43,6 @@ namespace MaxEndLabs.Data.Repository
 				.AsNoTracking()
 				.Where(p=> p.CategoryId == categoryId)
 				.ToArrayAsync();
-		}
-
-		public async Task<Category?> GetCategoryBySlugAsync(string slug)
-		{
-			return await DbContext.Categories
-				.FirstOrDefaultAsync(c => c.Slug == slug);
 		}
 
 		public async Task<Product?> GetProductAsync(string slug)
