@@ -1,11 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 using MaxEndLabs.Data;
 using MaxEndLabs.Data.Models;
-using MaxEndLabs.Data.Repository;
+
 using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
-using MaxEndLabs.ViewModels;
+
 using MaxEndLabs.ViewModels.Product;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +15,14 @@ namespace MaxEndLabs.Services.Core
     {
         private readonly MaxEndLabsDbContext _context;
         private readonly IProductRepository _productRepository;
-		public ProductService(MaxEndLabsDbContext context, IProductRepository productRepository)
+        private readonly IShoppingCartRepository _shoppingCartRepository;
+		public ProductService(
+			MaxEndLabsDbContext context, 
+			IProductRepository productRepository,
+			IShoppingCartRepository shoppingCartRepository)
         {
-            _context = context;
+			_shoppingCartRepository = shoppingCartRepository;
+			_context = context;
 			_productRepository = productRepository;
 		}
 
@@ -84,10 +89,9 @@ namespace MaxEndLabs.Services.Core
             if (category == null)
                 throw new ArgumentException("Category Not Found");
 
-            var products = await _productRepository.GetAllProductsAsync();
+            var products = await _productRepository.GetProductsByCategoryIdAsync(category.Id);
 
                 var productsListDto = products
-                .Where(p => p.CategoryId == category.Id)
                 .OrderBy(p => p.Name)
                 .Select(p => new ProductDto()
                 {
@@ -109,7 +113,7 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<ProductDetailsDto> GetProductDetailsAsync(string productSlug)
         {
-            var product = await _productRepository.GetProductBySlugAsync(productSlug);
+            var product = await _productRepository.GetProductAsync(productSlug);
 
             if (product == null)
 	            throw new ArgumentException("Product Not Found");
@@ -136,7 +140,7 @@ namespace MaxEndLabs.Services.Core
             };
         }
 
-        public async Task<ProductFormDto> GetProductCreateViewModelAsync()
+        public async Task<ProductFormDto> GetProductCreateDtoAsync()
         {
             var categories = await _productRepository
 		            .GetAllCategoriesAsync();
@@ -161,24 +165,28 @@ namespace MaxEndLabs.Services.Core
             return model;
         }
 
-        public async Task<string> AddProductAsync(ProductCreateDto model)
+        public async Task<string> AddProductAsync(ProductCreateDto dto)
         {
-            var slug = GenerateSlug(model.Name);
+            var slug = GenerateSlug(dto.Name);
 
             var product = new Product
             {
-                Name = model.Name,
-                Description = model.Description,
-                Price = model.Price,
-                MainImageUrl = model.MainImageUrl,
-                CategoryId = model.CategoryId,
+                Name = dto.Name,
+                Description = dto.Description,
+                Price = dto.Price,
+                MainImageUrl = dto.MainImageUrl,
+                CategoryId = dto.CategoryId,
                 Slug = slug,
                 CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                 UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                 IsPublished = true,
             };
 
-			bool successAdd = await _productRepository.AddProductAsync(product);
+	        await _productRepository.AddProductAsync(product);
+
+            int changes = await _productRepository.SaveChangesAsync();
+
+			var successAdd = changes > 0;
 
 			if (!successAdd)
 			{
@@ -188,84 +196,82 @@ namespace MaxEndLabs.Services.Core
 			return product.Slug;
         }
 
-        public async Task<ManageVariantsViewModel> GetProductAsync(string productSlug)
+        public async Task<ProductVariantListDto> GetProductAsync(string productSlug)
         {
-            var model = await _context.Products
-                .AsNoTracking()
-                .Include(p => p.ProductVariants)
-                .Include(p => p.Category)
-                .Where(p => p.Slug == productSlug && p.IsPublished)
-                .Select(p => new ManageVariantsViewModel()
-                {
-                    ProductId = p.Id,
-                    ProductName = p.Name,
-                    ProductSlug = p.Slug,
-                    CategorySlug = p.Category.Slug,
-                    Variants = p.ProductVariants.Select(pv => new VariantEditViewModel
-                        {
-                            Id = pv.Id,
-                            Name = pv.VariantName,
-                            Price = pv.Price
-                        })
-                        .ToList()
-                })
-                .FirstOrDefaultAsync();
+            var product = await _productRepository.GetProductAsync(productSlug);
 
-            if (model == null)
+            if (product == null)
 	            throw new ArgumentException("Product Not Found");
 
-            return model;
+			var productDto = new ProductVariantListDto()
+            {
+	            ProductId = product.Id,
+	            ProductName = product.Name,
+	            ProductSlug = product.Slug,
+	            CategorySlug = product.Category.Slug,
+	            Variants = product.ProductVariants.Select(pv => new ProductVariantDto()
+		            {
+			            Id = pv.Id,
+			            VariantName = pv.VariantName,
+			            Price = pv.Price
+		            })
+		            .ToList()
+            };
+
+            return productDto;
         }
 
-        public async Task ManageProductVariantsAsync(ManageVariantsViewModel model)
+        public async Task ManageProductVariantsAsync(ProductVariantListDto dto)
         {
-            var productVariantExistingInDatabase = await _context.ProductVariants
-                .Where(pv => pv.ProductId == model.ProductId)
-                .ToListAsync();
+            var productVariantExistingInDatabase = 
+	            await _productRepository.GetProductVariantsByProductIdAsync(dto.ProductId);
 
-            var incomingIdList = model.Variants.Select(v => v.Id).ToList();
-            var toDeleteList = productVariantExistingInDatabase
+            var pvExistingInDatabaseList = productVariantExistingInDatabase.ToList();
+
+			var incomingIdList = dto.Variants.Select(v => v.Id).ToList();
+			
+			var pvToDeleteList = pvExistingInDatabaseList
 	            .Where(pv => !incomingIdList.Contains(pv.Id)).ToList();
 
-            _context.ProductVariants.RemoveRange(toDeleteList);
+            _productRepository.RemoveRangeProductVariantAsync(pvToDeleteList);
 
-            foreach (var variant in model.Variants)
+            foreach (var variant in dto.Variants)
             {
                 if (variant.Id > 0)
                 {
-                    var existing = productVariantExistingInDatabase!.FirstOrDefault(ev => ev.Id == variant.Id);
+                    var existing = pvExistingInDatabaseList!.FirstOrDefault(ev => ev.Id == variant.Id);
 
                     if (existing != null)
                     {
-                        existing.VariantName = variant.Name;
+                        existing.VariantName = variant.VariantName;
                         existing.Price = variant.Price;
                     }
                 }
                 else
                 {
-                    var newVariant = new ProductVariant
+                    var newVariant = new ProductVariant()
                     {
-                        ProductId = model.ProductId,
-                        VariantName = variant.Name,
+	                    ProductId = dto.ProductId,
+                        VariantName = variant.VariantName,
                         Price = variant.Price
                     };
-                    await _context.AddAsync(newVariant);
-                }
+
+                    await _productRepository.AddProductVariantAsync(newVariant);
+				}
             }
 
-            await _context.SaveChangesAsync();
-		}
+            await _productRepository.SaveChangesAsync();
+        }
 
-        public async Task<ProductFormViewModel> GetProductEditViewModelAsync(string productSlug)
+        public async Task<ProductFormDto> GetProductEditDtoAsync(string productSlug)
         {
-	        var product = await _context.Products
-				.AsNoTracking()
-				.FirstOrDefaultAsync(p => p.Slug == productSlug && p.IsPublished);
+	        var product = await _productRepository.GetProductAsync(productSlug);
+            var categories = await _productRepository.GetAllCategoriesAsync();
 
-            if (product == null)
+			if (product == null)
 				throw new ArgumentException("Product Not Found");
 
-            return new ProductFormViewModel
+            return new ProductFormDto
 			{
 				Id = product.Id,
 				Name = product.Name,
@@ -273,28 +279,26 @@ namespace MaxEndLabs.Services.Core
 				Price = product.Price,
 				MainImageUrl = product.MainImageUrl,
 				CategoryId = product.CategoryId,
-				Categories = await _context.Categories
-					.AsNoTracking()
+				Categories = categories
 					.OrderBy(c => c.Name)
-					.Select(c => new CategorySelectViewModel
+					.Select(c => new CategorySelectDto()
 					{
 						Id = c.Id,
 						Name = c.Name,
 					})
-					.ToArrayAsync()
+					.ToList()
 			};
 		}
 
-        public async Task<ProductFormViewModel> GetProductEditViewModelAsync(int productId)
+        public async Task<ProductFormDto> GetProductEditDtoAsync(int productId)
         {
-			var product = await _context.Products
-				.AsNoTracking()
-				.FirstOrDefaultAsync(p => p.Id == productId && p.IsPublished);
+			var product = await _productRepository.GetProductAsync(productId);
+			var categories = await _productRepository.GetAllCategoriesAsync();
 
 			if (product == null)
 				throw new ArgumentException("Product Not Found");
 
-			return new ProductFormViewModel
+			return new ProductFormDto
 			{
 				Id = product.Id,
 				Name = product.Name,
@@ -302,66 +306,72 @@ namespace MaxEndLabs.Services.Core
 				Price = product.Price,
 				MainImageUrl = product.MainImageUrl,
 				CategoryId = product.CategoryId,
-				Categories = await _context.Categories
-					.AsNoTracking()
+				Categories = categories
 					.OrderBy(c => c.Name)
-					.Select(c => new CategorySelectViewModel
+					.Select(c => new CategorySelectDto()
 					{
 						Id = c.Id,
 						Name = c.Name,
 					})
-					.ToArrayAsync()
+					.ToList()
 			};
 		}
 
-        public async Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormViewModel model)
+        public async Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormDto dto)
         {
-	        var product = await _context.Products
-				.FirstOrDefaultAsync(p => p.Id == model.Id && p.IsPublished);
+	        var product = await _productRepository.GetProductAsync(dto.Id);
 
 			if (product == null)
 				throw new ArgumentException("Product Not Found");
 
-            var categorySlug = await _context.Categories
-				.Where(c => c.Id == model.CategoryId)
-				.Select(c => c.Slug)
-				.FirstOrDefaultAsync();
+			var category = dto.Categories
+				.Where(c => c.Id == dto.CategoryId)
+				.Select(c => c.Name)
+				.FirstOrDefault();
 
-			product.Name = model.Name;
-			product.Description = model.Description;
-			product.Price = model.Price;
-			product.MainImageUrl = model.MainImageUrl;
-			product.CategoryId = model.CategoryId;
-			product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-			product.Slug = GenerateSlug(model.Name);
+			if (category == null)
+				throw new ArgumentException("Category Not Found");
 
-			await _context.SaveChangesAsync();
+			var categorySlug = GenerateSlug(category);
+
+            product.Name = dto.Name;
+            product.Description = dto.Description;
+            product.Price = dto.Price;
+            product.MainImageUrl = dto.MainImageUrl;
+            product.CategoryId = dto.CategoryId;
+            product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+            product.Slug = GenerateSlug(dto.Name);
+
+			await _productRepository.SaveChangesAsync();
 
 			return (categorySlug!, product.Slug);
 		}
 
         public async Task DeleteProductAsync(string productSlug)
         {
-			var product = await _context.Products
-				.FirstOrDefaultAsync(p => p.Slug == productSlug && p.IsPublished);
+	        var product = await _productRepository.GetProductAsync(productSlug);
 
             if (product == null)
                 throw new ArgumentException("Product Not Found");
 
-            var cartItemsForRemoving = await _context.CartItems
-                .Where(ci => ci.Product.Slug == productSlug)
-                .ToListAsync();
+            var cartItemsForRemoving = await _shoppingCartRepository.GetCartItemsAsync(product.Slug);
 
             if (cartItemsForRemoving.Any())
             {
-                _context.CartItems.RemoveRange(cartItemsForRemoving);
+                _shoppingCartRepository.CartItemsRemoveRange(cartItemsForRemoving);
             }
 
-            product.IsPublished = false;
-            product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-            product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmm}";
+            _productRepository.SoftDeleteProduct(product);
 
-	        await _context.SaveChangesAsync();
+            int changes = await _productRepository.SaveChangesAsync();
+
+            var successAdd = changes > 0;
+
+            if (!successAdd)
+            {
+	            throw new ArgumentException();
+            }
+
 		}
 
         private static string GenerateSlug(string name)

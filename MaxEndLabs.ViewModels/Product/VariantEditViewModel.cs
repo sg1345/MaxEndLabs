@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static MaxEndLabs.GCommon.EntityValidation.ProductVariant;
 
-namespace MaxEndLabs.ViewModels
+namespace MaxEndLabs.ViewModels.Product
 {
     public class VariantEditViewModel
     {

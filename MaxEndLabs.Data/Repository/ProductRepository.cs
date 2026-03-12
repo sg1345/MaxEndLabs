@@ -43,13 +43,22 @@ namespace MaxEndLabs.Data.Repository
 				.ToArrayAsync();
 		}
 
-		public async Task<Category?> GetCategoryBySlugAsync(string slug)
+		public async Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId)
 		{
-			return (await DbContext.Categories
-				.FirstOrDefaultAsync(c => c.Slug == slug));
+			return await DbContext.Products
+				.Include(p => p.Category)
+				.AsNoTracking()
+				.Where(p=> p.CategoryId == categoryId)
+				.ToArrayAsync();
 		}
 
-		public async Task<Product?> GetProductBySlugAsync(string slug)
+		public async Task<Category?> GetCategoryBySlugAsync(string slug)
+		{
+			return await DbContext.Categories
+				.FirstOrDefaultAsync(c => c.Slug == slug);
+		}
+
+		public async Task<Product?> GetProductAsync(string slug)
 		{
 			return await DbContext.Products
 				.AsNoTracking()
@@ -58,12 +67,49 @@ namespace MaxEndLabs.Data.Repository
 				.FirstOrDefaultAsync(p => p.Slug == slug);
 		}
 
-		public async Task<bool> AddProductAsync(Product product)
+		public async Task<Product?> GetProductAsync(int id)
+		{
+			return await DbContext.Products
+				.AsNoTracking()
+				.Include(p => p.Category)
+				.Include(p => p.ProductVariants)
+				.FirstOrDefaultAsync(p => p.Id == id);
+		}
+
+		public async Task AddProductAsync(Product product)
 		{
 			await DbContext!.Products.AddAsync(product);
-			int resultCount = await SaveChangesAsync();
+		}
 
-			return resultCount == 1;
+		public async Task<int> SaveChangesAsync()
+		{
+			return await DbContext!.SaveChangesAsync();
+		}
+
+		public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductIdAsync(int productId)
+		{
+			return await DbContext.ProductVariants
+				.Where(pv=> pv.ProductId == productId)
+				.ToListAsync();
+		}
+
+		public void RemoveRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants)
+		{
+			DbContext!.RemoveRange(productVariants);
+		}
+
+		public async Task AddProductVariantAsync(ProductVariant productVariant)
+		{
+			await DbContext!.ProductVariants.AddAsync(productVariant);
+		}
+
+		public void SoftDeleteProduct(Product product)
+		{
+				product.IsPublished = false;
+				product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+				product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+
+				DbContext!.Products.Update(product);
 		}
 	}
 }

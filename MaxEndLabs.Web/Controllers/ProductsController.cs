@@ -1,7 +1,8 @@
 ﻿using MaxEndLabs.Service.Models.Product;
-using MaxEndLabs.Web.Controllers;
+
 using MaxEndLabs.Services.Core.Contracts;
-using MaxEndLabs.ViewModels;
+
+using MaxEndLabs.ViewModels.Category;
 using MaxEndLabs.ViewModels.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -124,7 +125,7 @@ namespace MaxEndLabs.Web.Controllers
         {
             try
             {
-                var productFormDto = await _productService.GetProductCreateViewModelAsync();
+                var productFormDto = await _productService.GetProductCreateDtoAsync();
 
                 var model = new ProductFormViewModel()
                 {
@@ -157,7 +158,17 @@ namespace MaxEndLabs.Web.Controllers
 
 	        if (!ModelState.IsValid)
 	        {
-		        return View(model);
+		        var categories = await _productService.GetAllCategoriesAsync();
+
+		        model.Categories = categories
+			        .Select(c => new CategorySelectViewModel()
+			        {
+				        Id = c.Id,
+				        Name = c.Name
+			        })
+			        .ToList();
+
+				return View(model);
 	        }
 
 			try
@@ -188,7 +199,24 @@ namespace MaxEndLabs.Web.Controllers
         {
             try
             {
-                ManageVariantsViewModel model = await _productService.GetProductAsync(productSlug);
+                var productVariantListDto = await _productService.GetProductAsync(productSlug);
+
+                var model = new ManageVariantsViewModel()
+				{
+					ProductId = productVariantListDto.ProductId,
+					ProductName = productVariantListDto.ProductName,
+					ProductSlug = productVariantListDto.ProductSlug,
+					CategorySlug = productVariantListDto.CategorySlug,
+					Variants = productVariantListDto.Variants
+						.Select(v => new VariantEditViewModel()
+						{
+							Id = v.Id,
+							Name = v.VariantName,
+							Price = v.Price
+						})
+						.ToList()
+				};
+
                 return View(model);
             }
             catch (ArgumentException e)
@@ -203,23 +231,41 @@ namespace MaxEndLabs.Web.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> VariantManager(ManageVariantsViewModel model)
         {
-            try
-            {
-                if (!model.Variants.Any())
-                {
-                    ModelState.AddModelError("Variants", "You must add at least one variant before finishing.");
-                }
+	        if (!model.Variants.Any())
+	        {
+		        ModelState.AddModelError("Variants", "You must add at least one variant before finishing.");
+	        }
 
-                if (!ModelState.IsValid)
-                {
-                    model = await _productService.GetProductAsync(model.ProductSlug);
+	        if (!ModelState.IsValid)
+	        {
+		        return View(model);
+	        }
 
-                    return View(model);
-                }
+			try
+			{
+				var productVariantListDto = new ProductVariantListDto()
+				{
+					ProductId = model.ProductId,
+					ProductName = model.ProductName,
+					ProductSlug = model.ProductSlug,
+					CategorySlug = model.CategorySlug,
+					Variants = model.Variants
+						.Select(v => new ProductVariantDto()
+						{
+							Id = v.Id,
+							VariantName = v.Name,
+							Price = v.Price
+						})
+						.ToList()
+				};
 
-                await _productService.ManageProductVariantsAsync(model);
+                await _productService.ManageProductVariantsAsync(productVariantListDto);
 
-                return RedirectToAction("Details", new { categorySlug = model.CategorySlug, productSlug = model.ProductSlug });
+                return RedirectToAction("Details", new 
+	                { 
+		                categorySlug = model.CategorySlug, 
+		                productSlug = model.ProductSlug
+	                });
             }
             catch (ArgumentException e)
             {
@@ -235,9 +281,26 @@ namespace MaxEndLabs.Web.Controllers
 		{
             try
             {
-                ProductFormViewModel model = await _productService.GetProductEditViewModelAsync(productSlug);
+                var productEditDto = await _productService.GetProductEditDtoAsync(productSlug);
 
-                return View(model);
+                var model = new ProductFormViewModel()
+                {
+					Id = productEditDto.Id,
+					Name = productEditDto.Name,
+					Description = productEditDto.Description,
+					Price = productEditDto.Price,
+					CategoryId = productEditDto.CategoryId,
+					MainImageUrl = productEditDto.MainImageUrl,
+					Categories = productEditDto.Categories.Select(c => new CategorySelectViewModel()
+						{
+							Id = c.Id,
+							Name = c.Name
+						})
+						.ToList()
+				};
+
+
+				return View(model);
             }
             catch (ArgumentException e)
             {
@@ -251,22 +314,51 @@ namespace MaxEndLabs.Web.Controllers
         [Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Edit(int id, ProductFormViewModel model)
 		{
-            try
-            {
-                if (await _productService.ProductExistsAsync(model.Name, model.Id))
+			if (await _productService.ProductExistsAsync(model.Name, model.Id))
+			{
+				ModelState.AddModelError("Name", "Product with this name Already exists.");
+			}
+
+			if (!ModelState.IsValid)
+			{
+				var categories = await _productService.GetAllCategoriesAsync();
+
+				model.Categories = categories
+					.Select(c => new CategorySelectViewModel()
+					{
+						Id = c.Id,
+						Name = c.Name
+					})
+					.ToList();
+
+				return View(model);
+			}
+
+			try
+			{
+				var dto = new ProductFormDto()
+				{
+					Id = model.Id,
+					Name = model.Name,
+					Description = model.Description,
+					Price = model.Price,
+					CategoryId = model.CategoryId,
+					MainImageUrl = model.MainImageUrl,
+					Categories = model.Categories
+						.Select(c => new CategorySelectDto() 
+						{
+							Id = c.Id,
+							Name = c.Name
+						})
+						.ToList()
+				};
+
+                (string CategorySlug, string ProductSlug) result = await _productService.EditProductAsync(dto);
+                return RedirectToAction("Details", new
                 {
-                    ModelState.AddModelError("Name", "Product with this name Already exists.");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    model = await _productService.GetProductEditViewModelAsync(model.Id);
-
-                    return View(model);
-                }
-
-                (string CategorySlug, string ProductSlug) result = await _productService.EditProductAsync(model);
-                return RedirectToAction("Details", new { categorySlug = result.CategorySlug, productSlug = result.ProductSlug });
+	                categorySlug = result.CategorySlug, 
+	                productSlug = result.ProductSlug
+                });
             }
             catch (ArgumentException e)
             {

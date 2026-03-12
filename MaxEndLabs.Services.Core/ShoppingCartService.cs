@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MaxEndLabs.Data;
 using MaxEndLabs.Data.Models;
+using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,11 @@ namespace MaxEndLabs.Services.Core
 	public class ShoppingCartService : IShoppingCartService
 	{
 		private readonly MaxEndLabsDbContext _context;
+		private readonly IShoppingCartRepository _shoppingCartRepository;
 
-		public ShoppingCartService(MaxEndLabsDbContext context)
+		public ShoppingCartService(MaxEndLabsDbContext context,IShoppingCartRepository shoppingCartRepository)
 		{
+			_shoppingCartRepository = shoppingCartRepository;
 			_context = context;
 		}
 

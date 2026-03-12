@@ -42,6 +42,7 @@ namespace MaxEndLabs.Web
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+            builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 
 			builder.Services.AddControllersWithViews();
 

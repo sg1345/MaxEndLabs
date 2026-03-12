@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static MaxEndLabs.GCommon.EntityValidation.Product;
+using MaxEndLabs.ViewModels.Category;
 
 namespace MaxEndLabs.ViewModels.Product
 {

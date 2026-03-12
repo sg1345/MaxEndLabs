@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MaxEndLabs.ViewModels.Product
+namespace MaxEndLabs.ViewModels.Category
 {
     public class CategorySelectViewModel
     {
