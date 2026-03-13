@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MaxEndLabs.Data.Models;
+﻿using MaxEndLabs.Data.Models;
 
 namespace MaxEndLabs.Data.Repository.Contracts
 {
 	public interface IShoppingCartRepository
 	{
-		Task AddToCartAsync(int userId, int productVariantId, int quantity);
-		Task RemoveFromCartAsync(int userId, int productVariantId);
-		Task UpdateCartItemAsync(int userId, int productVariantId, int quantity);
-		Task ClearCartAsync(int userId);
-		Task<IEnumerable<CartItem>> GetCartItemsAsync(int userId);
-		Task<IEnumerable<CartItem>> GetCartItemsAsync(string productSlug);
+		Task<int> GetShoppingCartIdAsync(string userId);
+		Task AddToCartAsync(CartItem cartItem);
+		void HardDeleteFromCartAsync(CartItem cartItem);
+		void SoftDeleteFromCartAsync(CartItem cartItem);
+		Task<CartItem?> GetCartItemIgnoreFilterAsync(int cartId, int productId, int productVariantId);
+		Task<CartItem?> GetCartItemAsync(int cartId, int productId, int productVariantId);
+		void ClearCart(IEnumerable<CartItem> cartItemsList);
+		Task<IEnumerable<CartItem>> GetCartItemsByUCartIdAsync(int cartId);
+		Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(string userId);
+		Task<IEnumerable<CartItem>> GetCartItemsByProductSlugAsync(string productSlug);
+		Task AddShoppingCartAsync(ShoppingCart shoppingCart);
+		Task<int> SaveChangesAsync();
 		void CartItemsRemoveRange(IEnumerable<CartItem> cartItems);
 	}
 }

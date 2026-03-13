@@ -1,12 +1,13 @@
-﻿using MaxEndLabs.Services.Core.Contracts;
-using MaxEndLabs.ViewModels;
+﻿using MaxEndLabs.Service.Models.ShoppingCart;
+using MaxEndLabs.Services.Core.Contracts;
+using MaxEndLabs.ViewModels.Product;
+using MaxEndLabs.ViewModels.ShoppingCart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MaxEndLabs.Web.Controllers
 {
-	public class ShoppingCartController : BaseController
+    public class ShoppingCartController : BaseController
 	{
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IProductService _productService;
@@ -28,7 +29,26 @@ namespace MaxEndLabs.Web.Controllers
 				return RedirectToPage("/Account/Login", new { area = "Identity" });
 			}
 
-			var model = await _shoppingCartService.GetAllCartItemsAsync(userId);
+			var dto = await _shoppingCartService
+				.GetAllCartItemsAsync(userId);
+
+			var model = new ShoppingCartIndexViewModel()
+			{
+				CartId = dto.CartId,
+				TotalPrice = dto.TotalPrice,
+				CartItems = dto.CartItems.Select(ci => new CartItemViewModel
+				{
+					ProductId = ci.ProductId,
+					ProductName = ci.ProductName,
+					ProductVariantId = ci.ProductVariantId,
+					VariantName = ci.VariantName,
+					UnitPrice = ci.UnitPrice,
+					MainImageUrl = ci.MainImageUrl,
+					Quantity = ci.Quantity
+				})
+					.ToList()
+			};
+
 			return View(model);
 		}
 
@@ -45,19 +65,46 @@ namespace MaxEndLabs.Web.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				var productDetails = await _productService.GetProductDetailsAsync(model.ProductSlug);
+				var productDetailsDto = await _productService.GetProductDetailsAsync(model.ProductSlug);
+
+				var productDetails = new ProductDetailsViewModel()
+				{
+					Id = productDetailsDto.Id,
+					Name = productDetailsDto.Name,
+					ProductSlug = productDetailsDto.Slug,
+					CategorySlug = productDetailsDto.CategorySlug,
+					Description = productDetailsDto.Description,
+					Price = productDetailsDto.Price,
+					MainImageUrl = productDetailsDto.MainImageUrl,
+					ProductVariants = productDetailsDto.ProductVariants
+						.Select(av => new VariantDisplayViewModel()
+						{
+							Id = av.Id,
+							VariantName = av.VariantName,
+							Price = av.Price
+						}).ToList(),
+				};
+
 				return View("/Views/Products/Details.cshtml", productDetails);
 			}
 
-			var cartId = await _shoppingCartService.GetShoppingCartIdAsync(userId);
-			if (cartId == 0)
+			var cartId = await _shoppingCartService.GetOrCreateShoppingCart(userId);
+
+			var dto = new CartItemCreateDto()
 			{
-				cartId = await _shoppingCartService.CreateShoppingCartAsync(userId);
-			}
+				CartId = cartId,
+				ProductId = model.ProductId,
+				ProductVariantId = model.ProductVariantId,
+				Quantity = model.Quantity
+			};
 
-			await _shoppingCartService.AddProductToShoppingCartAsync(model, cartId);
+			await _shoppingCartService.AddProductToShoppingCartAsync(dto);
 
-			return RedirectToAction("Details", "Products", new { model.CategorySlug, model.ProductSlug });
+			return RedirectToAction("Details", "Products", new
+			{
+				model.CategorySlug,
+				model.ProductSlug
+			});
 		}
 
 		[HttpPost]
@@ -71,7 +118,14 @@ namespace MaxEndLabs.Web.Controllers
 					return RedirectToPage("/Account/Login", new { area = "Identity" });
 				}
 
-				await _shoppingCartService.RemoveCartItemFromShoppingCartAsync(model);
+				var dto = new CartItemDeleteDto()
+				{
+					CartId = model.CartId,
+					ProductId = model.ProductId,
+					ProductVariantId = model.ProductVariantId
+				};
+
+				await _shoppingCartService.RemoveCartItemFromShoppingCartAsync(dto);
 
 				return RedirectToAction("Index");
 			}

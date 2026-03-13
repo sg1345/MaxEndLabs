@@ -3,8 +3,7 @@ using MaxEndLabs.Data.Configuration;
 
 namespace MaxEndLabs.Data
 {
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+	using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
     using Models;
@@ -66,10 +65,10 @@ namespace MaxEndLabs.Data
             builder.ApplyConfiguration(new CategoryConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductVariantConfiguration());
+            builder.ApplyConfiguration(new CartItemConfiguration());
 
+			//builder.ApplyConfigurationsFromAssembly(typeof(MaxEndLabsDbContext).Assembly);
 
-            //builder.ApplyConfigurationsFromAssembly(typeof(MaxEndLabsDbContext).Assembly);
-
-        }
+		}
 	}
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MaxEndLabs.Data.Models;
+﻿using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Repository.Contracts;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,37 +11,94 @@ namespace MaxEndLabs.Data.Repository
 		{
 		}
 
-		public Task AddToCartAsync(int userId, int productVariantId, int quantity)
+		public async Task<int> GetShoppingCartIdAsync(string userId)
 		{
-			throw new NotImplementedException();
+			return await DbContext.ShoppingCarts
+				.AsNoTracking()
+				.Where(sc => sc.UserId == userId)
+				.Select(sc => sc.Id)
+				.FirstOrDefaultAsync();
 		}
 
-		public Task RemoveFromCartAsync(int userId, int productVariantId)
+		public async Task AddToCartAsync(CartItem cartItem)
 		{
-			throw new NotImplementedException();
+			await DbContext.CartItems.AddAsync(cartItem);
 		}
 
-		public Task UpdateCartItemAsync(int userId, int productVariantId, int quantity)
+		public void HardDeleteFromCartAsync(CartItem cartItem)
 		{
-			throw new NotImplementedException();
+			DbContext.CartItems.Remove(cartItem);
 		}
 
-		public Task ClearCartAsync(int userId)
+		public void SoftDeleteFromCartAsync(CartItem cartItem)
 		{
-			throw new NotImplementedException();
+			cartItem.IsPublished = false;
+
+			DbContext.CartItems.Update(cartItem);
 		}
 
-		public Task<IEnumerable<CartItem>> GetCartItemsAsync(int userId)
+		public async Task<CartItem?> GetCartItemIgnoreFilterAsync(int cartId, int productId, int productVariantId)
 		{
-			throw new NotImplementedException();
+			return await DbContext.CartItems
+				.IgnoreQueryFilters()
+				.FirstOrDefaultAsync(ci => ci.CartId == cartId &&
+										  ci.ProductId == productId &&
+										  ci.ProductVariantId == productVariantId);
+
 		}
 
-		public async Task<IEnumerable<CartItem>> GetCartItemsAsync(string productSlug)
+		public async Task<CartItem?> GetCartItemAsync(int cartId, int productId, int productVariantId)
+		{
+			return await DbContext.CartItems
+				.FirstOrDefaultAsync(ci => ci.CartId == cartId &&
+				                           ci.ProductId == productId &&
+				                           ci.ProductVariantId == productVariantId);
+
+		}
+
+		public void ClearCart(IEnumerable<CartItem> cartItemsList)
+		{
+			foreach (var cartItem in cartItemsList)
+			{
+				cartItem.IsPublished = false;
+			}
+
+			DbContext.CartItems.UpdateRange(cartItemsList);
+		}
+
+		public async Task<IEnumerable<CartItem>> GetCartItemsByUCartIdAsync(int cartId)
+		{
+			return await DbContext.CartItems
+				.Where(c => c.CartId == cartId)
+				.ToListAsync();
+		}
+
+		public async Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(string userId)
+		{
+			return await DbContext.CartItems
+				.AsNoTracking()
+				.Include(ci => ci.Product)
+				.Include(ci => ci.ProductVariant)
+				.Where(ci => ci.ShoppingCart.UserId == userId)
+				.ToArrayAsync();
+		}
+
+		public async Task<IEnumerable<CartItem>> GetCartItemsByProductSlugAsync(string productSlug)
 		{
 			return await DbContext.CartItems
 				.Where(ci => ci.Product.Slug == productSlug)
 				.ToArrayAsync();
 
+		}
+
+		public async Task AddShoppingCartAsync(ShoppingCart shoppingCart)
+		{
+			await DbContext.ShoppingCarts.AddAsync(shoppingCart);
+		}
+
+		public async Task<int> SaveChangesAsync()
+		{
+			return await DbContext.SaveChangesAsync();
 		}
 
 		public void CartItemsRemoveRange(IEnumerable<CartItem> cartItems)

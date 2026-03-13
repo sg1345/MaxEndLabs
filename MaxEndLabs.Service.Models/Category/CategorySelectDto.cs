@@ -1,6 +1,6 @@
-﻿namespace MaxEndLabs.ViewModels.Category
+﻿namespace MaxEndLabs.Service.Models.Category
 {
-    public class CategorySelectViewModel
+    public class CategorySelectDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

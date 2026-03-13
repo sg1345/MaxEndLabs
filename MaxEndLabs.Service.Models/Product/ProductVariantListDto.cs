@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MaxEndLabs.Service.Models.Product
+﻿namespace MaxEndLabs.Service.Models.Product
 {
 	public class ProductVariantListDto
 	{

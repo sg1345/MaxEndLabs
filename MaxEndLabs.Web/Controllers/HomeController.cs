@@ -1,6 +1,6 @@
-using MaxEndLabs.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using MaxEndLabs.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MaxEndLabs.Web.Controllers

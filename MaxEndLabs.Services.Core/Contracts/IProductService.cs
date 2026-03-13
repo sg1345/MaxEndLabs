@@ -1,6 +1,5 @@
-﻿using MaxEndLabs.Service.Models.Product;
-using MaxEndLabs.ViewModels;
-using MaxEndLabs.ViewModels.Product;
+﻿using MaxEndLabs.Service.Models.Category;
+using MaxEndLabs.Service.Models.Product;
 
 namespace MaxEndLabs.Services.Core.Contracts
 {

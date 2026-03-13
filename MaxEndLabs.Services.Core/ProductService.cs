@@ -3,6 +3,7 @@
 using MaxEndLabs.Data.Models;
 
 using MaxEndLabs.Data.Repository.Contracts;
+using MaxEndLabs.Service.Models.Category;
 using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
 
@@ -181,14 +182,7 @@ namespace MaxEndLabs.Services.Core
 
 	        await _productRepository.AddProductAsync(product);
 
-            int changes = await _productRepository.SaveChangesAsync();
-
-			var successAdd = changes > 0;
-
-			if (!successAdd)
-			{
-				throw new ArgumentException();
-			}
+	        await EnsureSaveChangesAsync();
 
 			return product.Slug;
         }
@@ -255,7 +249,7 @@ namespace MaxEndLabs.Services.Core
 				}
             }
 
-            await _productRepository.SaveChangesAsync();
+            await EnsureSaveChangesAsync();
         }
 
         public async Task<ProductFormDto> GetProductEditDtoAsync(string productSlug)
@@ -332,7 +326,7 @@ namespace MaxEndLabs.Services.Core
             product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
             product.Slug = GenerateSlug(dto.Name);
 
-			await _productRepository.SaveChangesAsync();
+            await EnsureSaveChangesAsync();
 
 			return (categorySlug, product.Slug);
 		}
@@ -344,7 +338,7 @@ namespace MaxEndLabs.Services.Core
             if (product == null)
                 throw new ArgumentException("Product Not Found");
 
-            var cartItemsForRemoving = await _shoppingCartRepository.GetCartItemsAsync(product.Slug);
+            var cartItemsForRemoving = await _shoppingCartRepository.GetCartItemsByProductSlugAsync(product.Slug);
 
             if (cartItemsForRemoving.Any())
             {
@@ -372,5 +366,17 @@ namespace MaxEndLabs.Services.Core
             name = name.Trim('-');
             return name;
         }
+
+        private async Task EnsureSaveChangesAsync()
+        {
+	        int changes = await _productRepository.SaveChangesAsync();
+
+	        var successAdd = changes > 0;
+
+	        if (!successAdd)
+	        {
+		        throw new ArgumentException("Database Operation Failed");
+	        }
+		}
     }
 }

@@ -1,4 +1,4 @@
-namespace MaxEndLabs.Models
+namespace MaxEndLabs.ViewModels
 {
     public class ErrorViewModel
     {

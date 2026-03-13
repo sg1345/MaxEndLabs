@@ -25,6 +25,9 @@
         public int Quantity { get; set; }
 
         [Required]
-        public DateTime AddedAt { get; set; }             
+        public DateTime AddedAt { get; set; } 
+        
+        [Required]
+        public bool IsPublished { get; set; } 
     }
 }

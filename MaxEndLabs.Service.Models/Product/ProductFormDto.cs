@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MaxEndLabs.Service.Models.Category;
 
 namespace MaxEndLabs.Service.Models.Product
 {
-	public class ProductFormDto
+    public class ProductFormDto
 	{
 		public int Id { get; set; }
 		public string Name { get; set; } = null!;

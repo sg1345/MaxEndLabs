@@ -13,7 +13,6 @@
 			public const int NameMaxLength = 200;
 			public const int NameMinLength = 3;
 			public const int SlugMaxLength = 200;
-			public const int SlugMinLength = 3;
 
 			public const int DescriptionMaxLength = 500;
 

@@ -1,7 +1,6 @@
 ﻿namespace MaxEndLabs.Data.Models
 {
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
 
     using static MaxEndLabs.GCommon.EntityValidation.Category;
     public class Category

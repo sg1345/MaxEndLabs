@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MaxEndLabs.ViewModels.Product
+﻿namespace MaxEndLabs.ViewModels.Product
 {
     public class ProductListViewModel
     {

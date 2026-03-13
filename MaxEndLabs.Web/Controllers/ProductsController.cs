@@ -1,4 +1,5 @@
-﻿using MaxEndLabs.Service.Models.Product;
+﻿using MaxEndLabs.Service.Models.Category;
+using MaxEndLabs.Service.Models.Product;
 
 using MaxEndLabs.Services.Core.Contracts;
 
