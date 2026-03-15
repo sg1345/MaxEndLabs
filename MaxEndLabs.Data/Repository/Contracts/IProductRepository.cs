@@ -16,5 +16,6 @@ namespace MaxEndLabs.Data.Repository.Contracts
 		void RemoveRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants);
 		Task AddProductVariantAsync (ProductVariant productVariant);
 		void SoftDeleteProduct(Product product);
+		void ProductUpdate(Product product);
 	}
 }

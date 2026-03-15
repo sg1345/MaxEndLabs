@@ -93,5 +93,10 @@ namespace MaxEndLabs.Data.Repository
 
 				DbContext!.Products.Update(product);
 		}
+
+		public void ProductUpdate(Product product)
+		{
+			DbContext!.Products.Update(product);
+		}
 	}
 }

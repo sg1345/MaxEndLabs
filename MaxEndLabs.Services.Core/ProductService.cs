@@ -326,7 +326,9 @@ namespace MaxEndLabs.Services.Core
             product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
             product.Slug = GenerateSlug(dto.Name);
 
-            await EnsureSaveChangesAsync();
+            _productRepository.ProductUpdate(product);
+
+			await EnsureSaveChangesAsync();
 
 			return (categorySlug, product.Slug);
 		}
@@ -347,16 +349,8 @@ namespace MaxEndLabs.Services.Core
 
             _productRepository.SoftDeleteProduct(product);
 
-            int changes = await _productRepository.SaveChangesAsync();
-
-            var successAdd = changes > 0;
-
-            if (!successAdd)
-            {
-	            throw new ArgumentException();
-            }
-
-		}
+            await EnsureSaveChangesAsync();
+        }
 
         private static string GenerateSlug(string name)
         {
