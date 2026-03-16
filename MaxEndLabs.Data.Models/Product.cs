@@ -41,6 +41,6 @@
 
         public virtual Category Category { get; set; } = null!;
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new HashSet<ProductVariant>();
-        
-    }
+		public virtual ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
+	}
 }

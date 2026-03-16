@@ -1,0 +1,40 @@
+﻿
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+using MaxEndLabs.Data.Models.Enum;
+using Microsoft.AspNetCore.Identity;
+
+using static MaxEndLabs.GCommon.EntityValidation.Order;
+
+namespace MaxEndLabs.Data.Models
+{
+	public class Order
+	{
+		[Key]
+		public int Id { get; set; }
+
+		[ForeignKey(nameof(User))]
+		public string UserId { get; set; } = null!;
+		public virtual IdentityUser User { get; set; } = null!;
+
+		[Required]
+		[MaxLength(OrderNumberMaxLength)]
+		public string OrderNumber { get; set; } = null!;
+
+		[Required]
+		public OrderStatus Status { get; set; }
+
+		[Required]
+		[Column(TypeName = TotalAmountColumnType)]
+		public decimal TotalAmount { get; set; }
+
+		[Required]
+		public DateTime CreatedAt { get; set; }
+
+		[Required]
+		public DateTime UpdatedAt { get; set; }
+
+		public virtual ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
+	}
+}

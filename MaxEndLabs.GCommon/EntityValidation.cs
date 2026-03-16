@@ -46,5 +46,19 @@
 			public const int QuantityMaxValue = 99;
 			public const int ProductVariantIdMinValue = 1;
 		}
+
+		public static class Order
+		{
+			public const int OrderNumberMaxLength = 19;
+
+			public const string TotalAmountColumnType = "decimal(18, 2)";
+		}
+
+		public static class OrderItem
+		{
+			public const string UnitPriceColumnType = "decimal(10, 2)";
+			public const string LineTotalColumnType = "decimal(10, 2)";
+		}
+
 	}
 }
