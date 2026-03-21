@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MaxEndLabs.Service.Models.Order;
 
 namespace MaxEndLabs.Services.Core.Contracts
 {
 	public interface IOrderService
-	{
-	}
+    {
+        Task<OrderCreateDto> GetOrderCreateDtoAsync(string userId);
+        Task<int> CreateOrderAsync(OrderCreateDto dto);
+    }
 }

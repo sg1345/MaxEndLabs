@@ -23,6 +23,18 @@ namespace MaxEndLabs.Data.Models
 		public string OrderNumber { get; set; } = null!;
 
 		[Required]
+		[MaxLength(StreetAddressMaxLength)]
+		public string StreetAddress { get; set; } = null!;
+
+		[Required]
+		[MaxLength(CityMaxLength)]
+		public string City { get; set; } = null!;
+
+		[Required]
+		[MaxLength(PostcodeMaxLength)]
+		public string Postcode { get; set; } = null!;
+
+		[Required]
 		public OrderStatus Status { get; set; }
 
 		[Required]

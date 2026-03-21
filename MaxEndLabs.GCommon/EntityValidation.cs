@@ -51,6 +51,15 @@
 		{
 			public const int OrderNumberMaxLength = 19;
 
+			public const int StreetAddressMaxLength = 250;
+            public const int StreetAddressMinLength = 3;
+
+            public const int CityMaxLength = 100;
+            public const int CityMinLength = 2;
+
+            public const int PostcodeMaxLength = 15;
+			public const int PostcodeMinLength = 3;
+
 			public const string TotalAmountColumnType = "decimal(18, 2)";
 		}
 

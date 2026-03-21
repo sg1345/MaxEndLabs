@@ -46,6 +46,9 @@ namespace MaxEndLabs.Web
 			builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
             builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 			builder.Services.AddControllersWithViews();
 
             var app = builder.Build();

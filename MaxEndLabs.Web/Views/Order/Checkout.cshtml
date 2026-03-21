@@ -1,0 +1,77 @@
+﻿@model MaxEndLabs.ViewModels.Order.CheckoutViewModel
+
+<div class="container my-5">
+    <div class="row g-5">
+        <div class="col-md-5 col-lg-4 order-md-last">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary">Your cart</span>
+                <span class="badge bg-primary rounded-pill">@Model.CartItems.Count</span>
+            </h4>
+            <ul class="list-group mb-3 shadow-sm">
+                @foreach (var item in Model.CartItems)
+                {
+	                <li class="list-group-item d-flex align-items-center py-3">
+		                <img src="@item.MainImageUrl" class="rounded border me-3" 
+		                     style="width: 60px; height: 60px; object-fit: cover;" />
+
+		                <div class="flex-grow-1">
+			                <h6 class="mb-0">@item.ProductName</h6>
+			                <small class="text-muted">@item.VariantName | Qty: @item.Quantity</small>
+		                </div>
+
+		                <span class="fw-bold">@((item.UnitPrice * item.Quantity).ToString("C"))</span>
+	                </li>
+                }
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <span class="fw-bold">Total (Euro)</span>
+                    <strong class="text-success">@Model.TotalPrice.ToString("C")</strong>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-7 col-lg-8">
+            <h4 class="mb-3">Shipping Address</h4>
+            <form asp-action="Checkout" method="post" class="needs-validation">
+	            <div class="row g-3">
+		            <div class="col-12">
+			            <label asp-for="StreetAddress" class="form-label">Street</label>
+			            <input asp-for="StreetAddress" class="form-control" placeholder="Main Street 123" />
+			            <span asp-validation-for="StreetAddress" class="text-danger small"></span>
+		            </div>
+
+		            <div class="col-md-6">
+			            <label asp-for="City" class="form-label"></label>
+			            <input asp-for="City" class="form-control" placeholder="e.g. Paris" />
+			            <span asp-validation-for="City" class="text-danger small"></span>
+		            </div>
+
+		            <div class="col-md-6">
+			            <label asp-for="Postcode" class="form-label"></label>
+			            <input asp-for="Postcode" class="form-control" placeholder="e.g. 10001" />
+			            <span asp-validation-for="Postcode" class="text-danger small"></span>
+		            </div>
+	            </div>
+
+	            <hr class="my-4">
+
+	            <div class="row g-3 mt-4">
+		            <div class="col-sm-6 order-sm-last">
+			            <button class="w-100 btn btn-primary btn-lg rounded-pill shadow-sm" type="submit">
+				            Continue to Payment
+			            </button>
+		            </div>
+		            <div class="col-sm-6">
+			            <a asp-controller="ShoppingCart" asp-action="Index" 
+			               class="w-100 btn btn-outline-secondary btn-lg rounded-pill">
+				            Back to Cart
+			            </a>
+		            </div>
+	            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}
