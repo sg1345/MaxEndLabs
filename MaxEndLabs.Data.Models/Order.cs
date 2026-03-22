@@ -16,7 +16,7 @@ namespace MaxEndLabs.Data.Models
 
 		[ForeignKey(nameof(User))]
 		public string UserId { get; set; } = null!;
-		public virtual IdentityUser User { get; set; } = null!;
+		public virtual ApplicationUser User { get; set; } = null!;
 
 		[Required]
 		[MaxLength(OrderNumberMaxLength)]

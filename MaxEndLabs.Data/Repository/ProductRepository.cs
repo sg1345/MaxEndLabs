@@ -63,10 +63,6 @@ namespace MaxEndLabs.Data.Repository
 			await DbContext!.Products.AddAsync(product);
 		}
 
-		public async Task<int> SaveChangesAsync()
-		{
-			return await DbContext!.SaveChangesAsync();
-		}
 
 		public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductIdAsync(int productId)
 		{

@@ -1,15 +1,19 @@
-﻿
-using MaxEndLabs.Data.Configuration;
-
-namespace MaxEndLabs.Data
+﻿namespace MaxEndLabs.Data
 {
-	using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Configuration;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
     using Models;
 
-    public class MaxEndLabsDbContext(DbContextOptions<MaxEndLabsDbContext> options) : IdentityDbContext(options)
+    public class MaxEndLabsDbContext : IdentityDbContext<ApplicationUser>
     {
+        public MaxEndLabsDbContext(DbContextOptions<MaxEndLabsDbContext> options)
+            : base(options)
+        {
+        }
+
         public virtual DbSet<CartItem> CartItems { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
@@ -18,7 +22,7 @@ namespace MaxEndLabs.Data
         public virtual DbSet<Order> Orders { get; set; } = null!;
 		public virtual DbSet<OrderItem> OrderItems { get; set; } = null!;
 
-		protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
 
 	        //OrderItem

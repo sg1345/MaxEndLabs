@@ -1,4 +1,5 @@
 using MaxEndLabs.Data;
+using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Repository;
 using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Services.Core;
@@ -20,10 +21,12 @@ namespace MaxEndLabs.Web
             
             builder.Services.AddDbContext<MaxEndLabsDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MaxEndLabsDbContext>();
             
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireDigit = false;
@@ -32,7 +35,8 @@ namespace MaxEndLabs.Web
                     options.Password.RequireUppercase = false;
                 })
                 .AddEntityFrameworkStores<MaxEndLabsDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddDefaultUI();
 
             builder.Services.AddRazorPages();
 

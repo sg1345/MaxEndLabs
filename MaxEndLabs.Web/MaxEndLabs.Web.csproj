@@ -26,4 +26,8 @@
     <ProjectReference Include="..\MaxEndLabs.ViewModels\MaxEndLabs.ViewModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\qrcode\" />
+  </ItemGroup>
+
 </Project>

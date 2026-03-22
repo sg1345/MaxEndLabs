@@ -3,16 +3,16 @@
 	public class BaseRepository : IDisposable
 	{
 		private bool isDisposed = false;
-		private readonly MaxEndLabsDbContext dbContext;
+		private readonly MaxEndLabsDbContext _dbContext;
 
 		protected BaseRepository(MaxEndLabsDbContext dbContext)
 		{
-			this.dbContext = dbContext;
+			this._dbContext = dbContext;
 		}
 
-		protected MaxEndLabsDbContext DbContext => dbContext;
+		protected MaxEndLabsDbContext DbContext => _dbContext;
 
-		protected async Task<int> SaveChangesAsync()
+		public async Task<int> SaveChangesAsync()
 		{
 			return await DbContext.SaveChangesAsync();
 		}
@@ -29,7 +29,7 @@
 			{
 				if (disposing)
 				{
-					dbContext?.Dispose();
+					_dbContext?.Dispose();
 				}
 			}
 			isDisposed = true;

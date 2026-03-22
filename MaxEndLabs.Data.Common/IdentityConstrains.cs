@@ -2,7 +2,7 @@
 {
 	public class IdentityConstrains 
 	{
-		public static class IdentityUser
+		public static class ApplicationUser
 		{
 			public const string AdminUserId = "06313180-fa45-42b5-ac33-1333f673455d";
 		}

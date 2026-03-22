@@ -15,7 +15,7 @@ namespace MaxEndLabs.Data.Models
         [ForeignKey(nameof(User))]
         [MaxLength(UserIdMaxLength)]
         public string UserId { get; set; } = null!;
-		public virtual IdentityUser User { get; set; } = null!;
+		public virtual ApplicationUser User { get; set; } = null!;
 
 		[Required]
         public DateTime CreatedAt { get; set; }

@@ -69,5 +69,9 @@
 			public const string LineTotalColumnType = "decimal(10, 2)";
 		}
 
+        public static class ApplicationUser
+        {
+			public const int FullNameMaxLength = 250;
+        }
 	}
 }

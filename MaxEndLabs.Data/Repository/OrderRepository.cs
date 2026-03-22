@@ -21,9 +21,5 @@ namespace MaxEndLabs.Data.Repository
             await DbContext.Orders.AddAsync(order);
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await DbContext.SaveChangesAsync();
-        }
     }
 }

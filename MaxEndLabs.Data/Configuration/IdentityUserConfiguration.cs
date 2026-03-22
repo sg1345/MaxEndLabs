@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MaxEndLabs.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static MaxEndLabs.Data.Common.IdentityConstrains.IdentityUser;
+using static MaxEndLabs.Data.Common.IdentityConstrains.ApplicationUser;
 
 namespace MaxEndLabs.Data.Configuration
 {
-	public class IdentityUserConfiguration : IEntityTypeConfiguration<IdentityUser>
+	public class IdentityUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 	{
-		public void Configure(EntityTypeBuilder<IdentityUser> entity)
+		public void Configure(EntityTypeBuilder<ApplicationUser> entity)
 		{
 			entity
 				.HasData(SeedIdentityUser());
 		}
 
-		private IdentityUser[] SeedIdentityUser()
+		private ApplicationUser[] SeedIdentityUser()
 		{
-			var adminUser = new IdentityUser
+			var adminUser = new ApplicationUser
 			{
 				Id = AdminUserId,
+				FullName = "Dimitar Ivanov Berbatov",
 				UserName = "admin@labs.com",
 				NormalizedUserName = "ADMIN@LABS.COM",
 				Email = "admin@labs.com",
@@ -27,9 +29,6 @@ namespace MaxEndLabs.Data.Configuration
 				SecurityStamp = "c0142471-6ffd-44b4-b430-8b3c7acf8fbf",
 				PasswordHash = "AQAAAAIAAYagAAAAEP9JzX0YwKm6N+luPkuHrobdVlv+8FQxWWME12rmICorZgnbmrHziPC+5WxRG5/6aw=="
 			};
-
-			//adminUser.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(adminUser, "admin");
-
 
 			return [adminUser];
 		}

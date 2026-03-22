@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static MaxEndLabs.Data.Common.IdentityConstrains.IdentityUser;
+using static MaxEndLabs.Data.Common.IdentityConstrains.ApplicationUser;
 using static MaxEndLabs.Data.Common.IdentityConstrains.IdentityRole;
 
 namespace MaxEndLabs.Data.Configuration
