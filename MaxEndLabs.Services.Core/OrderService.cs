@@ -49,9 +49,13 @@ namespace MaxEndLabs.Services.Core
 
         }
 
-        public async Task<int> CreateOrderAsync(OrderCreateDto dto)
+        public async Task<int> CreateOrderAsync(AddressOrderDto dto)
         {
             string orderNumber = GenerateOrderNumber();
+
+            var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(dto.UserId);
+
+            decimal totalPrice = cartItemList.Sum(ci => ci.Quantity*(ci.ProductVariant.Price ?? ci.Product.Price));
 
             var order = new Order
             {
@@ -61,16 +65,16 @@ namespace MaxEndLabs.Services.Core
                 City = dto.City,
                 Postcode = dto.Postcode,
                 Status = OrderStatus.Pending,
-                TotalAmount = dto.TotalPrice,
+                TotalAmount = totalPrice,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                OrderItems = dto.CartItems.Select(ci => new OrderItem
+                OrderItems = cartItemList.Select(ci => new OrderItem
                     {
                         ProductId = ci.ProductId,
                         ProductVariantId = ci.ProductVariantId,
-                        UnitPrice = ci.UnitPrice,
+                        UnitPrice = ci.ProductVariant.Price ?? ci.Product.Price,
                         Quantity = ci.Quantity,
-                        LineTotal = ci.UnitPrice * ci.Quantity
+                        LineTotal = (ci.ProductVariant.Price ?? ci.Product.Price) * ci.Quantity
                     })
                     .ToList()
             };

@@ -36,15 +36,16 @@ namespace MaxEndLabs.Web.Controllers
                 TotalPrice = checkOutDto.TotalPrice,
                 CartId = checkOutDto.CartId,
                 CartItems = checkOutDto.CartItems.Select(ci => new CartItemViewModel
-                {
-                    ProductId = ci.ProductId,
-                    ProductName = ci.ProductName,
-                    ProductVariantId = ci.ProductVariantId,
-                    VariantName = ci.VariantName,
-                    UnitPrice = ci.UnitPrice,
-                    MainImageUrl = ci.MainImageUrl,
-                    Quantity = ci.Quantity
-                }).ToList()
+                    {
+                        ProductId = ci.ProductId,
+                        ProductName = ci.ProductName,
+                        ProductVariantId = ci.ProductVariantId,
+                        VariantName = ci.VariantName,
+                        UnitPrice = ci.UnitPrice,
+                        MainImageUrl = ci.MainImageUrl,
+                        Quantity = ci.Quantity
+                    })
+                    .ToList()
             };
 
             return View(model);
@@ -65,24 +66,13 @@ namespace MaxEndLabs.Web.Controllers
 			{
                 string userId = GetUserId()!;
 
-                var createOrderDto = new OrderCreateDto
+                var createOrderDto = new AddressOrderDto()
                 {
                     UserId = userId,
                     StreetAddress = model.StreetAddress,
                     City = model.City,
                     Postcode = model.Postcode,
-                    TotalPrice = model.TotalPrice,
-                    CartId = model.CartId,
-                    CartItems = model.CartItems.Select(ci => new CartItemDto
-                    {
-                        ProductId = ci.ProductId,
-                        ProductName = ci.ProductName,
-                        ProductVariantId = ci.ProductVariantId,
-                        VariantName = ci.VariantName,
-                        UnitPrice = ci.UnitPrice,
-                        MainImageUrl = ci.MainImageUrl,
-                        Quantity = ci.Quantity
-                    }).ToList()
+                    
                 };
 
                 int cartId = await _orderService.CreateOrderAsync(createOrderDto);
