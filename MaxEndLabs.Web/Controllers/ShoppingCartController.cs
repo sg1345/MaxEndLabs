@@ -84,7 +84,7 @@ namespace MaxEndLabs.Web.Controllers
 							Price = av.Price
 						}).ToList(),
 				};
-
+				TempData["ErrorMessage"] = "Failed adding to cart";
 				return View("/Views/Products/Details.cshtml", productDetails);
 			}
 
@@ -100,7 +100,8 @@ namespace MaxEndLabs.Web.Controllers
 
 			await _shoppingCartService.AddProductToShoppingCartAsync(dto);
 
-			return RedirectToAction("Details", "Products", new
+			TempData["SuccessMessage"] = "Added to cart!";
+            return RedirectToAction("Details", "Products", new
 			{
 				model.CategorySlug,
 				model.ProductSlug
@@ -127,29 +128,8 @@ namespace MaxEndLabs.Web.Controllers
 
 				await _shoppingCartService.RemoveCartItemFromShoppingCartAsync(dto);
 
-				return RedirectToAction("Index");
-			}
-			catch (ArgumentException e)
-			{
-				return NotFound(e.Message);
-			}
-
-		}
-
-		[HttpGet]
-		public async Task<IActionResult> Checkout(int cartId)
-		{
-			try
-			{
-				string? userId = GetUserId();
-				if (string.IsNullOrEmpty(userId))
-				{
-					return RedirectToPage("/Account/Login", new { area = "Identity" });
-				}
-
-				await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(cartId);
-
-				return View();
+                TempData["SuccessMessage"] = "Removed from Cart!";
+                return RedirectToAction("Index");
 			}
 			catch (ArgumentException e)
 			{

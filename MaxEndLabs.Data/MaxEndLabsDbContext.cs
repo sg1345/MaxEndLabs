@@ -24,9 +24,9 @@
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
-	        //OrderItem
-	        builder.Entity<OrderItem>()
+			//TODO: configurations for OrderItem and Order
+			//OrderItem
+			builder.Entity<OrderItem>()
 		        .HasKey(oi => new { oi.OrderId, oi.ProductId, oi.ProductVariantId });
 
 	        builder.Entity<OrderItem>()
@@ -46,43 +46,11 @@
 		        .WithMany(pv => pv.OrderItems)
 		        .HasForeignKey(oi => oi.ProductVariantId)
 		        .OnDelete(DeleteBehavior.Restrict);
-
-
-
-			//CartItem
-			builder.Entity<CartItem>()
-                .HasIndex(ci => new { ci.CartId, ci.ProductId, ci.ProductVariantId })
-                .IsUnique();
-
-            builder.Entity<CartItem>()
-                .HasOne(ci => ci.ShoppingCart)
-                .WithMany(c => c.CartItems)
-                .HasForeignKey(ci => ci.CartId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<CartItem>()
-                .HasOne(ci => ci.Product)
-                .WithMany()
-                .HasForeignKey(ci => ci.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<CartItem>()
-                .HasOne(ci => ci.ProductVariant)
-                .WithMany(pv => pv.CartItems)
-                .HasForeignKey(ci => ci.ProductVariantId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //Category
-            builder
-                .Entity<Category>()
-                .HasIndex(c => c.Slug)
-                .IsUnique();
-
-            //Product
-            builder
-                .Entity<Product>()
-                .HasIndex(p => p.Slug)
-                .IsUnique();
+            
+	        //Order
+	        builder.Entity<Order>()
+		        .HasIndex(o => o.OrderNumber)
+		        .IsUnique();
 
             base.OnModelCreating(builder);
 
@@ -96,9 +64,6 @@
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductVariantConfiguration());
             builder.ApplyConfiguration(new CartItemConfiguration());
-
-			//builder.ApplyConfigurationsFromAssembly(typeof(MaxEndLabsDbContext).Assembly);
-
 		}
 	}
 }

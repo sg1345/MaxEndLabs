@@ -16,10 +16,19 @@ namespace MaxEndLabs.Data.Repository
 		{
 		}
 
-        public async Task AddOrderAsync(Order order)
+		public async Task<Order?> GetOrderByIdAsync(int id)
+		{
+			return await DbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+		}
+
+		public async Task AddOrderAsync(Order order)
         {
             await DbContext.Orders.AddAsync(order);
         }
 
-    }
+		public void UpdateOrder(Order order)
+		{
+			DbContext.Orders.Update(order);
+		}
+	}
 }

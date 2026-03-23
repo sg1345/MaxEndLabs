@@ -22,7 +22,16 @@ body {
 }
 
 .nav-logo {
-    max-height: 45px;
+    max-height: 60px;
     width: auto;
     display: block;
+    transition: transform 0.2s ease-in-out;
+}
+
+.navbar-brand:hover .nav-logo {
+    transform: scale(1.05);
+}
+
+.hide-caret::after {
+    display: none !important;
 }

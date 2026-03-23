@@ -1,5 +1,10 @@
 ﻿@model MaxEndLabs.ViewModels.Order.CheckoutViewModel
 
+@{
+	var siteKey = (string)ViewData["RecaptchaSiteKey"];
+}
+
+
 <div class="container my-5">
     <div class="row g-5">
         <div class="col-md-5 col-lg-4 order-md-last">
@@ -11,8 +16,18 @@
                 @foreach (var item in Model.CartItems)
                 {
 	                <li class="list-group-item d-flex align-items-center py-3">
-		                <img src="@item.MainImageUrl" class="rounded border me-3" 
-		                     style="width: 60px; height: 60px; object-fit: cover;" />
+						
+		                @if (string.IsNullOrEmpty(item.MainImageUrl))
+		                {
+			                <img src = "~/images/default_product_image.jpg" class="rounded border me-3"
+			                     style="width: 60px; height: 60px; object-fit: cover;"/>
+		                }
+		                else
+		                {
+			                <img src="@item.MainImageUrl" class="rounded border me-3"
+			                     style="width: 60px; height: 60px; object-fit: cover;"/>
+		                }
+		                
 
 		                <div class="flex-grow-1">
 			                <h6 class="mb-0">@item.ProductName</h6>
@@ -52,12 +67,15 @@
 		            </div>
 	            </div>
 
+	            <div class="g-recaptcha my-4" data-sitekey="@siteKey"></div>
+	            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 	            <hr class="my-4">
 
 	            <div class="row g-3 mt-4">
 		            <div class="col-sm-6 order-sm-last">
 			            <button class="w-100 btn btn-primary btn-lg rounded-pill shadow-sm" type="submit">
-				            Continue to Payment
+				            Place an Order
 			            </button>
 		            </div>
 		            <div class="col-sm-6">
@@ -73,5 +91,6 @@
 </div>
 
 @section Scripts {
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
         <partial name="_ValidationScriptsPartial" />
 }

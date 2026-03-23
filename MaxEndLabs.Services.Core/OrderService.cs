@@ -49,7 +49,7 @@ namespace MaxEndLabs.Services.Core
 
         }
 
-        public async Task<int> CreateOrderAsync(AddressOrderDto dto)
+        public async Task<StripeSessionDto> CreateOrderAsync(AddressOrderDto dto)
         {
             string orderNumber = GenerateOrderNumber();
 
@@ -82,8 +82,52 @@ namespace MaxEndLabs.Services.Core
             await _orderRepository.AddOrderAsync(order);
             await EnsureSaveChangesAsync();
 
-            return await _shoppingCartRepository.GetShoppingCartIdAsync(dto.UserId);
+            int cartId = order.Id;
+            var lineItems = cartItemList.Select(ci => new StripeLineItemDto
+			{
+				ProductName = ci.Product.Name,
+				VariantName = ci.ProductVariant.VariantName,
+				Price = (long)((ci.ProductVariant?.Price ?? ci.Product.Price) * 100),
+				Quantity = ci.Quantity,
+				ImageUrl = ci.Product.MainImageUrl
+			}).ToList();
+			//int cartId = await _shoppingCartRepository.GetShoppingCartIdAsync(dto.UserId);
+			var result = new StripeSessionDto
+            {
+	            OrderNumber = orderNumber,
+	            CartId = cartItemList.FirstOrDefault()?.CartId ?? 0,
+	            OrderId = order.Id,
+	            LineItems = lineItems
+            };
+
+			return result;
+		}
+
+        public async Task<string> MarkOrderAsPaidAsync(int orderId)
+        {
+	        Order? order = _orderRepository.GetOrderByIdAsync(orderId).Result;
+
+	        if (order == null) return null!;
+
+			order.Status = OrderStatus.Paid;
+			order.UpdatedAt = DateTime.UtcNow;
+
+			_orderRepository.UpdateOrder(order);
+			await EnsureSaveChangesAsync();
+
+			return order.Status.ToString();
         }
+
+        public async Task<string?> GetOrderStatusAsync(int orderId)
+        {
+	        Order? order = await _orderRepository.GetOrderByIdAsync(orderId);
+
+            if(order == null)
+                return null;
+
+			return order.Status.ToString();
+		}
+
 
         private string GenerateOrderNumber()
         {

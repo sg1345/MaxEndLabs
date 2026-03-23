@@ -1,0 +1,18 @@
+﻿@using static MaxEndLabs.GCommon.ApplicationConstants
+
+@if (TempData[ErrorTempDataKey] != null)
+{
+	<script>toastr.error("@TempData[ErrorTempDataKey]")</script>
+}
+else if (TempData[SuccessTempDataKey] != null)
+{
+	<script>toastr.success("@TempData[SuccessTempDataKey]")</script>
+}
+else if (TempData[InfoTempDataKey] != null)
+{
+	<script>toastr.info("@TempData[InfoTempDataKey]")</script>
+}
+else if (TempData[WarningTempDataKey] != null)
+{
+	<script>toastr.warning("@TempData[WarningTempDataKey]")</script>
+}

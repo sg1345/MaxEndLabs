@@ -1,0 +1,27 @@
+﻿@model IEnumerable<MaxEndLabs.Data.Models.Category>
+
+<li class="nav-item dropdown">
+	<a class="nav-link dropdown-toggle text-dark hide-caret fw-bold text-uppercase fs-5 px-3" 
+	   href="#" id="catDropdown" role="button" data-bs-toggle="dropdown">
+		<i class="fa-solid fa-store"></i> Shop
+	</a>
+	<ul class="dropdown-menu shadow border-0 mt-2" aria-labelledby="catDropdown">
+		<li>
+			<a class="dropdown-item fw-bold fs-5 px-3" asp-controller="Products" asp-action="AllProducts">
+				All Products
+			</a>
+		</li>
+		<li><hr class="dropdown-divider"></li>
+		@foreach (var category in Model)
+		{
+			<li>
+					<a class="dropdown-item fs-5 px-3" 
+				   asp-controller="Products" 
+				   asp-action="ByCategory" 
+					   asp-route-slug="@category.Slug">
+					@category.Name
+				</a>
+			</li>
+		}
+	</ul>
+</li>

@@ -9,6 +9,10 @@ namespace MaxEndLabs.Data.Configuration
 		public void Configure(EntityTypeBuilder<Product> entity)
 		{
 			entity
+				.HasIndex(p => p.Slug)
+				.IsUnique();
+
+			entity
 				.HasQueryFilter(p => p.IsPublished == true);
 
 			entity

@@ -185,6 +185,7 @@ namespace MaxEndLabs.Web.Controllers
 
 				string productSlug = await _productService.AddProductAsync(productCreateDto);
 
+				TempData["SuccessMessage"] = "Product created!";
                 return RedirectToAction("VariantManager", new { productSlug = productSlug });
             }
             catch (ArgumentException e)
@@ -262,6 +263,7 @@ namespace MaxEndLabs.Web.Controllers
 
                 await _productService.ManageProductVariantsAsync(productVariantListDto);
 
+                TempData["SuccessMessage"] = "Variants updated!";
                 return RedirectToAction("Details", new 
 	                { 
 		                categorySlug = model.CategorySlug, 
@@ -270,7 +272,8 @@ namespace MaxEndLabs.Web.Controllers
             }
             catch (ArgumentException e)
             {
-                return NotFound(e.Message);
+	            TempData["WarningMessage"] = "No Changes were made!";
+	            return View(model);
             }
 	        
         }
@@ -355,6 +358,8 @@ namespace MaxEndLabs.Web.Controllers
 				};
 
                 (string CategorySlug, string ProductSlug) result = await _productService.EditProductAsync(dto);
+
+				TempData["SuccessMessage"] = "Product edited!";
                 return RedirectToAction("Details", new
                 {
 	                categorySlug = result.CategorySlug, 
@@ -375,10 +380,12 @@ namespace MaxEndLabs.Web.Controllers
         [Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Delete(string productSlug)
         {
-            
-            try
-            {
-                await _productService.DeleteProductAsync(productSlug);
+
+			try
+			{
+				await _productService.DeleteProductAsync(productSlug);
+
+				TempData["SuccessMessage"] = "Product deleted!";
                 return RedirectToAction("Index");
             }
             catch (ArgumentException e)

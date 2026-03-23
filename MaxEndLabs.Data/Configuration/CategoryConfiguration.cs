@@ -9,6 +9,10 @@ namespace MaxEndLabs.Data.Configuration
 		public void Configure(EntityTypeBuilder<Category> entity)
 		{
 			entity
+				.HasIndex(c => c.Slug)
+				.IsUnique();
+
+			entity
 				.HasData(SeedCategory());
 		}
 

@@ -4,9 +4,13 @@ using MaxEndLabs.Data.Repository;
 using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Services.Core;
 using MaxEndLabs.Services.Core.Contracts;
+using MaxEndLabs.Services.Core.Models.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using ProductService = MaxEndLabs.Services.Core.ProductService;
+
 
 namespace MaxEndLabs.Web
 {
@@ -21,8 +25,6 @@ namespace MaxEndLabs.Web
             
             builder.Services.AddDbContext<MaxEndLabsDbContext>(options =>
                 options.UseSqlServer(connectionString));
-
-            //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MaxEndLabsDbContext>();
             
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -38,11 +40,15 @@ namespace MaxEndLabs.Web
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
-            builder.Services.AddRazorPages();
+			builder.Services.AddRazorPages();
 
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
+			builder.Services.Configure<GoogleReCaptchaSettings>(
+				builder.Configuration.GetSection("GoogleReCaptcha"));
+			builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>();
+
+			builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -83,7 +89,9 @@ namespace MaxEndLabs.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            app.Run();
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Value;
+
+			app.Run();
         }
     }
 }
