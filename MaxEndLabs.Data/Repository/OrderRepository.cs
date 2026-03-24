@@ -16,6 +16,26 @@ namespace MaxEndLabs.Data.Repository
 		{
 		}
 
+		public async Task<IEnumerable<Order>> GetPageOrdersAsync(string userId, int skip, int take)
+		{
+			return await DbContext.Orders
+				.AsNoTracking()
+				.Where(o => o.UserId == userId)
+				.OrderByDescending(o => o.CreatedAt)
+				.ThenBy(o => o.Status)
+				.ThenByDescending(o=>o.UpdatedAt)
+                .Skip(skip) 
+                .Take(take) 
+                .ToArrayAsync();
+		}
+
+		public async Task<int> GetCountAsync(string userId)
+		{
+			return await DbContext.Orders
+				.AsNoTracking()
+				.CountAsync(o => o.UserId == userId);
+		}
+
 		public async Task<Order?> GetOrderByIdAsync(int id)
 		{
 			return await DbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);

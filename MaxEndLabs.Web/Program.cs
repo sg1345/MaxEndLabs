@@ -47,6 +47,7 @@ namespace MaxEndLabs.Web
 			builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>();
+            builder.Services.AddScoped<IStripeService,StripeService>();
 
 			builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();

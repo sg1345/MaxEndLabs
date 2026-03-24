@@ -19,6 +19,28 @@ namespace MaxEndLabs.Services.Core
             _shoppingCartRepository = shoppingCartRepository;
         }
 
+        public async Task<OrderPaginationDto> GetOrdersForUserAsync(string userId, int page)
+        {
+            int pageSize = 5;
+            int skip = (page - 1) * pageSize;
+            var orders = await _orderRepository.GetPageOrdersAsync(userId, skip, pageSize);
+            var count = await _orderRepository.GetCountAsync(userId);
+
+            return new OrderPaginationDto
+            {
+                CurrentPage = page,
+				TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+				Orders = orders.Select(o => new OrderDto
+				{
+					Id = o.Id,
+					OrderNumber = o.OrderNumber,
+					TotalAmount = o.TotalAmount,
+					Status = o.Status.ToString(),
+					CreatedAt = DateOnly.FromDateTime(o.CreatedAt)
+				}).ToList()
+			};
+        }
+
         public async Task<OrderCreateDto> GetOrderCreateDtoAsync(string userId)
         {
             int shoppingCartId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
@@ -91,7 +113,7 @@ namespace MaxEndLabs.Services.Core
 				Quantity = ci.Quantity,
 				ImageUrl = ci.Product.MainImageUrl
 			}).ToList();
-			//int cartId = await _shoppingCartRepository.GetShoppingCartIdAsync(dto.UserId);
+			
 			var result = new StripeSessionDto
             {
 	            OrderNumber = orderNumber,

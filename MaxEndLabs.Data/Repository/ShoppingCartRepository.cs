@@ -96,11 +96,6 @@ namespace MaxEndLabs.Data.Repository
 			await DbContext.ShoppingCarts.AddAsync(shoppingCart);
 		}
 
-		public async Task<int> SaveChangesAsync()
-		{
-			return await DbContext.SaveChangesAsync();
-		}
-
 		public void CartItemsRemoveRange(IEnumerable<CartItem> cartItems)
 		{
 			DbContext.CartItems.RemoveRange(cartItems);

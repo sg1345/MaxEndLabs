@@ -18,15 +18,16 @@ namespace MaxEndLabs.Web.Controllers
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IOptions<GoogleReCaptchaSettings> _captchaSettings;
 		private readonly IReCaptchaService _captchaService;
+		private readonly IStripeService _stripeService;
 		public OrderController(IOrderService orderService,
-			IShoppingCartService shoppingCartService,
-			IOptions<GoogleReCaptchaSettings> captchaSettings,
-			IReCaptchaService captchaService)
+			IShoppingCartService shoppingCartService, IOptions<GoogleReCaptchaSettings> captchaSettings,
+			IReCaptchaService captchaService, IStripeService stripeService)
 		{
 			_orderService = orderService;
 			_shoppingCartService = shoppingCartService;
 			_captchaSettings = captchaSettings;
 			_captchaService = captchaService;
+			_stripeService = stripeService;
 		}
 
 		public IActionResult Index()
@@ -78,7 +79,7 @@ namespace MaxEndLabs.Web.Controllers
 				await RefillCheckoutModel(model, userId);
 
 				ViewData["ReCaptchaSiteKey"] = _captchaSettings.Value.SiteKey;
-				return View(model);
+				return View(nameof(Checkout),model);
 			}
 
             if (!ModelState.IsValid)
@@ -86,10 +87,9 @@ namespace MaxEndLabs.Web.Controllers
 	            await RefillCheckoutModel(model, userId);
 
 				ViewData["ReCaptchaSiteKey"] = _captchaSettings.Value.SiteKey;
-				return View(model);
+				return View(nameof(Checkout) ,model);
             }
             
-
             var createOrderDto = new AddressOrderDto()
             {
 	            UserId = userId,
@@ -98,63 +98,32 @@ namespace MaxEndLabs.Web.Controllers
 	            Postcode = model.Postcode,
 
             };
+
 			//Create pending Order
+			//maybe move the whole thing into the order service
+			//the check can be exception and cleaning the cart can be part of the createing the order
             var stripeSessionDto = await _orderService.CreateOrderAsync(createOrderDto);
+            
+			if (!stripeSessionDto.LineItems.Any())
+				return RedirectToAction("Index","ShoppingCart");
+
 			await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(stripeSessionDto.CartId);
 
-			if (stripeSessionDto is null || !stripeSessionDto.LineItems.Any())
-				return RedirectToAction(nameof(Checkout));
-
-			var lineItems = stripeSessionDto.LineItems.Select(li =>
-				{
-					return new SessionLineItemOptions
-					{
-						Quantity = li.Quantity,
-						PriceData = new SessionLineItemPriceDataOptions
-						{
-							Currency = "eur",
-							UnitAmount = (long)li.Price,
-							ProductData = new SessionLineItemPriceDataProductDataOptions
-							{
-								Name = li.ProductName,
-								Images = string.IsNullOrWhiteSpace(li.ImageUrl)
-									? null
-									: new List<string> { li.ImageUrl }
-							}
-						}
-					};
-				})
-				.ToList();
-
+			//Create Stripe checkout session
 			var baseUrl = Environment.GetEnvironmentVariable("APP__PUBLICBASEURL")
-						  ?? $"{Request.Scheme}://{Request.Host}";
+			              ?? $"{Request.Scheme}://{Request.Host}";
 			var successBase = baseUrl + Url
 				.Action(nameof(PaymentSuccess), "Order", new { stripeSessionDto.OrderId });
 			var cancelUrl = baseUrl + Url.Action(nameof(PaymentCancel), "Order");
 			var successSeparator = successBase.Contains('?') ? "&" : "?";
 			var successUrl = successBase + successSeparator + "session_id={CHECKOUT_SESSION_ID}";
 
-
-			var options = new SessionCreateOptions
-			{
-				Mode = "payment",
-				PaymentMethodTypes = new List<String> { "card" },
-				LineItems = lineItems,
-
-				SuccessUrl = successUrl,
-				CancelUrl = cancelUrl,
-
-				Metadata = new Dictionary<string, string>
-				{
-					["orderId"] = stripeSessionDto.OrderId.ToString(),
-					["userId"] = userId
-				}
-			};
-
+			var optionsFromService =
+				_stripeService.CreateCheckoutSessionAsync(stripeSessionDto, successUrl, cancelUrl, userId);
 
 			try
 			{
-				var session = await new SessionService().CreateAsync(options);
+				var session = await new SessionService().CreateAsync(optionsFromService);
 
 				return Redirect(session.Url);
 			}
@@ -165,6 +134,7 @@ namespace MaxEndLabs.Web.Controllers
 		}
 
 		[HttpGet]
+		[Authorize]
 		public async Task<IActionResult> PaymentSuccess(int orderId,
 			[FromQuery(Name = "session_id")] string sessionId)
 		{
@@ -194,7 +164,7 @@ namespace MaxEndLabs.Web.Controllers
 			//	return View("Done");
 			//}
 
-			return View("PaymentProccessing");
+			return View("PaymentProccessing", model:session.PaymentStatus);
 		}
 
 
@@ -202,6 +172,20 @@ namespace MaxEndLabs.Web.Controllers
 		public IActionResult PaymentCancel()
 		{
 			return View();
+		}
+
+		[HttpGet]
+		[Authorize]
+		public async Task<IActionResult> Details(string orderId)
+		{
+			return Ok("Order Details");
+		}
+
+		[HttpGet]
+		[Authorize]
+		public async Task<IActionResult> StripeCheckoutSession(string orderId)
+		{
+			return Ok("Stripe Checkout Session");
 		}
 
 

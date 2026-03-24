@@ -28,8 +28,24 @@ body {
     transition: transform 0.2s ease-in-out;
 }
 
-.navbar-brand:hover .nav-logo {
+.navbar-brand:hover .nav-logo{
     transform: scale(1.05);
+}
+
+.nav-link:hover {
+    transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+    .custom-hover-dropdown:hover > .dropdown-menu {
+        display: block;
+        margin-top: 0;
+    }
+}
+
+.dropdown-menu {
+    transition: all 0.3s ease;
+    display: none;
 }
 
 .hide-caret::after {

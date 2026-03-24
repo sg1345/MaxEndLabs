@@ -116,12 +116,12 @@ namespace MaxEndLabs.Services.Core
 
 				await _shoppingCartRepository.AddShoppingCartAsync(newShoppingCart);
 
-				carId = newShoppingCart.Id;
-
 				await EnsureSaveChangesAsync();
+
+				carId = newShoppingCart.Id;
 			}
 
-			
+
 
 			return carId;
 		}

@@ -14,6 +14,11 @@ namespace MaxEndLabs.Web.Controllers
 			_logger = logger;
 		}
 
+		public IActionResult GetOrderBox(int page)
+		{
+			return ViewComponent("OrderBox", new { page = page });
+		}
+
 		[AllowAnonymous]
 		public IActionResult Index()
 		{

@@ -1,21 +1,33 @@
 ﻿using MaxEndLabs.Data.Repository.Contracts;
+using MaxEndLabs.Services.Core.Contracts;
+using MaxEndLabs.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MaxEndLabs.Web.ViewComponents
 {
 	public class CategoryMenuViewComponent : ViewComponent
 	{
-		private readonly ICategoryRepository _categoryRepository;
+		private readonly IProductService _productService;
 
-		public CategoryMenuViewComponent(ICategoryRepository categoryRepository)
+		public CategoryMenuViewComponent(IProductService productService)
 		{
-			_categoryRepository = categoryRepository;
+			_productService = productService;
 		}
 
 		public async Task<IViewComponentResult> InvokeAsync()
 		{
-			var categories = await _categoryRepository.GetAllCategoriesAsync();
-			return View(categories);
+			var categoriesDto = await _productService.GetAllCategoriesAsync();
+
+			var model = categoriesDto.Select(c => new ProductIndexViewModel
+				{
+					Id = c.Id,
+					Slug = c.Slug,
+					Name = c.Name
+					
+				})
+				.ToList();
+
+			return View(model);
 		}
 	}
 }
