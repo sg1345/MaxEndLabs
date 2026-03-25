@@ -38,7 +38,14 @@ namespace MaxEndLabs.Data.Repository
 
 		public async Task<Order?> GetOrderByIdAsync(int id)
 		{
-			return await DbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+			return await DbContext.Orders
+				.AsNoTracking()
+				.Include(o=> o.OrderItems)
+				.ThenInclude(oi=>oi.ProductVariant)
+				.Include(o=>o.OrderItems)
+				.ThenInclude(oi => oi.Product)
+                .Include(o=> o.User)
+				.FirstOrDefaultAsync(o => o.Id == id);
 		}
 
 		public async Task AddOrderAsync(Order order)

@@ -1,10 +1,8 @@
 ﻿using MaxEndLabs.Service.Models.Order;
-using MaxEndLabs.Service.Models.ShoppingCart;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.Services.Core.Models.Configuration;
 using MaxEndLabs.ViewModels.Order;
 using MaxEndLabs.ViewModels.ShoppingCart;
-using MaxEndLabs.Web.Models.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -66,6 +64,7 @@ namespace MaxEndLabs.Web.Controllers
 
         [HttpPost]
 		[Authorize]
+        [ValidateAntiForgeryToken]
 		public async Task<IActionResult> Checkout(CheckoutViewModel model)
 		{
 			string userId = GetUserId()!;
@@ -96,20 +95,25 @@ namespace MaxEndLabs.Web.Controllers
 	            StreetAddress = model.StreetAddress,
 	            City = model.City,
 	            Postcode = model.Postcode,
-
             };
 
-			//Create pending Order
-			//maybe move the whole thing into the order service
-			//the check can be exception and cleaning the cart can be part of the createing the order
-            var stripeSessionDto = await _orderService.CreateOrderAsync(createOrderDto);
-            
-			if (!stripeSessionDto.LineItems.Any())
+            var orderId = await _orderService.CreateOrderAsync(createOrderDto);
+			if (orderId == 0)
 				return RedirectToAction("Index","ShoppingCart");
 
-			await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(stripeSessionDto.CartId);
+			var cartId = await _shoppingCartService.GetOrCreateShoppingCart(userId);
+			await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(cartId);
 
-			//Create Stripe checkout session
+			return RedirectToAction(nameof(StripeCheckout), new {orderId =  orderId});
+		}
+
+		[HttpGet]
+		[Authorize]
+		public async Task<IActionResult> StripeCheckout(int orderId)
+		{
+			var userId = GetUserId()!;
+			var stripeSessionDto = await _orderService.GetOrderAsync(orderId);
+
 			var baseUrl = Environment.GetEnvironmentVariable("APP__PUBLICBASEURL")
 			              ?? $"{Request.Scheme}://{Request.Host}";
 			var successBase = baseUrl + Url
@@ -169,6 +173,7 @@ namespace MaxEndLabs.Web.Controllers
 
 
 		[HttpGet]
+		[Authorize]
 		public IActionResult PaymentCancel()
 		{
 			return View();
@@ -176,17 +181,36 @@ namespace MaxEndLabs.Web.Controllers
 
 		[HttpGet]
 		[Authorize]
-		public async Task<IActionResult> Details(string orderId)
-		{
-			return Ok("Order Details");
-		}
+		public async Task<IActionResult> Details(int orderId)
+        {
+            var dto = await _orderService.GetOrderDetailsAsync(orderId);
 
-		[HttpGet]
-		[Authorize]
-		public async Task<IActionResult> StripeCheckoutSession(string orderId)
-		{
-			return Ok("Stripe Checkout Session");
-		}
+            var model = new OrderDetailsViewModel
+            {
+				OwnerFullName = dto.OwnerFullName,
+				OwnerUsername = dto.OwnerUsername,
+                CreatedAt = dto.CreatedAt,
+				StatusBadgeClass = dto.StatusBadge,
+                Status = dto.Status,
+				StreetAddress = dto.StreetAddress,
+                City = dto.City,
+                Postcode = dto.Postcode,
+                TotalAmount = dto.TotalAmount,
+                OrderId = dto.OrderId,
+                OrderNumber = dto.OrderNumber,
+                OrderItems = dto.LineItems.Select(li => new OrderItemViewModel
+                    {
+                        ProductName = li.ProductName,
+                        VariantName = li.VariantName,
+                        Quantity = li.Quantity,
+                        Price = li.Price,
+                        ImageUrl = li.ImageUrl,
+						LineTotal = li.LineTotal
+                    })
+                    .ToList()
+            };
+            return View(model);
+        }
 
 
 		private async Task RefillCheckoutModel(CheckoutViewModel model, string userId)

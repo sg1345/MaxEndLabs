@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MaxEndLabs.Service.Models.Order
 {
-	public class StripeLineItemDto
+	public class StripeOrderItemDto
 	{
 		public string ProductName { get; set; } = null!;
 		public string VariantName { get; set; } = null!;

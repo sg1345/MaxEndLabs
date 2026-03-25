@@ -5,9 +5,12 @@ namespace MaxEndLabs.Services.Core.Contracts
 	public interface IOrderService
     {
         Task<OrderPaginationDto> GetOrdersForUserAsync(string userId, int page);
-		Task<OrderCreateDto> GetOrderCreateDtoAsync(string userId);
-        Task<StripeSessionDto> CreateOrderAsync(AddressOrderDto dto);
+		Task<OrderCreateDto>GetOrderCreateDtoAsync(string userId);
+        Task<int>CreateOrderAsync(AddressOrderDto dto);
+        Task<StripeSessionDto> GetOrderAsync(int orderId);
+        Task<OrderDetailsDto> GetOrderDetailsAsync(int orderId);
         Task<string> MarkOrderAsPaidAsync(int orderId);
 		Task<string?> GetOrderStatusAsync(int orderId);
+
     }
 }

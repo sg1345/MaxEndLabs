@@ -60,7 +60,7 @@
 										break;
 
 									case "Cancelled": 
-									case "Refund": 
+									case "Refunded": 
 										<span class="badge rounded-pill bg-danger-subtle text-danger-emphasis border border-danger-subtle">
 											<i class="fa-solid fa-ban me-1"></i> @order.Status
 										</span>
@@ -75,7 +75,7 @@
 									</a>
 									@if (order.Status == "Pending")
 									{
-										<a asp-controller="Order" asp-action="StripeCheckoutSession" asp-route-orderId="@order.Id" 
+										<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@order.Id" asp 
 										   class="btn btn-sm btn-primary shadow-sm">
 											Pay
 										</a>

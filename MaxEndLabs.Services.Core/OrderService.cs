@@ -71,13 +71,13 @@ namespace MaxEndLabs.Services.Core
 
         }
 
-        public async Task<StripeSessionDto> CreateOrderAsync(AddressOrderDto dto)
+        public async Task<int> CreateOrderAsync(AddressOrderDto dto)
         {
             string orderNumber = GenerateOrderNumber();
 
             var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(dto.UserId);
 
-            decimal totalPrice = cartItemList.Sum(ci => ci.Quantity*(ci.ProductVariant.Price ?? ci.Product.Price));
+            decimal totalPrice = cartItemList.Sum(ci => ci.Quantity * (ci.ProductVariant.Price ?? ci.Product.Price));
 
             var order = new Order
             {
@@ -91,39 +91,88 @@ namespace MaxEndLabs.Services.Core
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 OrderItems = cartItemList.Select(ci => new OrderItem
-                    {
-                        ProductId = ci.ProductId,
-                        ProductVariantId = ci.ProductVariantId,
-                        UnitPrice = ci.ProductVariant.Price ?? ci.Product.Price,
-                        Quantity = ci.Quantity,
-                        LineTotal = (ci.ProductVariant.Price ?? ci.Product.Price) * ci.Quantity
-                    })
+                {
+                    ProductId = ci.ProductId,
+                    ProductVariantId = ci.ProductVariantId,
+                    UnitPrice = ci.ProductVariant.Price ?? ci.Product.Price,
+                    Quantity = ci.Quantity,
+                    LineTotal = (ci.ProductVariant.Price ?? ci.Product.Price) * ci.Quantity
+                })
                     .ToList()
             };
 
             await _orderRepository.AddOrderAsync(order);
             await EnsureSaveChangesAsync();
 
-            int cartId = order.Id;
-            var lineItems = cartItemList.Select(ci => new StripeLineItemDto
-			{
-				ProductName = ci.Product.Name,
-				VariantName = ci.ProductVariant.VariantName,
-				Price = (long)((ci.ProductVariant?.Price ?? ci.Product.Price) * 100),
-				Quantity = ci.Quantity,
-				ImageUrl = ci.Product.MainImageUrl
-			}).ToList();
-			
-			var result = new StripeSessionDto
+            return order.Id;
+        }
+
+        public async Task<StripeSessionDto> GetOrderAsync(int orderId)
+        {
+	        var order = await _orderRepository.GetOrderByIdAsync(orderId);
+
+	        if (order == null) return null!;
+
+	        var stripeSessionDto = new StripeSessionDto
+	        {
+		        OrderId = order.Id,
+		        OrderNumber = order.OrderNumber,
+		        LineItems = order.OrderItems.Select(oi => new StripeOrderItemDto
+			        {
+				        ProductName = oi.Product.Name,
+				        VariantName = oi.ProductVariant.VariantName,
+				        Price = (long)(oi.UnitPrice * 100),
+				        Quantity = oi.Quantity,
+				        ImageUrl = oi.Product.MainImageUrl
+			        })
+			        .ToList()
+	        };
+
+	        return stripeSessionDto;
+        }
+
+        public async Task<OrderDetailsDto> GetOrderDetailsAsync(int orderId)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+
+            if (order == null) return null!;
+
+            string statusBadge = order.Status switch
             {
-	            OrderNumber = orderNumber,
-	            CartId = cartItemList.FirstOrDefault()?.CartId ?? 0,
-	            OrderId = order.Id,
-	            LineItems = lineItems
+                OrderStatus.Pending => "bg-warning-subtle text-warning-emphasis border border-warning-subtle",
+                OrderStatus.Paid => "bg-info-subtle text-info-emphasis border border-info-subtle",
+                OrderStatus.Shipped => "bg-primary-subtle text-primary-emphasis border border-primary-subtle",
+                OrderStatus.Completed => "bg-success-subtle text-success-emphasis border border-success-subtle",
+                OrderStatus.Cancelled => "badge bg-danger-subtle text-danger-emphasis border border-danger-subtle",
+                OrderStatus.Refunded => "badge bg-danger-subtle text-danger-emphasis border border-danger-subtle",
+                _ => ""
             };
 
-			return result;
-		}
+            var orderDetailsDto = new OrderDetailsDto
+            {
+                OrderId = order.Id,
+                OrderNumber = order.OrderNumber,
+                StreetAddress = order.StreetAddress,
+                City = order.City,
+                Postcode = order.Postcode,
+                StatusBadge = statusBadge,
+                Status = order.Status.ToString(),
+                TotalAmount = order.TotalAmount,
+                CreatedAt = order.CreatedAt,
+                LineItems = order.OrderItems.Select(oi => new OrderItemDetailsDto()
+                    {
+                        ProductName = oi.Product.Name,
+                        VariantName = oi.ProductVariant.VariantName,
+                        Quantity = oi.Quantity,
+                        Price = oi.UnitPrice,
+                        ImageUrl = oi.Product.MainImageUrl,
+                        LineTotal = oi.LineTotal
+                    })
+                    .ToList()
+            };
+
+            return orderDetailsDto;
+        }
 
         public async Task<string> MarkOrderAsPaidAsync(int orderId)
         {
@@ -149,7 +198,6 @@ namespace MaxEndLabs.Services.Core
 
 			return order.Status.ToString();
 		}
-
 
         private string GenerateOrderNumber()
         {
