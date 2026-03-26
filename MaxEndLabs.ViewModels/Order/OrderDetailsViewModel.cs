@@ -9,6 +9,7 @@ namespace MaxEndLabs.ViewModels.Order
 {
     public class OrderDetailsViewModel
     {
+	    public string OwnerUserId { get; set; } = null!;
         public string OwnerFullName { get; set; } = null!;
         public string OwnerUsername { get; set; } = null!;
         public DateTime CreatedAt { get; set; }

@@ -39,6 +39,7 @@ namespace MaxEndLabs.Data.Repository
 		public async Task<Order?> GetOrderByIdAsync(int id)
 		{
 			return await DbContext.Orders
+				.IgnoreQueryFilters()
 				.AsNoTracking()
 				.Include(o=> o.OrderItems)
 				.ThenInclude(oi=>oi.ProductVariant)

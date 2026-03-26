@@ -226,15 +226,18 @@ namespace MaxEndLabs.Services.Core
 
             foreach (var variant in dto.Variants)
             {
-                if (variant.Id > 0)
+                if (variant.Id > 0 ||
+                    productVariantExistingInDatabase.Any(ev => ev.VariantName == variant.VariantName))
                 {
-                    var existing = productVariantExistingInDatabase!.FirstOrDefault(ev => ev.Id == variant.Id);
+                    var existing = productVariantExistingInDatabase!
+	                    .FirstOrDefault(ev => (ev.Id == variant.Id) || (ev.VariantName == variant.VariantName));
 
                     if (existing != null)
                     {
                         existing.VariantName = variant.VariantName;
                         existing.Price = variant.Price;
-                    }
+                        existing.IsDeleted = false;
+					}
                 }
                 else
                 {

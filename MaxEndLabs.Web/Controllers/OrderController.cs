@@ -187,6 +187,7 @@ namespace MaxEndLabs.Web.Controllers
 
             var model = new OrderDetailsViewModel
             {
+				OwnerUserId = dto.OwnderUserId,
 				OwnerFullName = dto.OwnerFullName,
 				OwnerUsername = dto.OwnerUsername,
                 CreatedAt = dto.CreatedAt,

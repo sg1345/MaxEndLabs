@@ -150,6 +150,7 @@ namespace MaxEndLabs.Services.Core
 
             var orderDetailsDto = new OrderDetailsDto
             {
+                OwnderUserId = order.UserId,
                 OrderId = order.Id,
                 OrderNumber = order.OrderNumber,
                 StreetAddress = order.StreetAddress,

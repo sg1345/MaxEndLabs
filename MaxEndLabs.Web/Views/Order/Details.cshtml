@@ -1,4 +1,5 @@
-﻿@model MaxEndLabs.ViewModels.Order.OrderDetailsViewModel
+﻿@using System.Security.Claims
+@model MaxEndLabs.ViewModels.Order.OrderDetailsViewModel
 
 <div class="container mt-4">
     <div class="card shadow">
@@ -41,13 +42,21 @@
                     {
                             <tr>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="@item.ImageUrl" alt="" style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-3" />
-                                        <div>
-                                            <div class="fw-bold">@item.ProductName</div>
-                                            <small class="text-muted">Variant: @item.VariantName</small>
-                                        </div>
-                                    </div>
+	                                <div class="d-flex align-items-center">
+		                                @if (string.IsNullOrEmpty(@item.ImageUrl))
+		                                {
+			                                <img src = "~/images/default_product_image.jpg" alt="" style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-3"/>
+		                                }
+		                                else
+		                                {
+			                                <img src="@item.ImageUrl" alt="" style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-3"/>
+		                                }
+		                               
+		                                <div>
+			                                <div class="fw-bold">@item.ProductName</div>
+			                                <small class="text-muted">Variant: @item.VariantName</small>
+		                                </div>
+	                                </div>
                                 </td>
                                 <td>@item.Price.ToString("C")</td>
                                 <td>@item.Quantity</td>
@@ -63,10 +72,27 @@
                 </tfoot>
             </table>
         </div>
-        <div class="card-footer bg-white text-end">
-	        <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
-		        Back
-	        </a>
-        </div>
+	    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+		    <div>
+			    <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
+				    <i class="bi bi-arrow-left"></i> Back
+			    </a>
+		    </div>
+		    <div>
+			    @if (Model.Status == "Pending" && Model.OwnerUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+			    {
+				    <a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@Model.OrderId" class="btn btn-primary">
+					    Pay Now
+				    </a>
+			    }
+        
+			    @if (User.IsInRole("Admin"))
+			    {
+				    <button type="submit" form="statusForm" class="btn btn-success ms-2">
+					    Apply Changes
+				    </button>
+			    }
+		    </div>
+	    </div>
     </div>
 </div>
