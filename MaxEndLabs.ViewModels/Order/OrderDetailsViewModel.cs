@@ -9,6 +9,7 @@ namespace MaxEndLabs.ViewModels.Order
 {
     public class OrderDetailsViewModel
     {
+	    public string OwnerUserId { get; set; } = null!;
         public string OwnerFullName { get; set; } = null!;
         public string OwnerUsername { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
@@ -21,5 +22,7 @@ namespace MaxEndLabs.ViewModels.Order
         public int OrderId { get; set; }
         public string OrderNumber { get; set; } = null!;
         public List<OrderItemViewModel> OrderItems { get; set; } = [];
+
+        public List<String> Statuses = [];
     }
 }

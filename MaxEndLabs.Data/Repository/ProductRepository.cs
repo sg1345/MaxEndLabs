@@ -67,13 +67,21 @@ namespace MaxEndLabs.Data.Repository
 		public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductIdAsync(int productId)
 		{
 			return await DbContext.ProductVariants
+				.IgnoreQueryFilters()
 				.Where(pv=> pv.ProductId == productId)
 				.ToListAsync();
 		}
 
 		public void RemoveRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants)
 		{
-			DbContext!.RemoveRange(productVariants);
+			foreach (var productVariant in productVariants)
+			{
+				productVariant.IsDeleted = true;
+			}
+
+			//DbContext!.UpdateRange(productVariants);
+
+			//DbContext!.RemoveRange(productVariants);
 		}
 
 		public async Task AddProductVariantAsync(ProductVariant productVariant)
@@ -86,6 +94,11 @@ namespace MaxEndLabs.Data.Repository
 				product.IsPublished = false;
 				product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
 				product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+
+				foreach (var productVariant in product.ProductVariants)
+				{
+					productVariant.IsDeleted = true;
+				}
 
 				DbContext!.Products.Update(product);
 		}

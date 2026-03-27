@@ -9,6 +9,8 @@ namespace MaxEndLabs.Data.Configuration
 		public void Configure(EntityTypeBuilder<ProductVariant> entity)
 		{
 			entity
+				.HasQueryFilter(pv => pv.IsDeleted == false);
+			entity
 				.HasData(SeedProductVariant());
 		}
 

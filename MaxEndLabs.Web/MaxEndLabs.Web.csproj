@@ -25,6 +25,7 @@
     <ProjectReference Include="..\MaxEndLabs.GCommon\MaxEndLabs.GCommon.csproj" />
     <ProjectReference Include="..\MaxEndLabs.Services.Core\MaxEndLabs.Services.Core.csproj" />
     <ProjectReference Include="..\MaxEndLabs.ViewModels\MaxEndLabs.ViewModels.csproj" />
+    <ProjectReference Include="..\MaxEndLabs.Web.Common\MaxEndLabs.Web.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

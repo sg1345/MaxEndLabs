@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
+using static MaxEndLabs.Web.Common.PaginationConstants;
 
 namespace MaxEndLabs.Web.Controllers
 {
@@ -27,10 +28,69 @@ namespace MaxEndLabs.Web.Controllers
 			_captchaService = captchaService;
 			_stripeService = stripeService;
 		}
-
-		public IActionResult Index()
+		
+		[HttpGet]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Index(int page=1)
 		{
-			return Ok();
+			string userId = GetUserId()!;
+
+			var orderDto = await _orderService.GetOrdersForUserAsync(userId, page, PageSizeOrderManager);
+
+			var model = new OrderPaginationViewModel
+			{
+				CurrentPage = orderDto.CurrentPage,
+				TotalPages = orderDto.TotalPages,
+				HasNextPage = orderDto.HasNextPage,
+				HasPreviousPage = orderDto.HasPreviousPage,
+				Orders = orderDto.Orders.Select(o => new OrderViewModel
+				{
+					Id = o.Id,
+					OrderNumber = o.OrderNumber,
+					TotalAmount = o.TotalAmount,
+					Status = o.Status,
+					CreatedAt = o.CreatedAt
+				}).ToList()
+			};
+
+			if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+			{
+				return PartialView("_OrderList", model);
+			}
+
+			return View(model);
+		}
+
+		[HttpGet]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> OrderManager(string searchTerm, string searchType, int page = 1)
+		{
+			var orderDto = await _orderService.GetOrderSearchAsync(searchTerm, searchType, page, PageSizeOrderManager);
+
+			var model = new OrderPaginationViewModel
+			{
+				SearchTerm = searchTerm,
+				SearchType = searchType,
+				CurrentPage = orderDto.CurrentPage,
+				TotalPages = orderDto.TotalPages,
+				HasNextPage = orderDto.HasNextPage,
+				HasPreviousPage = orderDto.HasPreviousPage,
+				Orders = orderDto.Orders.Select(o => new OrderViewModel
+				{
+					Id = o.Id,
+					OrderNumber = o.OrderNumber,
+					TotalAmount = o.TotalAmount,
+					Status = o.Status,
+					CreatedAt = o.CreatedAt
+				}).ToList()
+			};
+
+			if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+			{
+				return PartialView("_OrderList", model);
+			}
+
+			return View("Index", model);
 		}
 
         [HttpGet]
@@ -60,7 +120,6 @@ namespace MaxEndLabs.Web.Controllers
             ViewData["ReCaptchaSiteKey"] = _captchaSettings.Value.SiteKey;
 			return View(model);
         }
-
 
         [HttpPost]
 		[Authorize]
@@ -187,6 +246,7 @@ namespace MaxEndLabs.Web.Controllers
 
             var model = new OrderDetailsViewModel
             {
+				OwnerUserId = dto.OwnderUserId,
 				OwnerFullName = dto.OwnerFullName,
 				OwnerUsername = dto.OwnerUsername,
                 CreatedAt = dto.CreatedAt,
@@ -198,6 +258,7 @@ namespace MaxEndLabs.Web.Controllers
                 TotalAmount = dto.TotalAmount,
                 OrderId = dto.OrderId,
                 OrderNumber = dto.OrderNumber,
+				Statuses = dto.Statuses,
                 OrderItems = dto.LineItems.Select(li => new OrderItemViewModel
                     {
                         ProductName = li.ProductName,
@@ -212,6 +273,33 @@ namespace MaxEndLabs.Web.Controllers
             return View(model);
         }
 
+		[HttpPost]
+		[Authorize(Roles = "Admin")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> UpdateStatus(int orderId, string newStatus)
+		{
+			try
+			{
+				var orderStatus = await _orderService.GetOrderStatusAsync(orderId);
+
+				if (orderStatus == newStatus)
+				{
+					TempData["InfoMessage"] = "Order is already in the selected status.";
+					return RedirectToAction(nameof(Details), new { orderId });
+				}
+
+				await _orderService.ChangeOrderStatus(newStatus, orderId);
+
+				TempData["SuccessMessage"] = "Order status updated successfully.";
+				return RedirectToAction(nameof(Details), new { orderId });
+
+			}
+			catch (Exception e)
+			{
+				return NotFound(e);
+			}
+
+		}
 
 		private async Task RefillCheckoutModel(CheckoutViewModel model, string userId)
 		{

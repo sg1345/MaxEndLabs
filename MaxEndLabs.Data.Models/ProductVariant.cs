@@ -21,6 +21,9 @@
         [Column(TypeName = PriceColumnType)]
         public decimal? Price { get; set; }
 
+        [Required]
+        public bool IsDeleted { get; set; }
+
         public virtual ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
 	}
