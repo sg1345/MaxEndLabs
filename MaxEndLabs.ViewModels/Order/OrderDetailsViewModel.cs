@@ -22,5 +22,7 @@ namespace MaxEndLabs.ViewModels.Order
         public int OrderId { get; set; }
         public string OrderNumber { get; set; } = null!;
         public List<OrderItemViewModel> OrderItems { get; set; } = [];
+
+        public List<String> Statuses = [];
     }
 }

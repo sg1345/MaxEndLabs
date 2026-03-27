@@ -8,9 +8,25 @@
 			    <h4 class="mb-0">Order #@Model.OrderNumber</h4>
 			    <small class="opacity-75">Placed on @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
 		    </div>
+			
 		    <span class="badge rounded-pill @Model.StatusBadgeClass fs-6">
 			    @Model.Status
 		    </span>
+
+		    @if (User.IsInRole("Admin"))
+			{
+				<form asp-controller="Order" asp-action="UpdateStatus" method="post" id="statusForm" class="d-flex align-items-center">
+				    <input type="hidden" name="orderId" value="@Model.OrderId" />
+				    <select name="newStatus" class="form-select form-select-sm me-2">
+					    @foreach (string status in Model.Statuses)
+					    {
+						    <option value="@status" selected="@(status == Model.Status ? "selected" : null)">
+							    @status
+						    </option>
+					    }
+				    </select>
+			    </form>
+			}
 	    </div>
         <div class="card-body">
             <div class="row mb-4">

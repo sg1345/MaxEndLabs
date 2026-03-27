@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MaxEndLabs.Data.Models;
+﻿using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Repository.Contracts;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +24,37 @@ namespace MaxEndLabs.Data.Repository
                 .ToArrayAsync();
 		}
 
+		public async Task<IEnumerable<Order>?> GetSearchOrdersAsync(string searchType ,string searchTerm, int skip, int take)
+		{
+			if (searchType == "Username")
+			{
+				return await DbContext.Orders
+					.AsNoTracking()
+					.Where(o => o.User.UserName.Contains(searchTerm))
+					.OrderByDescending(o => o.CreatedAt)
+					.ThenBy(o => o.Status)
+					.ThenByDescending(o => o.UpdatedAt)
+					.Skip(skip)
+					.Take(take)
+					.ToArrayAsync();
+			}
+			else if (searchType == "OrderNumber")
+			{
+				return await DbContext.Orders
+					.AsNoTracking()
+					.Where(o => o.OrderNumber.Contains(searchTerm))
+					.OrderByDescending(o => o.CreatedAt)
+					.ThenBy(o => o.Status)
+					.ThenByDescending(o => o.UpdatedAt)
+					.Skip(skip)
+					.Take(take)
+					.ToArrayAsync();
+			}
+
+			return null;
+
+		}
+
 		public async Task<int> GetCountAsync(string userId)
 		{
 			return await DbContext.Orders
@@ -36,11 +62,26 @@ namespace MaxEndLabs.Data.Repository
 				.CountAsync(o => o.UserId == userId);
 		}
 
+		public async Task<int> GetCountAsync(string searchType, string searchTerm)
+		{
+			if (searchType == "Username")
+			{
+				return await DbContext.Orders
+					.AsNoTracking()
+					.CountAsync(o => o.User.UserName.Contains(searchTerm));
+			}
+			else // if (searchType == "OrderNumber")
+			{
+				return await DbContext.Orders
+					.AsNoTracking()
+					.CountAsync(o => o.OrderNumber.Contains(searchTerm));
+			}
+		}
+
 		public async Task<Order?> GetOrderByIdAsync(int id)
 		{
 			return await DbContext.Orders
 				.IgnoreQueryFilters()
-				.AsNoTracking()
 				.Include(o=> o.OrderItems)
 				.ThenInclude(oi=>oi.ProductVariant)
 				.Include(o=>o.OrderItems)

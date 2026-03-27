@@ -5,6 +5,7 @@ using System.Security.Claims;
 using MaxEndLabs.Data.Models;
 using MaxEndLabs.ViewModels.Order;
 using Microsoft.AspNetCore.Identity;
+using static MaxEndLabs.Web.Common.PaginationConstants;
 
 namespace MaxEndLabs.Web.ViewComponents
 {
@@ -25,10 +26,10 @@ namespace MaxEndLabs.Web.ViewComponents
 
 			if (userId == null)
 			{
-				return View(new List<OrderDto>());
+				return View(new List<OrderPaginationViewModel>());
 			}
 
-			var orderDto = await _orderService.GetOrdersForUserAsync(userId, page);
+			var orderDto = await _orderService.GetOrdersForUserAsync(userId, page, PageSizeHomePage);
 
 			var model = new OrderPaginationViewModel
 			{

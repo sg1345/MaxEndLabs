@@ -13,5 +13,8 @@ namespace MaxEndLabs.ViewModels.Order
 		public bool HasPreviousPage { get; set; }
 		public bool HasNextPage { get; set; }
 		public IEnumerable<OrderViewModel> Orders { get; set; } = [];
+
+		public string? SearchType { get; set; }
+		public string? SearchTerm { get; set; }
 	}
 }

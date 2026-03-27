@@ -1,0 +1,21 @@
+﻿@model OrderPaginationViewModel
+
+<form asp-action="OrderManager" id="orderSearchForm" method="get" class="row g-3 mb-4">
+	<div class="col-md-8">
+		<div class="input-group shadow-sm">
+			<select name="searchType" id="searchType" class="form-select" style="max-width: 130px;">
+				<option value="OrderNumber" selected="@(Model.SearchType == "OrderNumber")">Order #</option>
+				<option value="Username" selected="@(Model.SearchType == "Username")">Username</option>
+			</select>
+            
+			<input type="text" name="searchTerm" id="searchTerm" 
+			       class="form-control" placeholder="Search orders..." 
+			       value="@Model.SearchTerm">
+            
+			<button class="btn btn-primary" type="submit">
+				<i class="fa-solid fa-magnifying-glass"></i>
+			</button>
+			<a asp-action="OrderManager" class="btn btn-outline-secondary">Clear</a>
+		</div>
+	</div>
+</form>

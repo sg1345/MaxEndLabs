@@ -1,0 +1,15 @@
+﻿@model OrderPaginationViewModel
+
+<div class="container mt-4">
+	<h2>Order Management</h2>
+
+	<div class="mb-4">
+        <partial name="_OrderSearchPartial" model="Model"/>
+	</div>
+
+	<div id="orderManagerBoxFullWrapper">
+		<partial name="_OrderList" model="Model"/>
+	</div>
+</div>
+
+<script src="/js/orderManager.js"></script>
