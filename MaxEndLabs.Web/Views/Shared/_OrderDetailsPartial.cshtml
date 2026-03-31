@@ -1,0 +1,94 @@
+﻿@using System.Security.Claims
+@model OrderDetailsViewModel
+
+<div class="modal-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div>
+        <h4 class="modal-title">Order #@Model.OrderNumber</h4>
+        <small class="opacity-75">Placed on @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+    </div>
+    <span class="badge rounded-pill @Model.StatusBadgeClass fs-6">@Model.Status</span>
+   
+</div>
+
+<div class="modal-body">
+    @if (User.IsInRole("Admin"))
+    {
+            <form asp-controller="Order" asp-action="UpdateStatus" method="post" id="statusForm" class="mb-3 p-2 bg-light rounded border">
+                <input type="hidden" name="orderId" value="@Model.OrderId" />
+                <div class="d-flex align-items-center">
+                    <label class="me-2 fw-bold">Update Status:</label>
+                    <select name="newStatus" class="form-select form-select-sm me-2">
+                    @foreach (string status in Model.Statuses)
+                    {
+                                <option value="@status" selected="@(status == Model.Status ? "selected" : null)">@status</option>
+                    }
+                    </select>
+                </div>
+            </form>
+    }
+
+    <div class="row mb-4">
+        <div class="col-sm-6">
+            <h6 class="text-muted">Customer Information:</h6>
+            <div><strong>@Model.OwnerFullName</strong></div>
+            <div>@Model.OwnerUsername</div>
+        </div>
+        <div class="col-sm-6 text-sm-end">
+            <h6 class="text-muted text-uppercase small fw-bold">Shipping Address</h6>
+            <div>@Model.StreetAddress</div>
+            <div>@Model.City, @Model.Postcode</div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default_product_image.jpg" : item.ImageUrl)" 
+                                         style="width: 40px; height: 40px; object-fit: cover;" class="rounded me-2"/>
+                                    <div>
+                                        <div class="fw-bold small">@item.ProductName</div>
+                                        <small class="text-muted">@item.VariantName</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@item.Price.ToString("C")</td>
+                            <td>@item.Quantity</td>
+                            <td class="text-end fw-bold">@item.LineTotal.ToString("C")</td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="text-end fw-bold fs-5 text-success">
+        Grand Total: @Model.TotalAmount.ToString("C")
+    </div>
+</div>
+
+<div class="modal-footer bg-white">
+	<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+
+	@if (Model.Status == "Pending" && Model.OwnerUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+	{
+		<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@Model.OrderId" class="btn btn-primary">Pay Now</a>
+	}
+
+	@if (User.IsInRole("Admin"))
+	{
+            <button type="button" id="btnUpdateStatus" form="statusForm" class="btn btn-success">Apply Changes</button>
+	}
+</div>
+
+<script src="js/applyChanges.js"></script>

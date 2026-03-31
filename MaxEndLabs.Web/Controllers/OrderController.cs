@@ -270,7 +270,7 @@ namespace MaxEndLabs.Web.Controllers
                     })
                     .ToList()
             };
-            return View(model);
+            return PartialView("_OrderDetailsPartial",model);
         }
 
 		[HttpPost]
@@ -283,17 +283,15 @@ namespace MaxEndLabs.Web.Controllers
 				var orderStatus = await _orderService.GetOrderStatusAsync(orderId);
 
 				if (orderStatus == newStatus)
-				{
-					TempData["InfoMessage"] = "Order is already in the selected status.";
-					return RedirectToAction(nameof(Details), new { orderId });
-				}
+                {
+                    return await Details(orderId);
+                }
 
 				await _orderService.ChangeOrderStatus(newStatus, orderId);
 
-				TempData["SuccessMessage"] = "Order status updated successfully.";
-				return RedirectToAction(nameof(Details), new { orderId });
+                return await Details(orderId);
 
-			}
+            }
 			catch (Exception e)
 			{
 				return NotFound(e);

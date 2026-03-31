@@ -60,10 +60,11 @@
 									</td>
 									<td class="text-end pe-4">
 										<div class="btn-group">
-											<a asp-controller="Order" asp-action="Details" asp-route-orderId="@order.Id" 
-											   class="btn btn-sm btn-light border shadow-sm">
+											<button type="button" 
+											        class="btn btn-sm btn-light border shadow-sm view-details-btn" 
+											        data-id="@order.Id">
 												Details
-											</a>
+											</button>
 									@if (order.Status == "Pending")
 									{
 													<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@order.Id" asp 
