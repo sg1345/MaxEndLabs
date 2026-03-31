@@ -28,15 +28,18 @@
 			</button>
 			<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 				<ul class="navbar-nav flex-grow-1">
-					@await Component.InvokeAsync("CategoryMenu")
 					@if (User.IsInRole("Admin"))
 					{
 						<li class="nav-item">
-							<a class="nav-link text-dark fw-bold text-uppercase fs-5 px-3" asp-area="" asp-controller="Order" asp-action="Index" title="OrderManager">
+							<a class="nav-link text-dark fw-bold text-uppercase fs-5 px-3" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" title="OrderManager">
 								<i class="fa-solid fa-clipboard-list me-2"></i> 
 								Order Manager
 							</a>
 						</li>
+					}
+					else
+					{
+							@await Component.InvokeAsync("CategoryMenu")
 					}
 				</ul>
 				<partial name="_LoginPartial"/>

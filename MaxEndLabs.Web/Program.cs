@@ -37,8 +37,8 @@ namespace MaxEndLabs.Web
                     options.Password.RequireUppercase = false;
                 })
                 .AddEntityFrameworkStores<MaxEndLabsDbContext>()
-                .AddDefaultTokenProviders()
-                .AddDefaultUI();
+                .AddDefaultTokenProviders();
+                //.AddDefaultUI();
 
 			builder.Services.AddRazorPages();
 
@@ -84,6 +84,9 @@ namespace MaxEndLabs.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",

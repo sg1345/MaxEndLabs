@@ -113,9 +113,9 @@ namespace MaxEndLabs.Web.Areas.Identity.Pages.Account
 			{
 				var user = CreateUser();
 
-                user.FullName = Input.FullName;
+	            user.FullName = Input.FullName;
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+	            await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
 				await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 				var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -139,7 +139,7 @@ namespace MaxEndLabs.Web.Areas.Identity.Pages.Account
 
 					if (_userManager.Options.SignIn.RequireConfirmedAccount)
 					{
-						return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
+						return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
 					}
 					else
 					{

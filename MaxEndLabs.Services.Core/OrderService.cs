@@ -174,6 +174,8 @@ namespace MaxEndLabs.Services.Core
 			{
 				OwnderUserId = order.UserId,
 				OrderId = order.Id,
+				OwnerFullName = order.User.FullName,
+				OwnerUsername = order.User.UserName!,
 				OrderNumber = order.OrderNumber,
 				StreetAddress = order.StreetAddress,
 				City = order.City,

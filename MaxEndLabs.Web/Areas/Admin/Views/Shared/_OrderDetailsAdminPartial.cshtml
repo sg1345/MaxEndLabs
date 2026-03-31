@@ -80,15 +80,10 @@
 <div class="modal-footer bg-white">
 	<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
 
-	@if (Model.Status == "Pending" && Model.OwnerUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
-	{
-		<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@Model.OrderId" class="btn btn-primary">Pay Now</a>
-	}
-
 	@if (User.IsInRole("Admin"))
 	{
             <button type="button" id="btnUpdateStatus" form="statusForm" class="btn btn-success">Apply Changes</button>
 	}
 </div>
 
-<script src="js/applyChanges.js"></script>
+<script src="~/js/applyChanges.js"></script>
