@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\OrderManagement\" />
     <Folder Include="Areas\Admin\Views\ProductManagement\" />
     <Folder Include="wwwroot\lib\qrcode\" />
   </ItemGroup>

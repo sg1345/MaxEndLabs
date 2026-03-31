@@ -4,8 +4,6 @@
     const formData = form.serialize();
 
     $.post(actionUrl, formData, function (freshHtml) {
-        // The 'freshHtml' is the result of 'return await Details(orderId)'
-        // We just overwrite the modal content with the updated version!
         $("#orderModalContent").html(freshHtml);
 
         console.log("Status updated and modal refreshed.");

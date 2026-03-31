@@ -61,18 +61,11 @@
 									<td class="text-end pe-4">
 										<div class="btn-group">
 											<button type="button" 
-											        class="btn btn-sm btn-light border shadow-sm view-details-btn" 
-											        data-url="@Url.Action("Details", "Order")"
+											        class="btn btn-sm btn-light border shadow-sm view-details-btn"
+													data-url="@Url.Action("Details", "OrderManagement", new {area = "Admin"})" 
 											        data-id="@order.Id">
 												Details
 											</button>
-									@if (order.Status == "Pending")
-									{
-													<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@order.Id" asp 
-													   class="btn btn-sm btn-primary shadow-sm">
-														Pay
-													</a>
-									}
 										</div>
 									</td>
 								</tr>
@@ -86,13 +79,13 @@
 						<nav aria-label="Order pagination">
 							<ul class="pagination pagination-sm mb-0 shadow-sm">
 								<li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-									<a class="page-link border-0" href="javascript:void(0)" onclick="loadOrderPage(1)" title="First Page">
+									<a class="page-link border-0" asp-action="Index" asp-route-page="1" title="First Page">
 										<i class="fa-solid fa-angles-left"></i>
 									</a>
 								</li>
 
 								<li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-									<a class="page-link border-0" href="javascript:void(0)" onclick="loadOrderPage(@(Model.CurrentPage - 1))">
+											<a class="page-link border-0" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)">
 										<i class="fa-solid fa-chevron-left"></i>
 									</a>
 								</li>
@@ -102,19 +95,19 @@
 							if (i > 0 && i <= Model.TotalPages)
 							{
 												<li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-													<a class="page-link border-0 rounded-3 mx-1" href="javascript:void(0)" onclick="loadOrderPage(@i)">@i</a>
+																<a class="page-link border-0 rounded-3 mx-1" asp-action="Index" asp-route-page="@i">@i</a>
 												</li>
 							}
 						}
 
 								<li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-									<a class="page-link border-0" href="javascript:void(0)" onclick="loadOrderPage(@(Model.CurrentPage + 1))">
+										<a class="page-link border-0" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)">
 										<i class="fa-solid fa-chevron-right"></i>
 									</a>
 								</li>
 
 								<li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-									<a class="page-link border-0" href="javascript:void(0)" onclick="loadOrderPage(@Model.TotalPages)" title="Last Page">
+										<a class="page-link border-0" asp-action="Index" asp-route-page="@Model.TotalPages" title="Last Page">
 										<i class="fa-solid fa-angles-right"></i>
 									</a>
 								</li>

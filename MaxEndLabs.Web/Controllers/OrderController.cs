@@ -241,63 +241,63 @@ namespace MaxEndLabs.Web.Controllers
 		[HttpGet]
 		[Authorize]
 		public async Task<IActionResult> Details(int orderId)
-        {
-            var dto = await _orderService.GetOrderDetailsAsync(orderId);
+		{
+			var dto = await _orderService.GetOrderDetailsAsync(orderId);
 
-            var model = new OrderDetailsViewModel
-            {
+			var model = new OrderDetailsViewModel
+			{
 				OwnerUserId = dto.OwnderUserId,
 				OwnerFullName = dto.OwnerFullName,
 				OwnerUsername = dto.OwnerUsername,
-                CreatedAt = dto.CreatedAt,
+				CreatedAt = dto.CreatedAt,
 				StatusBadgeClass = dto.StatusBadge,
-                Status = dto.Status,
+				Status = dto.Status,
 				StreetAddress = dto.StreetAddress,
-                City = dto.City,
-                Postcode = dto.Postcode,
-                TotalAmount = dto.TotalAmount,
-                OrderId = dto.OrderId,
-                OrderNumber = dto.OrderNumber,
+				City = dto.City,
+				Postcode = dto.Postcode,
+				TotalAmount = dto.TotalAmount,
+				OrderId = dto.OrderId,
+				OrderNumber = dto.OrderNumber,
 				Statuses = dto.Statuses,
-                OrderItems = dto.LineItems.Select(li => new OrderItemViewModel
-                    {
-                        ProductName = li.ProductName,
-                        VariantName = li.VariantName,
-                        Quantity = li.Quantity,
-                        Price = li.Price,
-                        ImageUrl = li.ImageUrl,
-						LineTotal = li.LineTotal
-                    })
-                    .ToList()
-            };
-            return PartialView("_OrderDetailsPartial",model);
-        }
-
-		[HttpPost]
-		[Authorize(Roles = "Admin")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> UpdateStatus(int orderId, string newStatus)
-		{
-			try
-			{
-				var orderStatus = await _orderService.GetOrderStatusAsync(orderId);
-
-				if (orderStatus == newStatus)
-                {
-                    return await Details(orderId);
-                }
-
-				await _orderService.ChangeOrderStatus(newStatus, orderId);
-
-                return await Details(orderId);
-
-            }
-			catch (Exception e)
-			{
-				return NotFound(e);
-			}
-
+				OrderItems = dto.LineItems.Select(li => new OrderItemViewModel
+				{
+					ProductName = li.ProductName,
+					VariantName = li.VariantName,
+					Quantity = li.Quantity,
+					Price = li.Price,
+					ImageUrl = li.ImageUrl,
+					LineTotal = li.LineTotal
+				})
+					.ToList()
+			};
+			return PartialView("_OrderDetailsPartial", model);
 		}
+
+		//[HttpPost]
+		//[Authorize(Roles = "Admin")]
+		//[ValidateAntiForgeryToken]
+		//public async Task<IActionResult> UpdateStatus(int orderId, string newStatus)
+		//{
+		//	try
+		//	{
+		//		var orderStatus = await _orderService.GetOrderStatusAsync(orderId);
+
+		//		if (orderStatus == newStatus)
+		//              {
+		//                  return await Details(orderId);
+		//              }
+
+		//		await _orderService.ChangeOrderStatus(newStatus, orderId);
+
+		//              return await Details(orderId);
+
+		//          }
+		//	catch (Exception e)
+		//	{
+		//		return NotFound(e);
+		//	}
+
+		//}
 
 		private async Task RefillCheckoutModel(CheckoutViewModel model, string userId)
 		{
