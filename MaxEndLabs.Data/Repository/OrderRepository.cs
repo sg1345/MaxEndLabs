@@ -93,15 +93,31 @@ namespace MaxEndLabs.Data.Repository
 			return 0;
 		}
 
-		public async Task<Order?> GetOrderByIdAsync(int id)
+		public async Task<Order?> GetOrderByIdAsync(int id, bool isFiltered,  bool includeOrderItems, bool includeUser)
 		{
-			return await DbContext.Orders
-				.IgnoreQueryFilters()
-				.Include(o=> o.OrderItems)
-				.ThenInclude(oi=>oi.ProductVariant)
-				.Include(o=>o.OrderItems)
-				.ThenInclude(oi => oi.Product)
-                .Include(o=> o.User)
+			IQueryable<Order> query = DbContext.Orders
+				.AsNoTracking();
+
+			if (!isFiltered)
+			{
+				query = query.IgnoreQueryFilters();
+			}
+
+			if (includeOrderItems)
+			{
+				query = query
+					.Include(o => o.OrderItems)
+					.ThenInclude(oi => oi.ProductVariant)
+					.Include(o => o.OrderItems)
+					.ThenInclude(oi => oi.Product);
+			}
+
+			if (includeUser)
+			{
+				query = query.Include(o => o.User);
+			}
+
+			return await query
 				.FirstOrDefaultAsync(o => o.Id == id);
 		}
 

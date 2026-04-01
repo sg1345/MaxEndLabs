@@ -1,4 +1,5 @@
-﻿using MaxEndLabs.Service.Models.Category;
+﻿using MaxEndLabs.GCommon.Exceptions;
+using MaxEndLabs.Service.Models.Category;
 using MaxEndLabs.Service.Models.Product;
 
 using MaxEndLabs.Services.Core.Contracts;
@@ -22,18 +23,25 @@ namespace MaxEndLabs.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var categoryDtoList = await _productService.GetAllCategoriesAsync();
+	        try
+	        {
+		        var categoryDtoList = await _productService.GetAllCategoriesAsync();
 
-			var categories = categoryDtoList
-				.Select(c => new ProductIndexViewModel()
-				{
-					Id = c.Id,
-					Name = c.Name,
-					Slug = c.Slug
-				})
-				.ToList();
+		        var categories = categoryDtoList
+			        .Select(c => new ProductIndexViewModel()
+			        {
+				        Id = c.Id,
+				        Name = c.Name,
+				        Slug = c.Slug
+			        })
+			        .ToList();
 
-			return View(categories);
+		        return View(categories);
+			}
+	        catch (EntityNotFoundException e)
+	        {
+		        return NotFound();
+	        }
         }
 
         [AllowAnonymous]
@@ -64,25 +72,32 @@ namespace MaxEndLabs.Web.Controllers
         [Route("Products/ByCategory/{slug}")]
         public async Task<IActionResult> ByCategory(string slug)
         {
-                var productsPageDto = await _productService.GetProductsByCategoryAsync(slug);
+	        try
+	        {
+		        var productsPageDto = await _productService.GetProductsByCategoryAsync(slug);
 
-                var products = new ProductsPageViewModel()
-                {
-	                Title = productsPageDto.Title,
-	                Products = productsPageDto.Products
-		                .Select(p => new ProductListViewModel()
-		                {
-			                Id = p.Id,
-			                Name = p.Name,
-			                Slug = p.Slug,
-			                Price = p.Price,
-			                MainImageUrl = p.MainImageUrl,
-			                CategorySlug = p.CategorySlug
-		                })
-		                .ToList()
-                };
+		        var products = new ProductsPageViewModel()
+		        {
+			        Title = productsPageDto.Title,
+			        Products = productsPageDto.Products
+				        .Select(p => new ProductListViewModel()
+				        {
+					        Id = p.Id,
+					        Name = p.Name,
+					        Slug = p.Slug,
+					        Price = p.Price,
+					        MainImageUrl = p.MainImageUrl,
+					        CategorySlug = p.CategorySlug
+				        })
+				        .ToList()
+		        };
 
-                return View("ProductsPage", products);
+		        return View("ProductsPage", products);
+			}
+	        catch (EntityNotFoundException e)
+	        {
+		        return NotFound();
+	        }
         }
 
         [AllowAnonymous]
@@ -115,9 +130,9 @@ namespace MaxEndLabs.Web.Controllers
 
 				return View(productDetails);
             }
-            catch (ArgumentException e)
+            catch (EntityNotFoundException e)
             {
-                return NotFound(e.Message);
+                return NotFound();
             }
         }
     }

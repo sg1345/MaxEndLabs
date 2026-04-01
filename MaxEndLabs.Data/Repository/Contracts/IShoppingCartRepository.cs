@@ -6,7 +6,6 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	{
 		Task<int> GetShoppingCartIdAsync(string userId);
 		Task AddToCartAsync(CartItem cartItem);
-		void HardDeleteFromCartAsync(CartItem cartItem);
 		void SoftDeleteFromCartAsync(CartItem cartItem);
 		Task<CartItem?> GetCartItemIgnoreFilterAsync(int cartId, int productId, int productVariantId);
 		Task<CartItem?> GetCartItemAsync(int cartId, int productId, int productVariantId);

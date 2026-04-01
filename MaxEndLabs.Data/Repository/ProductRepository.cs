@@ -90,33 +90,36 @@ namespace MaxEndLabs.Data.Repository
 				.ToArrayAsync();
 		}
 
-		public async Task<Product?> GetProductAsync(string slug, bool isFiltered)
+		public async Task<Product?> GetProductAsync(string slug, bool isFiltered, bool includeCategory, bool includeVariants)
 		{
 			IQueryable<Product> query = DbContext.Products
 				.AsNoTracking();
 
-            if (isFiltered)
+            if (!isFiltered)
             {
-				return await query
-                    .Include(p => p.Category)
-                    .Include(p => p.ProductVariants)
-                    .FirstOrDefaultAsync(p => p.Slug == slug);
+	            query = query.IgnoreQueryFilters();
+            }
+
+            if (includeCategory)
+            {
+	            query = query.Include(p => p.Category);
+
+            }
+
+            if (includeVariants)
+            {
+	            query = query.Include(p => p.ProductVariants);
+
             }
 
 			return await query
-                .IgnoreQueryFilters()
-                .Include(p => p.Category)
-                .Include(p => p.ProductVariants)
                 .FirstOrDefaultAsync(p => p.Slug == slug);
-
         }
 
 		public async Task<Product?> GetProductAsync(int id)
 		{
 			return await DbContext.Products
-				.AsNoTracking()
 				.Include(p => p.Category)
-				.Include(p => p.ProductVariants)
 				.FirstOrDefaultAsync(p => p.Id == id);
 		}
 
@@ -124,7 +127,6 @@ namespace MaxEndLabs.Data.Repository
 		{
 			await DbContext!.Products.AddAsync(product);
 		}
-
 
 		public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductIdAsync(int productId)
 		{
@@ -136,14 +138,19 @@ namespace MaxEndLabs.Data.Repository
 
 		public void RemoveRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants)
 		{
+			bool changesMade = false;
 			foreach (var productVariant in productVariants)
 			{
-				productVariant.IsDeleted = true;
+				if (productVariant.IsDeleted == false)
+				{
+					productVariant.IsDeleted = true;
+					changesMade = true;
+				}
 			}
 
-			//DbContext!.UpdateRange(productVariants);
+			if(changesMade)
+				DbContext!.UpdateRange(productVariants);
 
-			//DbContext!.RemoveRange(productVariants);
 		}
 
 		public async Task AddProductVariantAsync(ProductVariant productVariant)
@@ -153,6 +160,8 @@ namespace MaxEndLabs.Data.Repository
 
 		public void SoftDeleteProduct(Product product)
 		{
+			if (product.IsPublished)
+			{
 				product.IsPublished = false;
 				product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
 				product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
@@ -163,6 +172,7 @@ namespace MaxEndLabs.Data.Repository
 				}
 
 				DbContext!.Products.Update(product);
+			}
 		}
 
 		public void RestoreProduct(Product product)

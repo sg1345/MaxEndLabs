@@ -17,7 +17,6 @@ namespace MaxEndLabs.Services.Core.Contracts
         Task<ProductVariantListDto> GetProductAsync(string productSlug, bool isFiltered);
         Task ManageProductVariantsAsync(ProductVariantListDto dto);
         Task<ProductFormDto> GetProductEditDtoAsync(string productSlug);
-        Task<ProductFormDto> GetProductEditDtoAsync(int productId);
 		Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormDto dto);
 		Task SoftDeleteProductAsync(string productSlug);
 		Task RestoreProductAsync(string productSlug);

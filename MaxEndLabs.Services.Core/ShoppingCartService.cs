@@ -1,5 +1,6 @@
 ﻿using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Repository.Contracts;
+using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Service.Models.ShoppingCart;
 using MaxEndLabs.Services.Core.Contracts;
 
@@ -21,7 +22,10 @@ namespace MaxEndLabs.Services.Core
 
 			var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(userId);
 
-				var cartItemListDto = cartItemList
+			if(cartItemList == null)
+				throw new EntityNotFoundException();
+
+			var cartItemListDto = cartItemList
 				.Select(ci => new CartItemDto
 				{
 					ProductId = ci.ProductId,
@@ -84,7 +88,7 @@ namespace MaxEndLabs.Services.Core
 
 
 			if (cartItem == null)
-                throw new ArgumentException("Cart Item Not Found");
+                throw new EntityNotFoundException();
 
             _shoppingCartRepository.SoftDeleteFromCartAsync(cartItem);
             await EnsureSaveChangesAsync();
@@ -96,7 +100,7 @@ namespace MaxEndLabs.Services.Core
 				.GetCartItemsByUCartIdAsync(cartId);
 
 			if(cartItemList == null)
-				throw new ArgumentException("No Cart Items Found");
+				throw new EntityNotFoundException();
 
             _shoppingCartRepository.ClearCart(cartItemList);
             await EnsureSaveChangesAsync();
@@ -121,8 +125,6 @@ namespace MaxEndLabs.Services.Core
 				carId = newShoppingCart.Id;
 			}
 
-
-
 			return carId;
 		}
 
@@ -134,7 +136,7 @@ namespace MaxEndLabs.Services.Core
 
 			if (!successAdd)
 			{
-				throw new ArgumentException("Database Operation Failed");
+				throw new EntityNotFoundException();
 			}
 		}
 	}

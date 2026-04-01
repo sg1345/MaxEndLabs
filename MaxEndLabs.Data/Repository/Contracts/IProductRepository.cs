@@ -10,7 +10,7 @@ namespace MaxEndLabs.Data.Repository.Contracts
         Task<int> GetCountAsync(string? searchTerm);
         Task<IEnumerable<Product>> GetAllProductsAsync();
 		Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId);
-		Task<Product?> GetProductAsync(string slug, bool isFiltered);
+		Task<Product?> GetProductAsync(string slug, bool isFiltered, bool includeCategory, bool includeVariants);
 		Task<Product?> GetProductAsync(int id);
 		Task AddProductAsync(Product product);
 		Task<int> SaveChangesAsync();

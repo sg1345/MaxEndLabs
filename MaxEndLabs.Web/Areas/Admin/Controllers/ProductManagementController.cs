@@ -1,12 +1,14 @@
-﻿using MaxEndLabs.Data.Migrations;
+﻿using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Service.Models.Category;
 using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels.Category;
 using MaxEndLabs.ViewModels.Product;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using static MaxEndLabs.Web.Common.PaginationConstants;
+using static MaxEndLabs.GCommon.OutputMessages.Product;
+using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers
 {
@@ -22,30 +24,38 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Index(string searchTerm = "", int page = 1)
 		{
-			var productDto = await _productService.GetProductSearchAsync(searchTerm, page, PageSizeProductManager);
-
-			var model = new ProductPaginationViewModel
+			try
 			{
-				SearchTerm = searchTerm,
-				CurrentPage = productDto.CurrentPage,
-				TotalPages = productDto.TotalPages,
-				HasNextPage = productDto.HasNextPage,
-				HasPreviousPage = productDto.HasPreviousPage,
-				Products = productDto.Products.Select(p => new ProductPaginationEntityViewModel
-				{
-					Id = p.Id,
-					Name = p.Name,
-					Price = p.Price,
-					Slug = p.Slug,
-					MainImageUrl = p.MainImageUrl,
-					IsPublished = p.IsPublished,
-					CategoryName = p.CategoryName,
-					CategorySlug = p.CategorySlug
-				}).ToList()
-			};
+				var productDto = await _productService.GetProductSearchAsync(searchTerm, page, PageSizeProductManager);
 
-			ViewBag.CurrentPage = page;
-			return View(model);
+				var model = new ProductPaginationViewModel
+				{
+					SearchTerm = searchTerm,
+					CurrentPage = productDto.CurrentPage,
+					TotalPages = productDto.TotalPages,
+					HasNextPage = productDto.HasNextPage,
+					HasPreviousPage = productDto.HasPreviousPage,
+					Products = productDto.Products.Select(p => new ProductPaginationEntityViewModel
+					{
+						Id = p.Id,
+						Name = p.Name,
+						Price = p.Price,
+						Slug = p.Slug,
+						MainImageUrl = p.MainImageUrl,
+						IsPublished = p.IsPublished,
+						CategoryName = p.CategoryName,
+						CategorySlug = p.CategorySlug
+					}).ToList()
+				};
+
+				ViewBag.CurrentPage = page;
+				return View(model);
+			}
+			catch (EntityNotFoundException e)
+			{
+				return NotFound();
+			}
+			
 		}
 
 		[HttpGet]
@@ -78,9 +88,9 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 				ViewBag.IsPublished = false;
 				return View(productDetails);
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
 			}
 		}
 
@@ -103,9 +113,9 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
 				return View(model);
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
 			}
 		}
 
@@ -118,23 +128,24 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 				ModelState.AddModelError("Name", "Product with this name Already exists.");
 			}
 
-			if (!ModelState.IsValid)
-			{
-				var categories = await _productService.GetAllCategoriesAsync();
-
-				model.Categories = categories
-					.Select(c => new CategorySelectViewModel()
-					{
-						Id = c.Id,
-						Name = c.Name
-					})
-					.ToList();
-
-				return View(model);
-			}
 
 			try
 			{
+				if (!ModelState.IsValid)
+				{
+					var categories = await _productService.GetAllCategoriesAsync();
+
+					model.Categories = categories
+						.Select(c => new CategorySelectViewModel()
+						{
+							Id = c.Id,
+							Name = c.Name
+						})
+						.ToList();
+
+					return View(model);
+				}
+
 				var productCreateDto = new ProductCreateDto()
 				{
 					Name = model.Name,
@@ -146,12 +157,17 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
 				string productSlug = await _productService.AddProductAsync(productCreateDto);
 
-				TempData["SuccessMessage"] = "Product created!";
+				TempData[SuccessTempDataKey] = ProductCreated;
 				return RedirectToAction("VariantManager", new { productSlug = productSlug });
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
+			}
+			catch (EntityPersistFailureException e)
+			{
+				TempData[ErrorTempDataKey] = FailedToCreateProduct;
+				return View("Index","ProductManagement");
 			}
 		}
 
@@ -181,9 +197,9 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
 				return View(model);
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
 			}
 
 		}
@@ -221,16 +237,20 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
 				await _productService.ManageProductVariantsAsync(productVariantListDto);
 
-				TempData["SuccessMessage"] = "Variants updated!";
+				TempData[SuccessTempDataKey] = VariantUpdated;
 				return RedirectToAction("Details", new
 				{
 					categorySlug = model.CategorySlug,
 					productSlug = model.ProductSlug
 				});
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				TempData["WarningMessage"] = "No Changes were made!";
+				return NotFound();
+			}
+			catch (EntityPersistFailureException e)
+			{
+				TempData[WarningTempDataKey] = NoChangesWereMade;
 				return View(model);
 			}
 
@@ -263,9 +283,9 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
 				return View(model);
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
 			}
 
 		}
@@ -278,23 +298,23 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 				ModelState.AddModelError("Name", "Product with this name Already exists.");
 			}
 
-			if (!ModelState.IsValid)
-			{
-				var categories = await _productService.GetAllCategoriesAsync();
-
-				model.Categories = categories
-					.Select(c => new CategorySelectViewModel()
-					{
-						Id = c.Id,
-						Name = c.Name
-					})
-					.ToList();
-
-				return View(model);
-			}
-
 			try
 			{
+				if (!ModelState.IsValid)
+				{
+					var categories = await _productService.GetAllCategoriesAsync();
+
+					model.Categories = categories
+						.Select(c => new CategorySelectViewModel()
+						{
+							Id = c.Id,
+							Name = c.Name
+						})
+						.ToList();
+
+					return View(model);
+				}
+
 				var dto = new ProductFormDto()
 				{
 					Id = model.Id,
@@ -314,19 +334,22 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
 				(string CategorySlug, string ProductSlug) result = await _productService.EditProductAsync(dto);
 
-				TempData["SuccessMessage"] = "Product edited!";
+				TempData[SuccessTempDataKey] = ProductEdited;
 				return RedirectToAction("Details", new
 				{
 					categorySlug = result.CategorySlug,
 					productSlug = result.ProductSlug
 				});
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
 			}
-
-
+			catch (EntityPersistFailureException e)
+			{
+				TempData[WarningTempDataKey] = NoChangesWereMade;
+				return RedirectToAction("Index", "Home");
+			}
 		}
 
 		//We have onclick confirmation for delete, so I am skipping the GET method
@@ -337,12 +360,17 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			{
 				await _productService.SoftDeleteProductAsync(productSlug);
 
-				TempData["SuccessMessage"] = "Product is removed!";
+				TempData[SuccessTempDataKey] = ProductRemoved;
 				return RedirectToAction("Index");
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
+			}
+			catch (EntityPersistFailureException e)
+			{
+				TempData[ErrorTempDataKey] = FailedToDeleteProduct;
+				return RedirectToAction("Index");
 			}
 		}
 
@@ -352,12 +380,17 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			{
 				await _productService.RestoreProductAsync(productSlug);
 
-				TempData["SuccessMessage"] = "Product is published!";
+				TempData[SuccessTempDataKey] = ProductRestored;
 				return RedirectToAction("Index");
 			}
-			catch (ArgumentException e)
+			catch (EntityNotFoundException e)
 			{
-				return NotFound(e.Message);
+				return NotFound();
+			}
+			catch (EntityPersistFailureException e)
+			{
+				TempData[ErrorTempDataKey] = FailedToRestoreProduct;
+				return RedirectToAction("Index");
 			}
 		}
 	}

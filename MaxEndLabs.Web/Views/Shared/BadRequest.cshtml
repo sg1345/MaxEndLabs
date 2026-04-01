@@ -1,0 +1,15 @@
+﻿@{
+	ViewData["Title"] = "Bad Request";
+}
+
+<div class="error-container text-center">
+	<h1 class="display-1 text-warning">400</h1>
+	<h2>Bad Request</h2>
+	<p class="lead">Oops! It looks like the request you sent was invalid or corrupted.</p>
+	<hr />
+	<p>This usually happens if a link is broken or the data sent was malformed.</p>
+    
+	<a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-primary">
+		Back to Home
+	</a>
+</div>

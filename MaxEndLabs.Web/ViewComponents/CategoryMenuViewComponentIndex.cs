@@ -1,4 +1,5 @@
 ﻿using MaxEndLabs.Data.Repository.Contracts;
+using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;

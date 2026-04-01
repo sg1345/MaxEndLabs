@@ -1,6 +1,7 @@
 ﻿using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Models.Enum;
 using MaxEndLabs.Data.Repository.Contracts;
+using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Service.Models.Order;
 using MaxEndLabs.Service.Models.ShoppingCart;
 using MaxEndLabs.Services.Core.Contracts;
@@ -22,6 +23,10 @@ namespace MaxEndLabs.Services.Core
 		{
 			int skip = (page - 1) * pageSize;
 			var orders = await _orderRepository.GetPageOrdersAsync(userId, skip, pageSize);
+
+			if(orders == null)
+				throw new EntityNotFoundException();
+
 			var count = await _orderRepository.GetCountAsync(userId);
 
 			return new OrderPaginationDto
@@ -43,6 +48,10 @@ namespace MaxEndLabs.Services.Core
 		{
 			int skip = (page - 1) * pageSize;
 			var orders = await _orderRepository.GetSearchOrdersAsync(searchType, searchTerm, skip, pageSize);
+
+			if(orders == null)
+				throw new EntityNotFoundException();
+
 			var count = await _orderRepository.GetCountAsync(searchType, searchTerm);
 
 			return new OrderPaginationDto
@@ -67,6 +76,9 @@ namespace MaxEndLabs.Services.Core
 
 			var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(userId);
 
+			if (cartItemList == null || shoppingCartId == 0)
+				throw new EntityNotFoundException();
+
 			var cartItemListDto = cartItemList
 				.Select(ci => new CartItemDto
 				{
@@ -88,7 +100,6 @@ namespace MaxEndLabs.Services.Core
 			};
 
 			return orderCreateDto;
-
 		}
 
 		public async Task<int> CreateOrderAsync(AddressOrderDto dto)
@@ -96,6 +107,9 @@ namespace MaxEndLabs.Services.Core
 			string orderNumber = GenerateOrderNumber();
 
 			var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(dto.UserId);
+
+			if (cartItemList == null)
+				throw new EntityNotFoundException();
 
 			decimal totalPrice = cartItemList.Sum(ci => ci.Quantity * (ci.ProductVariant.Price ?? ci.Product.Price));
 
@@ -129,7 +143,7 @@ namespace MaxEndLabs.Services.Core
 
 		public async Task<StripeSessionDto> GetOrderAsync(int orderId)
 		{
-			var order = await _orderRepository.GetOrderByIdAsync(orderId);
+			var order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered:false, includeOrderItem:true, includeUser:false);
 
 			if (order == null) return null!;
 
@@ -153,9 +167,10 @@ namespace MaxEndLabs.Services.Core
 
 		public async Task<OrderDetailsDto> GetOrderDetailsAsync(int orderId)
 		{
-			var order = await _orderRepository.GetOrderByIdAsync(orderId);
+			var order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered:false, includeOrderItem:true, includeUser:true);
 
-			if (order == null) return null!;
+			if (order == null)
+				throw new EntityNotFoundException();
 
 			string statusBadge = order.Status switch
 			{
@@ -169,6 +184,9 @@ namespace MaxEndLabs.Services.Core
 			};
 
 			var statuses = Enum.GetNames(typeof(OrderStatus)).ToList();
+
+			if (!statuses.Any())
+				throw new BadRequestException();
 
 			var orderDetailsDto = new OrderDetailsDto
 			{
@@ -202,9 +220,10 @@ namespace MaxEndLabs.Services.Core
 
 		public async Task<string> MarkOrderAsPaidAsync(int orderId)
 		{
-			Order? order = _orderRepository.GetOrderByIdAsync(orderId).Result;
+			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
 
-			if (order == null) return null!;
+			if (order == null)
+				throw new EntityNotFoundException();
 
 			order.Status = OrderStatus.Paid;
 			order.UpdatedAt = DateTime.UtcNow;
@@ -217,24 +236,24 @@ namespace MaxEndLabs.Services.Core
 
 		public async Task<string?> GetOrderStatusAsync(int orderId)
 		{
-			Order? order = await _orderRepository.GetOrderByIdAsync(orderId);
+			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
 
 			if (order == null)
-				throw new ArgumentException("Order not found");
+				throw new EntityNotFoundException();
 
 			return order.Status.ToString();
 		}
 
 		public async Task ChangeOrderStatus(string status, int orderId)
 		{
-			Order? order = await _orderRepository.GetOrderByIdAsync(orderId);
+			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
 
 			if (order == null)
-				throw new ArgumentException("Order not found");
+				throw new EntityNotFoundException();
 
 			if (!Enum.TryParse(status, true, out OrderStatus newStatus))
 			{
-				throw new ArgumentException("Invalid status value");
+				throw new BadRequestException();
 			}
 
 			order.Status = newStatus;
@@ -262,7 +281,7 @@ namespace MaxEndLabs.Services.Core
 
 			if (!successAdd)
 			{
-				throw new ArgumentException("Database Operation Failed");
+				throw new EntityPersistFailureException("Database Operation Failed");
 			}
 		}
 	}

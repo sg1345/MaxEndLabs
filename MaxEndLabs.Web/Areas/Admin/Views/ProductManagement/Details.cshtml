@@ -77,7 +77,7 @@
 
 							<form asp-action="Delete" asp-route-productSlug="@Model.ProductSlug" method="post" class="d-inline">
 								<button type="submit" class="btn btn-white border-2 border-white bg-white shadow-sm px-4 py-2 fw-bold text-danger transition-hover"
-								        onclick="return confirm('Are you absolutely sure? This cannot be undone.')">
+								        onclick="return confirm('Remove this product from the live catalog?')">
 									<i class="fa-solid fa-trash-can"></i>
 								</button>
 							</form>
