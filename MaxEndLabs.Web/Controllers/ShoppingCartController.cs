@@ -97,7 +97,8 @@ namespace MaxEndLabs.Web.Controllers
 								Price = av.Price
 							}).ToList(),
 					};
-					TempData["ErrorMessage"] = "Failed adding to cart";
+
+					TempData[ErrorTempDataKey] = FailedToAddProductToCart;
 					return View("/Views/Products/Details.cshtml", productDetails);
 				}
 
@@ -113,7 +114,7 @@ namespace MaxEndLabs.Web.Controllers
 
 				await _shoppingCartService.AddProductToShoppingCartAsync(dto);
 
-				TempData["SuccessMessage"] = ProductAddedToCart;
+				TempData[SuccessTempDataKey] = ProductAddedToCart;
 				return RedirectToAction("Details", "Products", new
 				{
 					model.CategorySlug,
