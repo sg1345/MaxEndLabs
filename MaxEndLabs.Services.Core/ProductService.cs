@@ -4,6 +4,7 @@ using MaxEndLabs.Data.Models;
 
 using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.Service.Models.Category;
+using MaxEndLabs.Service.Models.Order;
 using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
 
@@ -37,6 +38,30 @@ namespace MaxEndLabs.Services.Core
 
 			return await _productRepository.SlugExistsAsync(productSlug);
 		}
+
+        public async Task<ProductPaginationDto> GetProductSearchAsync(string searchTerm, int page, int pageSize)
+        {
+            int skip = (page - 1) * pageSize;
+            var products = await _productRepository.GetSearchProductsAsync(searchTerm, skip, pageSize);
+            var count = await _productRepository.GetCountAsync(searchTerm);
+
+            return new ProductPaginationDto
+            {
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+                Products = products!.Select(p => new ProductPaginationEntityDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Slug = p.Slug,
+                    MainImageUrl = p.MainImageUrl,
+                    IsPublished = p.IsPublished,
+                    CategoryName = p.Category.Name,
+                    CategorySlug = p.Category.Slug
+                }).ToList()
+            };
+        }
 
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
@@ -109,15 +134,16 @@ namespace MaxEndLabs.Services.Core
             };
         }
 
-        public async Task<ProductDetailsDto> GetProductDetailsAsync(string productSlug)
+        public async Task<ProductDetailsDto> GetProductDetailsAsync(string productSlug, bool isFiltered)
         {
-            var product = await _productRepository.GetProductAsync(productSlug);
+            var product = await _productRepository.GetProductAsync(productSlug, isFiltered);
 
             if (product == null)
 	            throw new ArgumentException("Product Not Found");
 
             var productVariant = product.ProductVariants
-                .Select(pv => new ProductVariantDto()
+	            .Where(pv=> !pv.IsDeleted)
+	            .Select(pv => new ProductVariantDto()
                 {
                     Id = pv.Id,
                     VariantName = pv.VariantName,
@@ -134,7 +160,8 @@ namespace MaxEndLabs.Services.Core
                 Description = product.Description,
                 Price = product.Price,
                 MainImageUrl = product.MainImageUrl,
-                ProductVariants = productVariant
+                IsPublished = product.IsPublished,
+				ProductVariants = productVariant
             };
         }
 
@@ -187,9 +214,9 @@ namespace MaxEndLabs.Services.Core
 			return product.Slug;
         }
 
-        public async Task<ProductVariantListDto> GetProductAsync(string productSlug)
+        public async Task<ProductVariantListDto> GetProductAsync(string productSlug, bool isFiltered)
         {
-            var product = await _productRepository.GetProductAsync(productSlug);
+            var product = await _productRepository.GetProductAsync(productSlug, isFiltered: isFiltered);
 
             if (product == null)
 	            throw new ArgumentException("Product Not Found");
@@ -200,7 +227,9 @@ namespace MaxEndLabs.Services.Core
 	            ProductName = product.Name,
 	            ProductSlug = product.Slug,
 	            CategorySlug = product.Category.Slug,
-	            Variants = product.ProductVariants.Select(pv => new ProductVariantDto()
+	            Variants = product.ProductVariants
+		            .Where(pv => !pv.IsDeleted)
+		            .Select(pv => new ProductVariantDto()
 		            {
 			            Id = pv.Id,
 			            VariantName = pv.VariantName,
@@ -257,7 +286,7 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<ProductFormDto> GetProductEditDtoAsync(string productSlug)
         {
-	        var product = await _productRepository.GetProductAsync(productSlug);
+	        var product = await _productRepository.GetProductAsync(productSlug, isFiltered:true);
             var categories = await _categoryRepository.GetAllCategoriesAsync();
 
 			if (product == null)
@@ -336,9 +365,9 @@ namespace MaxEndLabs.Services.Core
 			return (categorySlug, product.Slug);
 		}
 
-        public async Task DeleteProductAsync(string productSlug)
+        public async Task SoftDeleteProductAsync(string productSlug)
         {
-	        var product = await _productRepository.GetProductAsync(productSlug);
+	        var product = await _productRepository.GetProductAsync(productSlug, isFiltered: true);
 
             if (product == null)
                 throw new ArgumentException("Product Not Found");
@@ -353,6 +382,22 @@ namespace MaxEndLabs.Services.Core
             _productRepository.SoftDeleteProduct(product);
 
             await EnsureSaveChangesAsync();
+        }
+
+        public async Task RestoreProductAsync(string productSlug)
+        {
+			var product = await _productRepository.GetProductAsync(productSlug, isFiltered: false);
+
+			if (product == null)
+				throw new ArgumentException("Product Not Found");
+
+            if(product.IsPublished)
+				throw new ArgumentException("Product is already published");
+
+
+			_productRepository.RestoreProduct(product);
+
+			await EnsureSaveChangesAsync();
         }
 
         private static string GenerateSlug(string name)

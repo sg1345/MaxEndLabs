@@ -1,0 +1,25 @@
+﻿@model ProductPaginationViewModel
+@{
+	ViewData["Title"] = "Product Manager";
+}
+
+<div class="container mt-4">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h2 class="mb-0">Product Management</h2>
+	</div>
+
+	<div class="d-flex gap-2 mb-4 align-items-start">
+		<div class="flex-grow-1">
+			<partial name="_ProductSearchPartial" model="Model"/>
+		</div>
+        
+		<a asp-action="Create" class="btn btn-dark shadow-sm d-flex align-items-center justify-content-center" 
+		   style="height: 38px; min-width: 160px; white-space: nowrap;">
+			<i class="fa-solid fa-plus me-2"></i> Create Product
+		</a>
+	</div>
+
+	<div id="orderManagerBoxFullWrapper">
+		<partial name="_ProductAdminListPartial" model="Model"/>
+	</div>
+</div>

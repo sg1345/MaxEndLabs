@@ -3,6 +3,7 @@
 	public class ProductDetailsDto : ProductDto
 	{
 		public string? Description { get; set; }
+		public bool IsPublished { get; set; }
 		public IEnumerable<ProductVariantDto> ProductVariants { get; set; } = [];
 	}
 }

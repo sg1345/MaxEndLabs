@@ -6,9 +6,11 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	{
 		Task<bool> SlugExistsAsync(string slug, int productId);
 		Task<bool> SlugExistsAsync(string slug);
-		Task<IEnumerable<Product>> GetAllProductsAsync();
+		Task<IEnumerable<Product>?> GetSearchProductsAsync(string? searchTerm, int skip, int take);
+        Task<int> GetCountAsync(string? searchTerm);
+        Task<IEnumerable<Product>> GetAllProductsAsync();
 		Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId);
-		Task<Product?> GetProductAsync(string slug);
+		Task<Product?> GetProductAsync(string slug, bool isFiltered);
 		Task<Product?> GetProductAsync(int id);
 		Task AddProductAsync(Product product);
 		Task<int> SaveChangesAsync();
@@ -16,6 +18,7 @@ namespace MaxEndLabs.Data.Repository.Contracts
 		void RemoveRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants);
 		Task AddProductVariantAsync (ProductVariant productVariant);
 		void SoftDeleteProduct(Product product);
+		void RestoreProduct(Product product);
 		void ProductUpdate(Product product);
 	}
 }

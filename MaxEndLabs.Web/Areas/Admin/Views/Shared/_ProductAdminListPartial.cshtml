@@ -1,0 +1,136 @@
+﻿@model ProductPaginationViewModel
+
+<div class="card-body p-0">
+    @if (Model.Products.Any())
+    {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-uppercase font-monospace" style="font-size: 1rem;">
+                        <tr>
+                            <th class="ps-4 py-3">Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var product in Model.Products)
+                    {
+                                <tr>
+                                    <td class="ps-4">
+                                @if (!string.IsNullOrEmpty(product.MainImageUrl))
+                                {
+                                                <img src="@product.MainImageUrl" alt="@product.Name" class="rounded shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">
+                                }
+                                else
+                                {
+	                                <img src="~/images/default_product_image.jpg" alt="@product.Name" class="rounded shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">
+                                }
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@product.Name</div>
+                                        <small class="text-muted">@product.Slug</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">
+                                    @product.CategoryName
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-primary">
+                                @product.Price.ToString("C")
+                                    </td>
+                                    <td>
+                                @if (product.IsPublished)
+                                {
+                                                <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle">
+                                                    <i class="fa-solid fa-eye me-1"></i> Published
+                                                </span>
+                                }
+                                else
+                                {
+                                                <span class="badge rounded-pill bg-dark-subtle text-dark-emphasis border border-dark-subtle">
+                                                    <i class="fa-solid fa-eye-slash me-1"></i> Draft
+                                                </span>
+                                }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group shadow-sm">
+                                            <a class="btn btn-sm btn-light border view-product-btn"
+                                               asp-area="Admin"
+                                               asp-controller="ProductManagement"
+                                               asp-action="Details"
+                                               asp-route-categorySlug="@product.CategorySlug"
+                                               asp-route-productSlug="@product.Slug">
+                                                Details
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="productBoxContainer">
+                <div class="card-footer bg-white border-top-0 pb-4 px-4 d-flex justify-content-center">
+                    <nav aria-label="Product pagination">
+                        <ul class="pagination pagination-sm mb-0 shadow-sm">
+
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link border-0" asp-action="Index" 
+                                   asp-route-page="1" 
+                                   asp-route-searchTerm="@Model.SearchTerm">
+                                    <i class="fa-solid fa-angles-left"></i>
+                                </a>
+                            </li>
+
+                            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                <a class="page-link border-0" asp-action="Index" 
+                                   asp-route-page="@(Model.CurrentPage - 1)" 
+                                   asp-route-searchTerm="@Model.SearchTerm">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </a>
+                            </li>
+
+                        @for (int i = Model.CurrentPage - 1; i <= Model.CurrentPage + 1; i++)
+                        {
+                            if (i > 0 && i <= Model.TotalPages)
+                            {
+                                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                                <a class="page-link border-0 rounded-3 mx-1" asp-action="Index" 
+                                                   asp-route-page="@i" 
+                                                   asp-route-searchTerm="@Model.SearchTerm">@i</a>
+                                            </li>
+                            }
+                        }
+
+                            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                <a class="page-link border-0" asp-action="Index" 
+                                   asp-route-page="@(Model.CurrentPage + 1)" 
+                                   asp-route-searchTerm="@Model.SearchTerm">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            </li>
+
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link border-0" asp-action="Index" 
+                                   asp-route-page="@Model.TotalPages" 
+                                   asp-route-searchTerm="@Model.SearchTerm">
+                                    <i class="fa-solid fa-angles-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+    }
+    else
+    {
+	    <div class="text-center py-5">
+		    <img src="~/images/empty-box.png" alt="No Orders" style="width: 60px; opacity: 0.3;" class="mb-3">
+                <p class="text-muted">No products found.</p>
+	    </div>
+    }
+</div>

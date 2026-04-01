@@ -10,9 +10,9 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	public interface IOrderRepository
 	{
 		Task<IEnumerable<Order>> GetPageOrdersAsync(string userId, int skip, int take);
-		Task<IEnumerable<Order>?> GetSearchOrdersAsync(string searchType, string searchTerm, int skip, int take);
+		Task<IEnumerable<Order>?> GetSearchOrdersAsync(string searchType, string? searchTerm, int skip, int take);
 		Task<int> GetCountAsync(string userId);
-		Task<int> GetCountAsync(string searchType, string searchTerm);
+		Task<int> GetCountAsync(string searchType, string? searchTerm);
 		Task<Order?> GetOrderByIdAsync(int id);
 		Task AddOrderAsync(Order order);
         Task<int> SaveChangesAsync();

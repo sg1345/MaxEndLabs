@@ -1,0 +1,14 @@
+﻿<form asp-action="Index" id="orderSearchForm" method="get" class="row g-3 mb-4">
+	<div class="col-md-8">
+		<div class="input-group shadow-sm">
+
+			<input type="text" name="searchTerm" id="searchTerm" 
+				   class="form-control" placeholder="Search product's name..." 
+				   value="@Model.SearchTerm">
+
+			<button class="btn btn-primary" type="submit">
+				<i class="fa-solid fa-magnifying-glass"></i>
+			</button>
+		</div>
+	</div>
+</form>

@@ -24,28 +24,35 @@ namespace MaxEndLabs.Data.Repository
                 .ToArrayAsync();
 		}
 
-		public async Task<IEnumerable<Order>?> GetSearchOrdersAsync(string searchType ,string searchTerm, int skip, int take)
+		public async Task<IEnumerable<Order>?> GetSearchOrdersAsync(string searchType ,string? searchTerm, int skip, int take)
 		{
-			if (searchType == "Username")
+			IQueryable<Order> query = DbContext.Orders
+				.AsNoTracking()
+				.OrderByDescending(o => o.CreatedAt)
+				.ThenBy(o => o.Status)
+				.ThenByDescending(o => o.UpdatedAt);
+
+
+
+			if (searchType == "Username" && searchTerm != null)
 			{
-				return await DbContext.Orders
-					.AsNoTracking()
-					.Where(o => o.User.UserName.Contains(searchTerm))
-					.OrderByDescending(o => o.CreatedAt)
-					.ThenBy(o => o.Status)
-					.ThenByDescending(o => o.UpdatedAt)
+				return await query
+					.Where(o => o.User.UserName!.Contains(searchTerm))
 					.Skip(skip)
 					.Take(take)
 					.ToArrayAsync();
 			}
-			else if (searchType == "OrderNumber")
+			else if (searchType == "OrderNumber" && searchTerm != null)
 			{
-				return await DbContext.Orders
-					.AsNoTracking()
+				return await query
 					.Where(o => o.OrderNumber.Contains(searchTerm))
-					.OrderByDescending(o => o.CreatedAt)
-					.ThenBy(o => o.Status)
-					.ThenByDescending(o => o.UpdatedAt)
+					.Skip(skip)
+					.Take(take)
+					.ToArrayAsync();
+			}
+			else if ((searchType is "Username" or "OrderNumber") && string.IsNullOrEmpty(searchTerm))
+			{
+				return await query
 					.Skip(skip)
 					.Take(take)
 					.ToArrayAsync();
@@ -62,20 +69,28 @@ namespace MaxEndLabs.Data.Repository
 				.CountAsync(o => o.UserId == userId);
 		}
 
-		public async Task<int> GetCountAsync(string searchType, string searchTerm)
+		public async Task<int> GetCountAsync(string searchType, string? searchTerm)
 		{
-			if (searchType == "Username")
+			IQueryable<Order> query = DbContext.Orders
+				.AsNoTracking();
+
+			if (searchType == "Username" && searchTerm != null)
 			{
-				return await DbContext.Orders
-					.AsNoTracking()
-					.CountAsync(o => o.User.UserName.Contains(searchTerm));
+				return await query
+					.CountAsync(o => o.User.UserName!.Contains(searchTerm));
 			}
-			else // if (searchType == "OrderNumber")
+			else if (searchType == "OrderNumber" && searchTerm != null)
 			{
-				return await DbContext.Orders
-					.AsNoTracking()
+				return await query
 					.CountAsync(o => o.OrderNumber.Contains(searchTerm));
 			}
+			else if ((searchType is "Username" or "OrderNumber") && string.IsNullOrEmpty(searchTerm))
+			{
+				return await query
+					.CountAsync();
+			}
+
+			return 0;
 		}
 
 		public async Task<Order?> GetOrderByIdAsync(int id)

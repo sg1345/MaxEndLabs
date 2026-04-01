@@ -37,8 +37,8 @@ namespace MaxEndLabs.Web
                     options.Password.RequireUppercase = false;
                 })
                 .AddEntityFrameworkStores<MaxEndLabsDbContext>()
-                .AddDefaultTokenProviders();
-                //.AddDefaultUI();
+                .AddDefaultTokenProviders()
+                .AddDefaultUI();
 
 			builder.Services.AddRazorPages();
 

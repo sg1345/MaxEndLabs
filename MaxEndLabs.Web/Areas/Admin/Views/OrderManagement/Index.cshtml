@@ -1,6 +1,7 @@
-﻿@using Microsoft.CodeAnalysis.Scripting
-@model OrderPaginationViewModel
-
+﻿@model OrderPaginationViewModel
+@{
+	ViewData["Title"] = "Order Manager";
+}
 <div class="container mt-4">
 	<h2>Order Management</h2>
 
@@ -9,22 +10,19 @@
 	</div>
 
 	<div id="orderManagerBoxFullWrapper">
-		<partial name="_OrderAdminList" model="Model"/>
+		<partial name="_OrderAdminListPartial" model="Model"/>
 	</div>
 </div>
 
 <partial name="_OrderModalShell"/>
-
-<script src="~/js/orderDetails.js"></script>
-@*<script src="~/js/orderManager.js"></script>*@
-
-@section Scripts {
-        <script>
-               // Listen for when the modal is FULLY closed
-    $(document).on('hidden.bs.modal', '#orderModal', function () {
-        // This reloads the current URL (e.g., /Admin/Order?page=3)
-        // The user sees the updated status immediately!
-        location.reload(); 
-    });
-        </script>
+@section Scripts
+{
+	<script src="~/js/orderDetails.js"></script>
+	<script>  			
+	$(document).on('hidden.bs.modal', '#orderModal', function () {
+	    location.reload(); 
+	});
+	</script>
 }
+
+
