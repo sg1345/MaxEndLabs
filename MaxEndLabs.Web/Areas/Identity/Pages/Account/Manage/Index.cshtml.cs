@@ -124,8 +124,8 @@ namespace MaxEndLabs.Web.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
+			StatusMessage = "Your profile has been updated";
+			return RedirectToPage();
         }
     }
 }

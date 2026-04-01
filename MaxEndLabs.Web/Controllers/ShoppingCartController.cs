@@ -65,7 +65,7 @@ namespace MaxEndLabs.Web.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				var productDetailsDto = await _productService.GetProductDetailsAsync(model.ProductSlug);
+				var productDetailsDto = await _productService.GetProductDetailsAsync(model.ProductSlug, isFiltered:true);
 
 				var productDetails = new ProductDetailsViewModel()
 				{
@@ -76,6 +76,7 @@ namespace MaxEndLabs.Web.Controllers
 					Description = productDetailsDto.Description,
 					Price = productDetailsDto.Price,
 					MainImageUrl = productDetailsDto.MainImageUrl,
+					IsPublished = productDetailsDto.IsPublished,
 					ProductVariants = productDetailsDto.ProductVariants
 						.Select(av => new VariantDisplayViewModel()
 						{

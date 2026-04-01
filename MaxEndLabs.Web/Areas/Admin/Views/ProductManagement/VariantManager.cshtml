@@ -1,5 +1,7 @@
 ﻿@model ManageVariantsViewModel
-
+@{
+	ViewData["Title"] = "Variant Manager";
+}
 
 <form asp-action="VariantManager" method="post">
 	<div asp-validation-summary="All" class="text-danger mb-3 font-weight-bold"></div>

@@ -9,8 +9,8 @@
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public string? MainImageUrl { get; set; }
-
-        public IEnumerable<VariantDisplayViewModel> ProductVariants { get; set; } = [];
+        public bool IsPublished { get; set; }
+		public IEnumerable<VariantDisplayViewModel> ProductVariants { get; set; } = [];
 
     }
 }

@@ -12,5 +12,7 @@ namespace MaxEndLabs.GCommon
         public const string WarningTempDataKey = "WarningMessage";
         public const string SuccessTempDataKey = "SuccessMessage";
         public const string InfoTempDataKey = "InfoMessage";
-    }
+
+        public const string DefaultSearchType = "OrderNumber";
+	}
 }
