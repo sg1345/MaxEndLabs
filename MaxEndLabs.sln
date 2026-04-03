@@ -25,7 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxEndLabs.Data.Common", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxEndLabs.Service.Models", "MaxEndLabs.Service.Models\MaxEndLabs.Service.Models.csproj", "{F5AB0AC0-9274-4F24-999D-C5187B4B0A0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxEndLabs.Web.Common", "MaxEndLabs.Web.Common\MaxEndLabs.Web.Common.csproj", "{8EB2A63D-9559-4F58-B644-06AC7A73103D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxEndLabs.Web.Common", "MaxEndLabs.Web.Common\MaxEndLabs.Web.Common.csproj", "{8EB2A63D-9559-4F58-B644-06AC7A73103D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6EE2615F-F72A-45D5-A53D-9EB7BEEF590D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxEndLabs.Service.Tests", "MaxEndLabs.Service.Tests\MaxEndLabs.Service.Tests.csproj", "{067DABC8-892A-42AC-AB24-ECA60CF54FA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +73,10 @@ Global
 		{8EB2A63D-9559-4F58-B644-06AC7A73103D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EB2A63D-9559-4F58-B644-06AC7A73103D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EB2A63D-9559-4F58-B644-06AC7A73103D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{067DABC8-892A-42AC-AB24-ECA60CF54FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{067DABC8-892A-42AC-AB24-ECA60CF54FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{067DABC8-892A-42AC-AB24-ECA60CF54FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{067DABC8-892A-42AC-AB24-ECA60CF54FA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +90,7 @@ Global
 		{3104E94F-614E-48C1-BF78-76E722DFB02D} = {6614F3F1-4674-4269-AE6B-B722BBF46FF3}
 		{F5AB0AC0-9274-4F24-999D-C5187B4B0A0D} = {7CF2F68E-133E-4605-9D4C-CC8D50AA3190}
 		{8EB2A63D-9559-4F58-B644-06AC7A73103D} = {40525165-CF73-40D5-89B1-2DD0225B1B5F}
+		{067DABC8-892A-42AC-AB24-ECA60CF54FA6} = {6EE2615F-F72A-45D5-A53D-9EB7BEEF590D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3EC76FDC-F4F2-499A-BE5B-1FEEA949883A}

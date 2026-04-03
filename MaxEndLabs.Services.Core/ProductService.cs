@@ -114,9 +114,9 @@ namespace MaxEndLabs.Services.Core
 		}
 
 		public async Task<ProductsPageDto> GetProductsByCategoryAsync(string categorySlug)
-		{
-			var category = await _categoryRepository.GetCategoryBySlugAsync(categorySlug);
-
+        {
+            Category? category = await _categoryRepository.GetCategoryBySlugAsync(categorySlug);
+            
 			if (category == null)
 				throw new EntityNotFoundException();
 

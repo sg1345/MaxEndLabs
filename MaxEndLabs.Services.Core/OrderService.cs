@@ -19,7 +19,7 @@ namespace MaxEndLabs.Services.Core
 			_shoppingCartRepository = shoppingCartRepository;
 		}
 
-		public async Task<OrderPaginationDto> GetOrdersForUserAsync(string userId, int page, int pageSize)
+        public async Task<OrderPaginationDto> GetOrdersForUserAsync(string userId, int page, int pageSize)
 		{
 			int skip = (page - 1) * pageSize;
 			var orders = await _orderRepository.GetPageOrdersAsync(userId, skip, pageSize);
@@ -29,11 +29,16 @@ namespace MaxEndLabs.Services.Core
 
 			var count = await _orderRepository.GetCountAsync(userId);
 
-			return new OrderPaginationDto
+            bool hasPreviousPage = page > 1;
+            int totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new OrderPaginationDto
 			{
 				CurrentPage = page,
-				TotalPages = (int)Math.Ceiling(count / (double)pageSize),
-				Orders = orders.Select(o => new OrderDto
+				TotalPages = totalPages,
+				HasPreviousPage = hasPreviousPage,
+				HasNextPage = page < totalPages,
+                Orders = orders.Select(o => new OrderDto
 				{
 					Id = o.Id,
 					OrderNumber = o.OrderNumber,
@@ -44,7 +49,8 @@ namespace MaxEndLabs.Services.Core
 			};
 		}
 
-		public async Task<OrderPaginationDto> GetOrderSearchAsync(string searchTerm, string searchType, int page, int pageSize)
+		public async Task<OrderPaginationDto> GetOrderSearchAsync
+            (string searchTerm, string searchType, int page, int pageSize)
 		{
 			int skip = (page - 1) * pageSize;
 			var orders = await _orderRepository.GetSearchOrdersAsync(searchType, searchTerm, skip, pageSize);
@@ -54,10 +60,15 @@ namespace MaxEndLabs.Services.Core
 
 			var count = await _orderRepository.GetCountAsync(searchType, searchTerm);
 
-			return new OrderPaginationDto
+            bool hasPreviousPage = page > 1;
+            int totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new OrderPaginationDto
 			{
 				CurrentPage = page,
-				TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+				TotalPages = totalPages,
+				HasPreviousPage = hasPreviousPage,
+				HasNextPage = page < totalPages,
 				Orders = orders.Select(o => new OrderDto
 				{
 					Id = o.Id,
@@ -142,8 +153,9 @@ namespace MaxEndLabs.Services.Core
 		}
 
 		public async Task<StripeSessionDto> GetOrderAsync(int orderId)
-		{
-			var order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered:false, includeOrderItem:true, includeUser:false);
+        {
+            Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: false, includeOrderItem: true, includeUser: false);
+            
 
 			if (order == null) return null!;
 
@@ -166,9 +178,9 @@ namespace MaxEndLabs.Services.Core
 		}
 
 		public async Task<OrderDetailsDto> GetOrderDetailsAsync(int orderId)
-		{
-			var order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered:false, includeOrderItem:true, includeUser:true);
-
+        {
+            Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: false, includeOrderItem: true, includeUser: true);
+			
 			if (order == null)
 				throw new EntityNotFoundException();
 
@@ -221,7 +233,7 @@ namespace MaxEndLabs.Services.Core
 		public async Task<string> MarkOrderAsPaidAsync(int orderId)
 		{
 			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
-
+            
 			if (order == null)
 				throw new EntityNotFoundException();
 
