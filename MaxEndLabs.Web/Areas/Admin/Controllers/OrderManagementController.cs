@@ -94,39 +94,49 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			{
 				return PartialView("BadRequest");
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+				//I need another partial
+                return PartialView("BadRequest");
+            }
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> UpdateStatus(int orderId, string newStatus)
 		{
-			try
-			{
-				var orderStatus = await _orderService.GetOrderStatusAsync(orderId);
+            try
+            {
+                var orderStatus = await _orderService.GetOrderStatusAsync(orderId);
 
-				if (orderStatus == newStatus)
-				{
-					return await Details(orderId);
-				}
+                if (orderStatus == newStatus)
+                {
+                    return await Details(orderId);
+                }
 
-				await _orderService.ChangeOrderStatus(newStatus, orderId);
+                await _orderService.ChangeOrderStatus(newStatus, orderId);
 
-				return await Details(orderId);
+                return await Details(orderId);
 
-			}
-			catch (EntityNotFoundException e)
-			{
-				return NotFound();
-			}
-			catch (BadRequestException e)
-			{
-				return BadRequest();
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound();
+            }
+            catch (BadRequestException e)
+            {
+                return BadRequest();
 
-			}
-			catch (EntityPersistFailureException e)
-			{
-				TempData[ErrorTempDataKey] = FailedToUpdateStatus;
-				return RedirectToAction("Index", "Home");
-			}
+            }
+            catch (EntityPersistFailureException e)
+            {
+                TempData[ErrorTempDataKey] = FailedToUpdateStatus;
+                return RedirectToAction("Index", "Home");
+            }
+            catch (InvalidOperationException)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return RedirectToAction("Index", "Home");
+            }
 		}
 	}
 }

@@ -1,13 +1,11 @@
 ﻿using MaxEndLabs.GCommon.Exceptions;
-using MaxEndLabs.Service.Models.Category;
-using MaxEndLabs.Service.Models.Product;
 
 using MaxEndLabs.Services.Core.Contracts;
-
-using MaxEndLabs.ViewModels.Category;
 using MaxEndLabs.ViewModels.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static MaxEndLabs.GCommon.OutputMessages.Product;
+using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Controllers
 {
@@ -72,32 +70,37 @@ namespace MaxEndLabs.Web.Controllers
         [Route("Products/ByCategory/{slug}")]
         public async Task<IActionResult> ByCategory(string slug)
         {
-	        try
-	        {
-		        var productsPageDto = await _productService.GetProductsByCategoryAsync(slug);
+            try
+            {
+                var productsPageDto = await _productService.GetProductsByCategoryAsync(slug);
 
-		        var products = new ProductsPageViewModel()
-		        {
-			        Title = productsPageDto.Title,
-			        Products = productsPageDto.Products
-				        .Select(p => new ProductListViewModel()
-				        {
-					        Id = p.Id,
-					        Name = p.Name,
-					        Slug = p.Slug,
-					        Price = p.Price,
-					        MainImageUrl = p.MainImageUrl,
-					        CategorySlug = p.CategorySlug
-				        })
-				        .ToList()
-		        };
+                var products = new ProductsPageViewModel()
+                {
+                    Title = productsPageDto.Title,
+                    Products = productsPageDto.Products
+                        .Select(p => new ProductListViewModel()
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Slug = p.Slug,
+                            Price = p.Price,
+                            MainImageUrl = p.MainImageUrl,
+                            CategorySlug = p.CategorySlug
+                        })
+                        .ToList()
+                };
 
-		        return View("ProductsPage", products);
-			}
-	        catch (EntityNotFoundException e)
-	        {
-		        return NotFound();
-	        }
+                return View("ProductsPage", products);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound();
+            }
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
         }
 
         [AllowAnonymous]
@@ -133,6 +136,11 @@ namespace MaxEndLabs.Web.Controllers
             catch (EntityNotFoundException e)
             {
                 return NotFound();
+            }
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
             }
         }
     }

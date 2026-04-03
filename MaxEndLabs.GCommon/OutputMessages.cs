@@ -14,7 +14,9 @@ namespace MaxEndLabs.GCommon
 			public static string FailedToCheckout = "Failed to checkout.";
 			public static string FailedToUpdateToPaid = "Failed to update order status after payment. Please contact us!";
 			public static string PaymentFailed = "Payment failed";
-		}
+            public static string ServerError =
+                "We encountered a technical issue with this product's data. Our team has been notified.";
+        }
 
 		public static class Product
 		{
@@ -27,7 +29,11 @@ namespace MaxEndLabs.GCommon
 			public static string FailedToDeleteProduct = "The product remains published";
 			public static string ProductRestored = "Product is restored!";
 			public static string FailedToRestoreProduct = "Failed to restore product!";
-		}
+
+            public static string ServerError =
+                "We encountered a technical issue with this product's data. Our team has been notified.";
+
+        }
 
 		public static class ShoppingCart
 		{
@@ -35,6 +41,8 @@ namespace MaxEndLabs.GCommon
 			public static string FailedToAddProductToCart = "Failed to add product to cart!";
 			public static string ProductRemovedFromCart = "Product removed from cart!";
 			public static string FailedToRemoveProductFromCart = "Failed to remove product from cart!";
-		}
+            public static string ServerError =
+                "We encountered a technical issue with this product's data. Our team has been notified.";
+        }
 	}
 }

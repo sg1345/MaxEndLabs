@@ -92,7 +92,12 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			{
 				return NotFound();
 			}
-		}
+			catch(InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 
 		[HttpGet]
 		public async Task<IActionResult> Create()
@@ -201,8 +206,13 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			{
 				return NotFound();
 			}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
 
-		}
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> VariantManager(ManageVariantsViewModel model)
@@ -287,8 +297,13 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			{
 				return NotFound();
 			}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
 
-		}
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> Edit(int id, ProductFormViewModel model)
@@ -350,7 +365,12 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 				TempData[WarningTempDataKey] = NoChangesWereMade;
 				return RedirectToAction("Index", "Home");
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 
 		//We have onclick confirmation for delete, so I am skipping the GET method
 		[HttpPost]
@@ -372,7 +392,12 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 				TempData[ErrorTempDataKey] = FailedToDeleteProduct;
 				return RedirectToAction("Index");
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 
 		public async Task<IActionResult> Restore(string productSlug)
 		{
@@ -392,6 +417,11 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 				TempData[ErrorTempDataKey] = FailedToRestoreProduct;
 				return RedirectToAction("Index");
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 	}
 }

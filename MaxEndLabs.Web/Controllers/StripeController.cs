@@ -24,33 +24,42 @@ namespace MaxEndLabs.Web.Controllers
 		[HttpPost("stripe/webhook")]
 		public async Task<IActionResult> Webhook()
 		{
-			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-			var stripeSignature = Request.Headers["Stripe-Signature"];
+            try
+            {
+                var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+                var stripeSignature = Request.Headers["Stripe-Signature"];
 
-			Event stripeEvent;
-			try
-			{
-				stripeEvent = EventUtility.ConstructEvent(json, stripeSignature, _stripeSettings.WebhookSecret);
+                Event stripeEvent;
+                try
+                {
+                    stripeEvent = EventUtility.ConstructEvent(json, stripeSignature, _stripeSettings.WebhookSecret);
 
-			}
-			catch
-			{
-				return BadRequest();
-			}
+                }
+                catch
+                {
+                    return BadRequest();
+                }
 
-			if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
-			{
-				var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
+                if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
+                {
+                    var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
 
-				if (session?.Metadata != null &&
-				    session.Metadata.TryGetValue("orderId", out var orderIdStr) &&
-				    int.TryParse(orderIdStr, out var orderId))
-				{
-					await _orderService.MarkOrderAsPaidAsync(orderId);
-				}
-			}
+                    if (session?.Metadata != null &&
+                        session.Metadata.TryGetValue("orderId", out var orderIdStr) &&
+                        int.TryParse(orderIdStr, out var orderId))
+                    {
+                        await _orderService.MarkOrderAsPaidAsync(orderId);
+                    }
+                }
 
-			return Ok();
+                return Ok();
+            }
+            catch (InvalidOperationException e)
+            {
+                return Conflict();
+            }
+
+			
 		}
 	}
 }

@@ -65,7 +65,12 @@ namespace MaxEndLabs.Web.Controllers
 			{
 				return NotFound();
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 
 		[HttpPost]
 		[Authorize]
@@ -122,29 +127,34 @@ namespace MaxEndLabs.Web.Controllers
 				TempData[ErrorTempDataKey] = FailedToCheckout;
 				return RedirectToAction("Index", "Home");
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 
 		[HttpGet]
 		[Authorize]
 		public async Task<IActionResult> StripeCheckout(int orderId)
 		{
-			var userId = GetUserId()!;
-			var stripeSessionDto = await _orderService.GetOrderAsync(orderId);
-
-			var baseUrl = Environment.GetEnvironmentVariable("APP__PUBLICBASEURL")
-						  ?? $"{Request.Scheme}://{Request.Host}";
-			var successBase = baseUrl + Url
-				.Action(nameof(PaymentSuccess), "Order", new { stripeSessionDto.OrderId });
-			var cancelUrl = baseUrl + Url.Action(nameof(PaymentCancel), "Order");
-			var successSeparator = successBase.Contains('?') ? "&" : "?";
-			var successUrl = successBase + successSeparator + "session_id={CHECKOUT_SESSION_ID}";
-
-			var optionsFromService =
-				_stripeService.CreateCheckoutSessionAsync(stripeSessionDto, successUrl, cancelUrl, userId);
-
 			try
 			{
-				var session = await new SessionService().CreateAsync(optionsFromService);
+                var userId = GetUserId()!;
+                var stripeSessionDto = await _orderService.GetOrderAsync(orderId);
+
+                var baseUrl = Environment.GetEnvironmentVariable("APP__PUBLICBASEURL")
+                              ?? $"{Request.Scheme}://{Request.Host}";
+                var successBase = baseUrl + Url
+                    .Action(nameof(PaymentSuccess), "Order", new { stripeSessionDto.OrderId });
+                var cancelUrl = baseUrl + Url.Action(nameof(PaymentCancel), "Order");
+                var successSeparator = successBase.Contains('?') ? "&" : "?";
+                var successUrl = successBase + successSeparator + "session_id={CHECKOUT_SESSION_ID}";
+
+                var optionsFromService =
+                    _stripeService.CreateCheckoutSessionAsync(stripeSessionDto, successUrl, cancelUrl, userId);
+
+                var session = await new SessionService().CreateAsync(optionsFromService);
 
 				return Redirect(session.Url);
 			}
@@ -165,19 +175,20 @@ namespace MaxEndLabs.Web.Controllers
 				return RedirectToAction(nameof(PaymentCancel));
 			}
 
-			try
-			{
-				//without webhook (offline)
-				var service = new SessionService();
-				var session = await service.GetAsync(sessionId);
+            try
+            {
+                //without webhook (offline)
+                var service = new SessionService();
+                var session = await service.GetAsync(sessionId);
 
-				if (session.PaymentStatus == "paid")
-				{
-					string orderStatus = await _orderService.MarkOrderAsPaidAsync(orderId);
-					return View("Done", model: orderStatus);
-				}
+                if (session.PaymentStatus == "paid")
+                {
+                    string orderStatus = await _orderService.MarkOrderAsPaidAsync(orderId);
+                    return View("Done", model: orderStatus);
+                }
 
-				//With webhook (online)
+				//With webhook(online)
+
 				//var status = await _orderService.GetOrderStatusAsync(orderId);
 				//if (status == "Paid")
 				//{
@@ -185,16 +196,21 @@ namespace MaxEndLabs.Web.Controllers
 				//}
 
 				return View("PaymentProccessing", model: session.PaymentStatus);
-			}
-			catch (EntityNotFoundException e)
-			{
-				return NotFound();
-			}
-			catch (EntityPersistFailureException e)
-			{
-				TempData[ErrorTempDataKey] = FailedToUpdateToPaid;
-				return RedirectToAction("Index", "Home");
-			}
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound();
+            }
+            catch (EntityPersistFailureException e)
+            {
+                TempData[ErrorTempDataKey] = FailedToUpdateToPaid;
+                return RedirectToAction("Index", "Home");
+            }
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return RedirectToAction("Index", "Home");
+            }
 		}
 
 		[HttpGet]
@@ -248,8 +264,13 @@ namespace MaxEndLabs.Web.Controllers
 			{
 				return PartialView("BadRequest");
 			}
+            catch (InvalidOperationException e)
+            {
+                // I need another partial and better understanding how to handle exceptions in general
+                return PartialView("BadRequest");
+            }
 
-		}
+        }
 
 		private async Task RefillCheckoutModel(CheckoutViewModel model, string userId)
 		{

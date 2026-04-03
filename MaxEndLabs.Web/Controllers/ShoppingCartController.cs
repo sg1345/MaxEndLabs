@@ -60,7 +60,12 @@ namespace MaxEndLabs.Web.Controllers
 			{
 				return NotFound();
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 
 		[HttpPost]
 		[AllowAnonymous]
@@ -134,9 +139,14 @@ namespace MaxEndLabs.Web.Controllers
 					model.ProductSlug
 				});
 			}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
 
 
-		}
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> RemoveFromCart(CartItemRemoveViewModel model)
@@ -170,6 +180,11 @@ namespace MaxEndLabs.Web.Controllers
 				TempData[ErrorTempDataKey] = FailedToRemoveProductFromCart;
 				return RedirectToAction("Index");
 			}
-		}
+            catch (InvalidOperationException e)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return View("Index", "Home");
+            }
+        }
 	}
 }
