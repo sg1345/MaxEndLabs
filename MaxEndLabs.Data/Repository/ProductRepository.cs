@@ -113,14 +113,14 @@ namespace MaxEndLabs.Data.Repository
             }
 
 			return await query
-                .FirstOrDefaultAsync(p => p.Slug == slug);
+                .SingleOrDefaultAsync(p => p.Slug == slug);
         }
 
 		public async Task<Product?> GetProductAsync(int id)
 		{
 			return await DbContext.Products
 				.Include(p => p.Category)
-				.FirstOrDefaultAsync(p => p.Id == id);
+				.SingleOrDefaultAsync(p => p.Id == id);
 		}
 
 		public async Task AddProductAsync(Product product)

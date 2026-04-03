@@ -1,4 +1,5 @@
-﻿using MaxEndLabs.Data.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using MaxEndLabs.Data.Models;
 
 namespace MaxEndLabs.Data.Repository.Contracts
 {
@@ -6,6 +7,5 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	{
 		Task<IEnumerable<Category>> GetAllCategoriesAsync();
 		Task<Category?> GetCategoryBySlugAsync(string slug);
-		Task<string?> GetCategorySlugAsync(int id);
 	}
 }

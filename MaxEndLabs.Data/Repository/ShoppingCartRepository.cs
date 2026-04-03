@@ -39,7 +39,7 @@ namespace MaxEndLabs.Data.Repository
 		{
 			return await DbContext.CartItems
 				.IgnoreQueryFilters()
-				.FirstOrDefaultAsync(ci => ci.CartId == cartId &&
+				.SingleOrDefaultAsync(ci => ci.CartId == cartId &&
 										  ci.ProductId == productId &&
 										  ci.ProductVariantId == productVariantId);
 
@@ -48,7 +48,7 @@ namespace MaxEndLabs.Data.Repository
 		public async Task<CartItem?> GetCartItemAsync(int cartId, int productId, int productVariantId)
 		{
 			return await DbContext.CartItems
-				.FirstOrDefaultAsync(ci => ci.CartId == cartId &&
+				.SingleOrDefaultAsync(ci => ci.CartId == cartId &&
 				                           ci.ProductId == productId &&
 				                           ci.ProductVariantId == productVariantId);
 

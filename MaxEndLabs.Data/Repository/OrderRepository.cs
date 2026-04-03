@@ -32,8 +32,6 @@ namespace MaxEndLabs.Data.Repository
 				.ThenBy(o => o.Status)
 				.ThenByDescending(o => o.UpdatedAt);
 
-
-
 			if (searchType == "Username" && searchTerm != null)
 			{
 				return await query
@@ -46,13 +44,6 @@ namespace MaxEndLabs.Data.Repository
 			{
 				return await query
 					.Where(o => o.OrderNumber.Contains(searchTerm))
-					.Skip(skip)
-					.Take(take)
-					.ToArrayAsync();
-			}
-			else if ((searchType is "Username" or "OrderNumber") && string.IsNullOrEmpty(searchTerm))
-			{
-				return await query
 					.Skip(skip)
 					.Take(take)
 					.ToArrayAsync();
@@ -84,11 +75,6 @@ namespace MaxEndLabs.Data.Repository
 				return await query
 					.CountAsync(o => o.OrderNumber.Contains(searchTerm));
 			}
-			else if ((searchType is "Username" or "OrderNumber") && string.IsNullOrEmpty(searchTerm))
-			{
-				return await query
-					.CountAsync();
-			}
 
 			return 0;
 		}
@@ -118,7 +104,7 @@ namespace MaxEndLabs.Data.Repository
 			}
 
 			return await query
-				.FirstOrDefaultAsync(o => o.Id == id);
+				.SingleOrDefaultAsync(o => o.Id == id);
 		}
 
 		public async Task AddOrderAsync(Order order)
