@@ -5,6 +5,7 @@ using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Service.Models.Order;
 using MaxEndLabs.Service.Models.ShoppingCart;
 using MaxEndLabs.Services.Core.Contracts;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MaxEndLabs.Services.Core
 {
@@ -119,7 +120,7 @@ namespace MaxEndLabs.Services.Core
 
 			var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(dto.UserId);
 
-			if (cartItemList == null)
+			if (cartItemList.IsNullOrEmpty())
 				throw new EntityNotFoundException();
 
 			decimal totalPrice = cartItemList.Sum(ci => ci.Quantity * (ci.ProductVariant.Price ?? ci.Product.Price));
@@ -202,7 +203,7 @@ namespace MaxEndLabs.Services.Core
 
 			var orderDetailsDto = new OrderDetailsDto
 			{
-				OwnderUserId = order.UserId,
+				OwnerUserId = order.UserId,
 				OrderId = order.Id,
 				OwnerFullName = order.User.FullName,
 				OwnerUsername = order.User.UserName!,
@@ -237,8 +238,11 @@ namespace MaxEndLabs.Services.Core
 			if (order == null)
 				throw new EntityNotFoundException();
 
-			order.Status = OrderStatus.Paid;
-			order.UpdatedAt = DateTime.UtcNow;
+            if (order.Status == OrderStatus.Pending)
+            {
+                order.Status = OrderStatus.Paid;
+                order.UpdatedAt = DateTime.UtcNow;
+            }
 
 			_orderRepository.UpdateOrder(order);
 			await EnsureSaveChangesAsync();

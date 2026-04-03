@@ -5,7 +5,7 @@ namespace MaxEndLabs.Service.Models.Order
 {
     public class OrderCreateDto : ShoppingCartIndexDto
     {
-        public string UserId { get; set; } = null!;
+
     } 
     
 }

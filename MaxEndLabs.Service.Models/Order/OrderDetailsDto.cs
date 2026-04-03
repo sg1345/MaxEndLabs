@@ -8,7 +8,7 @@ namespace MaxEndLabs.Service.Models.Order
 {
     public class OrderDetailsDto
     {
-	    public string OwnderUserId { get; set; } = null!; 
+	    public string OwnerUserId { get; set; } = null!; 
         public string OwnerFullName { get; set; } = null!;
         public string OwnerUsername { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
