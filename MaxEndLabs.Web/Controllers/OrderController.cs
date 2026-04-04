@@ -113,7 +113,7 @@ namespace MaxEndLabs.Web.Controllers
 				if (orderId == 0)
 					return RedirectToAction("Index", "ShoppingCart");
 
-				var cartId = await _shoppingCartService.GetOrCreateShoppingCart(userId);
+				var cartId = await _shoppingCartService.GetOrCreateShoppingCartAsync(userId);
 				await _shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(cartId);
 
 				return RedirectToAction(nameof(StripeCheckout), new { orderId = orderId });
@@ -130,7 +130,7 @@ namespace MaxEndLabs.Web.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 

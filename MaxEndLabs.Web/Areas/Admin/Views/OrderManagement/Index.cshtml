@@ -15,9 +15,12 @@
 </div>
 
 <partial name="_OrderModalShell"/>
+
+
 @section Scripts
 {
 	<script src="~/js/orderDetails.js"></script>
+	<script src="~/js/applyChanges.js"></script>
 	<script>  			
 	$(document).on('hidden.bs.modal', '#orderModal', function () {
 	    location.reload(); 

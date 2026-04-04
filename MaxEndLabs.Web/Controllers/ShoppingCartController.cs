@@ -23,7 +23,7 @@ namespace MaxEndLabs.Web.Controllers
 		}
 
 		[HttpGet]
-		[AllowAnonymous]
+		[Authorize(Roles = "User")]
 		public async Task<IActionResult> Index()
 		{
 			string? userId = GetUserId();
@@ -107,7 +107,7 @@ namespace MaxEndLabs.Web.Controllers
 					return View("/Views/Products/Details.cshtml", productDetails);
 				}
 
-				var cartId = await _shoppingCartService.GetOrCreateShoppingCart(userId);
+				var cartId = await _shoppingCartService.GetOrCreateShoppingCartAsync(userId);
 
 				var dto = new CartItemCreateDto()
 				{

@@ -1108,7 +1108,7 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
-        public async Task GetOrderDetailsAsync_OrderDoesNotExist_throwsEntityNotFoundException()
+        public async Task GetOrderDetailsAsync_OrderDoesNotExist_ThrowsEntityNotFoundException()
         {
             //Arrange
             int orderId = 1;
@@ -1120,7 +1120,7 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
-        public async Task GetOrderDetailsAsync_OrderExist_returnCorrectDto()
+        public async Task GetOrderDetailsAsync_OrderExist_ReturnCorrectDto()
         {
             //Arrange
             int orderId = 1;

@@ -3,6 +3,7 @@ using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Service.Models.ShoppingCart;
 using MaxEndLabs.Services.Core.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace MaxEndLabs.Services.Core
@@ -86,27 +87,45 @@ namespace MaxEndLabs.Services.Core
 			var cartItem = await _shoppingCartRepository
 					.GetCartItemAsync(dto.CartId, dto.ProductId, dto.ProductVariantId);
 
-
 			if (cartItem == null)
                 throw new EntityNotFoundException();
 
-            _shoppingCartRepository.SoftDeleteFromCartAsync(cartItem);
+            if (cartItem.IsPublished)
+            {
+                cartItem.IsPublished = false;
+
+                _shoppingCartRepository.CartItemUpdate(cartItem);
+            }
+            
             await EnsureSaveChangesAsync();
 		}
 
 		public async Task DeleteAllCartItemsFromShoppingCartAsync(int cartId)
 		{
 			var cartItemList = await _shoppingCartRepository
-				.GetCartItemsByUCartIdAsync(cartId);
+				.GetCartItemsByCartIdAsync(cartId);
 
 			if(cartItemList == null)
 				throw new EntityNotFoundException();
 
-            _shoppingCartRepository.ClearCart(cartItemList);
+            bool changesMade = false;
+            foreach (var cartItem in cartItemList)
+            {
+                if (cartItem.IsPublished)
+                {
+                    cartItem.IsPublished = false;
+					changesMade = true;
+                }
+                    
+            }
+
+            if (changesMade)
+                _shoppingCartRepository.CartItemUpdateRange(cartItemList);
+
             await EnsureSaveChangesAsync();
 		}
 
-		public async Task<int> GetOrCreateShoppingCart(string userId)
+		public async Task<int> GetOrCreateShoppingCartAsync(string userId)
 		{
 			var carId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
 
@@ -136,7 +155,7 @@ namespace MaxEndLabs.Services.Core
 
 			if (!successAdd)
 			{
-				throw new EntityNotFoundException();
+				throw new EntityPersistFailureException();
 			}
 		}
 	}

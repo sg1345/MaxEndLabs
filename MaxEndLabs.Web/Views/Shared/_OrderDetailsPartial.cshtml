@@ -84,13 +84,4 @@
 	{
 		<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@Model.OrderId" class="btn btn-primary">Pay Now</a>
 	}
-
-	@if (User.IsInRole("Admin"))
-	{
-            <button type="button" id="btnUpdateStatus" form="statusForm" class="btn btn-success">Apply Changes</button>
-	}
 </div>
-
-@section Scripts{
-        <script src="~/js/applyChanges.js"></script>
-}

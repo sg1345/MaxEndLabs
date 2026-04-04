@@ -8,6 +8,6 @@ namespace MaxEndLabs.Services.Core.Contracts
 		Task AddProductToShoppingCartAsync(CartItemCreateDto dto);
 		Task RemoveCartItemFromShoppingCartAsync(CartItemDeleteDto dto);
 		Task DeleteAllCartItemsFromShoppingCartAsync(int cartId);
-		Task<int> GetOrCreateShoppingCart(string userId);
+		Task<int> GetOrCreateShoppingCartAsync(string userId);
 	}
 }

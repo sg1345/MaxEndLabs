@@ -25,15 +25,10 @@ namespace MaxEndLabs.Data.Repository
 			await DbContext.CartItems.AddAsync(cartItem);
 		}
 
-		public void SoftDeleteFromCartAsync(CartItem cartItem)
+		public void CartItemUpdate(CartItem cartItem)
 		{
-			if (cartItem.IsPublished)
-			{
-				cartItem.IsPublished = false;
-
-				DbContext.CartItems.Update(cartItem);
-			}
-		}
+            DbContext.CartItems.Update(cartItem);
+        }
 
 		public async Task<CartItem?> GetCartItemIgnoreFilterAsync(int cartId, int productId, int productVariantId)
 		{
@@ -54,20 +49,12 @@ namespace MaxEndLabs.Data.Repository
 
 		}
 
-		public void ClearCart(IEnumerable<CartItem> cartItemsList)
+		public void CartItemUpdateRange(IEnumerable<CartItem> cartItemList)
 		{
-			bool changesMade = false;
-			foreach (var cartItem in cartItemsList)
-			{
-				if (cartItem.IsPublished)
-					cartItem.IsPublished = false;
-			}
+            DbContext.CartItems.UpdateRange(cartItemList);
+        }
 
-			if(changesMade)
-				DbContext.CartItems.UpdateRange(cartItemsList);
-		}
-
-		public async Task<IEnumerable<CartItem>> GetCartItemsByUCartIdAsync(int cartId)
+		public async Task<IEnumerable<CartItem>> GetCartItemsByCartIdAsync(int cartId)
 		{
 			return await DbContext.CartItems
 				.Where(c => c.CartId == cartId)

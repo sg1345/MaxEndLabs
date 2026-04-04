@@ -1,5 +1,4 @@
-﻿using MaxEndLabs.Service.Models.Order;
-using MaxEndLabs.Services.Core.Contracts;
+﻿using MaxEndLabs.Services.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using MaxEndLabs.Data.Models;
