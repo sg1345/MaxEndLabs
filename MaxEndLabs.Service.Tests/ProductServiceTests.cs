@@ -331,8 +331,6 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetAllCategoriesAsync_CategoriesAreEmpty_ReturnCorrectEmptyList()
         {
             //Arrange
-
-
             categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
                 .ReturnsAsync(new List<Category>());
 
@@ -507,7 +505,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetProductsByCategoryIdAsync(categoryId))
                 .ReturnsAsync((List<Product>)null!);
 
-            Assert.ThrowsAsync<EntityNotFoundException>(async () => 
+            Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.GetProductsByCategoryAsync(categorySlug));
         }
 
@@ -525,19 +523,162 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
-        public void GetProductsByCategoryAsync_CategoryNotFound_ThrowEntityNotFoundException()
+        public void GetProductDetailsAsync_ProductNotFound_ThrowEntityNotFoundException()
         {
             //Arrange
-            string categorySlug = "slug";
+            string productSlug = "slug";
 
-            categoryRepositoryMock.Setup(cr => cr.GetCategoryBySlugAsync(categorySlug))
-                .ReturnsAsync(new Category
-                {
-                    Id = 0
-                });
+            productRepositoryMock.Setup(pr =>
+                    pr.GetProductAsync(productSlug, true, true, true))
+                .ReturnsAsync((Product)null!);
 
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
-                await productService.GetProductsByCategoryAsync(categorySlug));
+                await productService.GetProductDetailsAsync(productSlug, true));
+        }
+
+        [Test]
+        public async Task GetProductDetailsAsync_ProductExist_ReturnPopulatedDto()
+        {
+            //Arrange
+            string productSlug = "ultra-light-wireless-mouse";
+
+            var product = new Product
+            {
+                Id = 1,
+                Name = "Ultra-Light Wireless Mouse",
+                Slug = "ultra-light-wireless-mouse",
+                Description = "Very good mouse.",
+                Category = new Category
+                {
+                    Name = "Electronics",
+                    Slug = "electronics"
+                },
+                Price = 89.99m,
+                MainImageUrl = "https://cdn.example.com/images/products/mouse-01.jpg",
+                ProductVariants = new List<ProductVariant>()
+                {
+                    new ProductVariant()
+                    {
+                        Id = 1,
+                        VariantName = "Ultra white",
+                        Price = 69.69m,
+                        IsDeleted = false
+                    },
+                    new ProductVariant()
+                    {
+                        Id = 2,
+                        VariantName = "Giga Black",
+                        Price = null,
+                        IsDeleted = false
+                    },
+                    new ProductVariant()
+                    {
+                        Id = 3,
+                        VariantName = "Cyber Myber",
+                        Price = null,
+                        IsDeleted = true
+                    }
+                }
+            };
+            var expected = new ProductDetailsDto()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Slug = product.Slug,
+                CategorySlug = product.Category.Slug,
+                Description = product.Description,
+                Price = product.Price,
+                MainImageUrl = product.MainImageUrl,
+                ProductVariants = new List<ProductVariantDto>()
+                {
+                    new ProductVariantDto()
+                    {
+                        Id = 1,
+                        VariantName = "Ultra white",
+                        Price = 69.69m,
+                    },
+                    new ProductVariantDto()
+                    {
+                        Id = 2,
+                        VariantName = "Giga Black",
+                        Price = 89.99m
+                    }
+                }
+            };
+            var expectedVariantsArr = expected.ProductVariants.ToArray();
+
+            productRepositoryMock.Setup(pr =>
+                    pr.GetProductAsync(productSlug, true, true, true))
+                .ReturnsAsync(product);
+            //Act
+            var result = await productService.GetProductDetailsAsync(productSlug, true);
+
+            //Assert
+            var variantResultArr = result.ProductVariants.ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Id,Is.EqualTo(expected.Id));
+                Assert.That(result.Name, Is.EqualTo(expected.Name));
+                Assert.That(result.Slug, Is.EqualTo(expected.Slug));
+                Assert.That(result.CategorySlug, Is.EqualTo(expected.CategorySlug));
+                Assert.That(result.Description, Is.EqualTo(expected.Description));
+                Assert.That(result.Price, Is.EqualTo(expected.Price));
+                Assert.That(result.MainImageUrl, Is.EqualTo(expected.MainImageUrl));
+                Assert.That(result.ProductVariants.Count(), Is.EqualTo(expected.ProductVariants.Count()));
+                Assert.That(variantResultArr[0].Id, Is.EqualTo(expectedVariantsArr[0].Id));
+                Assert.That(variantResultArr[0].VariantName, Is.EqualTo(expectedVariantsArr[0].VariantName));
+                Assert.That(variantResultArr[0].Price, Is.EqualTo(expectedVariantsArr[0].Price));
+                Assert.That(variantResultArr[1].Id, Is.EqualTo(expectedVariantsArr[1].Id));
+                Assert.That(variantResultArr[1].VariantName, Is.EqualTo(expectedVariantsArr[1].VariantName));
+                Assert.That(variantResultArr[1].Price, Is.EqualTo(expectedVariantsArr[1].Price));
+            });
+        }
+
+        [Test]
+        public void GetProductCreateDtoAsync_CategoriesDoesNotExist_ThrowEntityNotFoundException()
+        {
+            //Arrange
+            categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
+                .ReturnsAsync((List<Category>)null!);
+
+            Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductCreateDtoAsync());
+        }
+
+        [Test]
+        public async Task GetProductCreateDtoAsync_CategoriesExist_ReturnPopulatedDto()
+        {
+            //Arrange
+            var categories = new List<Category>()
+            {
+                new Category() { Id = 1, Name = "A" },
+                new Category() { Id = 2, Name = "C" },
+                new Category() { Id = 3, Name = "B" }
+            };
+
+            var expectedCat = new List<Category>()
+            {
+                new Category() { Id = 1, Name = "A" },
+                new Category() { Id = 3, Name = "B" },
+                new Category() { Id = 2, Name = "C" }
+            };
+
+            categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
+                .ReturnsAsync(categories);
+            //Act
+            var result = await productService.GetProductCreateDtoAsync();
+
+            //Assert
+            var categoriesResult = result.Categories.ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(categoriesResult.Length, Is.EqualTo(expectedCat.Count));
+                Assert.That(categoriesResult[0].Id, Is.EqualTo(expectedCat[0].Id));
+                Assert.That(categoriesResult[0].Name, Is.EqualTo(expectedCat[0].Name));
+                Assert.That(categoriesResult[1].Id, Is.EqualTo(expectedCat[1].Id));
+                Assert.That(categoriesResult[1].Name, Is.EqualTo(expectedCat[1].Name));
+                Assert.That(categoriesResult[2].Id, Is.EqualTo(expectedCat[2].Id));
+                Assert.That(categoriesResult[2].Name, Is.EqualTo(expectedCat[2].Name));
+            });
         }
     }
 }

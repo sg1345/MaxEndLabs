@@ -122,7 +122,7 @@ namespace MaxEndLabs.Services.Core
         {
             Category? category = await _categoryRepository.GetCategoryBySlugAsync(categorySlug);
 
-            if (category == null || category.Id == 0)
+            if (category == null)
                 throw new EntityNotFoundException();
 
             var products = await _productRepository.GetProductsByCategoryIdAsync(category.Id);
