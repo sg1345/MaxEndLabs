@@ -10,8 +10,8 @@ namespace MaxEndLabs.Service.Models.Product
     {
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
-        public bool HasPreviousPage => CurrentPage > 1;
-        public bool HasNextPage => CurrentPage < TotalPages;
+        public bool HasPreviousPage { get; set; }
+        public bool HasNextPage { get; set; }
         public IEnumerable<ProductPaginationEntityDto> Products { get; set; } = [];
     }
 }

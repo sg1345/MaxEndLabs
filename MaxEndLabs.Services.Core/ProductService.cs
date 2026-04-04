@@ -9,403 +9,412 @@ using MaxEndLabs.Services.Core.Contracts;
 
 namespace MaxEndLabs.Services.Core
 {
-	public class ProductService : IProductService
-	{
-		private readonly IProductRepository _productRepository;
-		private readonly IShoppingCartRepository _shoppingCartRepository;
-		private readonly ICategoryRepository _categoryRepository;
-		public ProductService(
-			IProductRepository productRepository,
-			IShoppingCartRepository shoppingCartRepository,
-			ICategoryRepository categoryRepository)
-		{
-			_shoppingCartRepository = shoppingCartRepository;
-			_productRepository = productRepository;
-			_categoryRepository = categoryRepository;
-		}
+    public class ProductService : IProductService
+    {
+        private readonly IProductRepository _productRepository;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        public ProductService(
+            IProductRepository productRepository,
+            IShoppingCartRepository shoppingCartRepository,
+            ICategoryRepository categoryRepository)
+        {
+            _shoppingCartRepository = shoppingCartRepository;
+            _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
+        }
 
-		public async Task<bool> ProductExistsAsync(string productName, int productId)
-		{
-			var productSlug = GenerateSlug(productName);
+        public async Task<bool> ProductExistsAsync(string productName, int productId)
+        {
+            var productSlug = GenerateSlug(productName);
 
-			return await _productRepository.SlugExistsAsync(productSlug, productId);
-		}
+            return await _productRepository.SlugExistsAsync(productSlug, productId);
+        }
 
-		public async Task<bool> ProductExistsAsync(string productName)
-		{
-			var productSlug = GenerateSlug(productName);
+        public async Task<bool> ProductExistsAsync(string productName)
+        {
+            var productSlug = GenerateSlug(productName);
 
-			return await _productRepository.SlugExistsAsync(productSlug);
-		}
+            return await _productRepository.SlugExistsAsync(productSlug);
+        }
 
-		public async Task<ProductPaginationDto> GetProductSearchAsync(string searchTerm, int page, int pageSize)
-		{
-			int skip = (page - 1) * pageSize;
-			var products = await _productRepository.GetSearchProductsAsync(searchTerm, skip, pageSize);
-			var count = await _productRepository.GetCountAsync(searchTerm);
+        public async Task<ProductPaginationDto> GetProductSearchAsync(string searchTerm, int page, int pageSize)
+        {
+            int skip = (page - 1) * pageSize;
+            var products = await _productRepository.GetSearchProductsAsync(searchTerm, skip, pageSize);
+            var count = await _productRepository.GetCountAsync(searchTerm);
 
-			if (products == null)
-				throw new EntityNotFoundException();
+            if (products == null)
+                throw new EntityNotFoundException();
 
-			return new ProductPaginationDto
-			{
-				CurrentPage = page,
-				TotalPages = (int)Math.Ceiling(count / (double)pageSize),
-				Products = products!.Select(p => new ProductPaginationEntityDto()
-				{
-					Id = p.Id,
-					Name = p.Name,
-					Price = p.Price,
-					Slug = p.Slug,
-					MainImageUrl = p.MainImageUrl,
-					IsPublished = p.IsPublished,
-					CategoryName = p.Category.Name,
-					CategorySlug = p.Category.Slug
-				}).ToList()
-			};
-		}
+            bool hasPreviousPage = page > 1;
+            int totalPages = (int)Math.Ceiling(count / (double)pageSize);
 
-		public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
-		{
-			var categories = await _categoryRepository
-					.GetAllCategoriesAsync();
+            return new ProductPaginationDto
+            {
+                CurrentPage = page,
+                TotalPages = totalPages,
+                HasPreviousPage = hasPreviousPage,
+                HasNextPage = page < totalPages,
+                Products = products!.Select(p => new ProductPaginationEntityDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Slug = p.Slug,
+                    MainImageUrl = p.MainImageUrl,
+                    IsPublished = p.IsPublished,
+                    CategoryName = p.Category.Name,
+                    CategorySlug = p.Category.Slug
+                }).ToList()
+            };
+        }
 
-			if (categories == null)
-				throw new EntityNotFoundException();
+        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
+        {
+            var categories = await _categoryRepository
+                    .GetAllCategoriesAsync();
 
-			var categoryDtoList = categories
-				.OrderByDescending(c => c.Name)
-				.Select(c => new CategoryDto
-				{
-					Id = c.Id,
-					Name = c.Name,
-					Slug = c.Slug
-				})
-				.ToList();
+            if (categories == null)
+                throw new EntityNotFoundException();
 
-			return categoryDtoList;
-		}
+            var categoryDtoList = categories
+                .OrderByDescending(c => c.Name)
+                .Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Slug = c.Slug
+                })
+                .ToList();
 
-		public async Task<ProductsPageDto> GetAllProductsAsync()
-		{
-			var products = await _productRepository.GetAllProductsAsync();
+            return categoryDtoList;
+        }
 
-			if (products == null)
-				throw new EntityNotFoundException();
+        public async Task<ProductsPageDto> GetAllProductsAsync()
+        {
+            var products = await _productRepository.GetAllProductsAsync();
 
-			var productDtoList = products
-			.OrderBy(p => p.Name)
-			.Select(p => new ProductDto()
-			{
-				Id = p.Id,
-				Name = p.Name,
-				Slug = p.Slug,
-				Price = p.Price,
-				MainImageUrl = p.MainImageUrl,
-				CategorySlug = p.Category.Slug
-			})
-			.ToList();
+            if (products == null)
+                throw new EntityNotFoundException();
 
-			return new ProductsPageDto
-			{
-				Title = "All Products",
-				Products = productDtoList
-			};
-		}
+            var productDtoList = products
+            .OrderBy(p => p.Name)
+            .Select(p => new ProductDto()
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Slug = p.Slug,
+                Price = p.Price,
+                MainImageUrl = p.MainImageUrl,
+                CategorySlug = p.Category.Slug
+            })
+            .ToList();
 
-		public async Task<ProductsPageDto> GetProductsByCategoryAsync(string categorySlug)
+            return new ProductsPageDto
+            {
+                Title = "All Products",
+                Products = productDtoList
+            };
+        }
+
+        public async Task<ProductsPageDto> GetProductsByCategoryAsync(string categorySlug)
         {
             Category? category = await _categoryRepository.GetCategoryBySlugAsync(categorySlug);
-            
-			if (category == null)
-				throw new EntityNotFoundException();
 
-			var products = await _productRepository.GetProductsByCategoryIdAsync(category.Id);
+            if (category == null || category.Id == 0)
+                throw new EntityNotFoundException();
 
-			var productsListDto = products
-			.OrderBy(p => p.Name)
-			.Select(p => new ProductDto()
-			{
-				Id = p.Id,
-				Name = p.Name,
-				Slug = p.Slug,
-				Price = p.Price,
-				MainImageUrl = p.MainImageUrl,
-				CategorySlug = p.Category.Slug
-			})
-			.ToList();
+            var products = await _productRepository.GetProductsByCategoryIdAsync(category.Id);
 
-			return new ProductsPageDto
-			{
-				Title = category.Name,
-				Products = productsListDto
-			};
-		}
+            if (products == null)
+                throw new EntityNotFoundException();
 
-		public async Task<ProductDetailsDto> GetProductDetailsAsync(string productSlug, bool isFiltered)
-		{
-			var product = await _productRepository
-				.GetProductAsync(productSlug, isFiltered: isFiltered, includeCategory: true, includeVariants: true);
 
-			if (product == null)
-				throw new EntityNotFoundException();
+            var productsListDto = products
+            .OrderBy(p => p.Name)
+            .Select(p => new ProductDto()
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Slug = p.Slug,
+                Price = p.Price,
+                MainImageUrl = p.MainImageUrl,
+                CategorySlug = p.Category.Slug
+            })
+            .ToList();
 
-			var productVariant = product.ProductVariants
-				.Where(pv => !pv.IsDeleted)
-				.Select(pv => new ProductVariantDto()
-				{
-					Id = pv.Id,
-					VariantName = pv.VariantName,
-					Price = pv.Price ?? product.Price
-				})
-				.ToArray();
+            return new ProductsPageDto
+            {
+                Title = category.Name,
+                Products = productsListDto
+            };
+        }
 
-			return new ProductDetailsDto
-			{
-				Id = product.Id,
-				Name = product.Name,
-				Slug = product.Slug,
-				CategorySlug = product.Category.Slug,
-				Description = product.Description,
-				Price = product.Price,
-				MainImageUrl = product.MainImageUrl,
-				IsPublished = product.IsPublished,
-				ProductVariants = productVariant
-			};
-		}
+        public async Task<ProductDetailsDto> GetProductDetailsAsync(string productSlug, bool isFiltered)
+        {
+            var product = await _productRepository
+                .GetProductAsync(productSlug, isFiltered: isFiltered, includeCategory: true, includeVariants: true);
 
-		public async Task<ProductFormDto> GetProductCreateDtoAsync()
-		{
-			var categories = await _categoryRepository
-					.GetAllCategoriesAsync();
+            if (product == null)
+                throw new EntityNotFoundException();
 
-			if (categories == null)
-				throw new EntityNotFoundException();
+            var productVariant = product.ProductVariants
+                .Where(pv => !pv.IsDeleted)
+                .Select(pv => new ProductVariantDto()
+                {
+                    Id = pv.Id,
+                    VariantName = pv.VariantName,
+                    Price = pv.Price ?? product.Price
+                })
+                .ToArray();
 
-			var categoryDtoList = categories
-				.OrderBy(c => c.Name)
-				.Select(c => new CategorySelectDto()
-				{
-					Id = c.Id,
-					Name = c.Name,
-				})
-				.ToList();
+            return new ProductDetailsDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Slug = product.Slug,
+                CategorySlug = product.Category.Slug,
+                Description = product.Description,
+                Price = product.Price,
+                MainImageUrl = product.MainImageUrl,
+                IsPublished = product.IsPublished,
+                ProductVariants = productVariant
+            };
+        }
 
-			var model = new ProductFormDto
-			{
-				Categories = categoryDtoList
-			};
+        public async Task<ProductFormDto> GetProductCreateDtoAsync()
+        {
+            var categories = await _categoryRepository
+                    .GetAllCategoriesAsync();
 
-			return model;
-		}
+            if (categories == null)
+                throw new EntityNotFoundException();
 
-		public async Task<string> AddProductAsync(ProductCreateDto dto)
-		{
-			var slug = GenerateSlug(dto.Name);
+            var categoryDtoList = categories
+                .OrderBy(c => c.Name)
+                .Select(c => new CategorySelectDto()
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                })
+                .ToList();
 
-			var product = new Product
-			{
-				Name = dto.Name,
-				Description = dto.Description,
-				Price = dto.Price,
-				MainImageUrl = dto.MainImageUrl,
-				CategoryId = dto.CategoryId,
-				Slug = slug,
-				CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-				UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-				IsPublished = true,
-			};
+            var model = new ProductFormDto
+            {
+                Categories = categoryDtoList
+            };
 
-			await _productRepository.AddProductAsync(product);
+            return model;
+        }
 
-			await EnsureSaveChangesAsync();
+        public async Task<string> AddProductAsync(ProductCreateDto dto)
+        {
+            var slug = GenerateSlug(dto.Name);
 
-			return product.Slug;
-		}
+            var product = new Product
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                Price = dto.Price,
+                MainImageUrl = dto.MainImageUrl,
+                CategoryId = dto.CategoryId,
+                Slug = slug,
+                CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                IsPublished = true,
+            };
 
-		public async Task<ProductVariantListDto> GetProductAsync(string productSlug, bool isFiltered)
-		{
-			var product = await _productRepository
-				.GetProductAsync(productSlug, isFiltered: isFiltered, includeCategory: true, includeVariants: true);
+            await _productRepository.AddProductAsync(product);
 
-			if (product == null)
-				throw new EntityNotFoundException();
+            await EnsureSaveChangesAsync();
 
-			var productDto = new ProductVariantListDto()
-			{
-				ProductId = product.Id,
-				ProductName = product.Name,
-				ProductSlug = product.Slug,
-				CategorySlug = product.Category.Slug,
-				Variants = product.ProductVariants
-					.Where(pv => !pv.IsDeleted)
-					.Select(pv => new ProductVariantDto()
-					{
-						Id = pv.Id,
-						VariantName = pv.VariantName,
-						Price = pv.Price
-					})
-					.ToList()
-			};
+            return product.Slug;
+        }
 
-			return productDto;
-		}
+        public async Task<ProductVariantListDto> GetProductAsync(string productSlug, bool isFiltered)
+        {
+            var product = await _productRepository
+                .GetProductAsync(productSlug, isFiltered: isFiltered, includeCategory: true, includeVariants: true);
 
-		public async Task ManageProductVariantsAsync(ProductVariantListDto dto)
-		{
-			var productVariantExistingInDatabase =
-				await _productRepository.GetProductVariantsByProductIdAsync(dto.ProductId);
+            if (product == null)
+                throw new EntityNotFoundException();
 
-			if (productVariantExistingInDatabase == null)
-				throw new EntityNotFoundException();
+            var productDto = new ProductVariantListDto()
+            {
+                ProductId = product.Id,
+                ProductName = product.Name,
+                ProductSlug = product.Slug,
+                CategorySlug = product.Category.Slug,
+                Variants = product.ProductVariants
+                    .Where(pv => !pv.IsDeleted)
+                    .Select(pv => new ProductVariantDto()
+                    {
+                        Id = pv.Id,
+                        VariantName = pv.VariantName,
+                        Price = pv.Price
+                    })
+                    .ToList()
+            };
 
-			var incomingIdList = dto.Variants.Select(v => v.Id).ToList();
+            return productDto;
+        }
 
-			var pvToDeleteList = productVariantExistingInDatabase
-				.Where(pv => !incomingIdList.Contains(pv.Id)).ToList();
+        public async Task ManageProductVariantsAsync(ProductVariantListDto dto)
+        {
+            var productVariantExistingInDatabase =
+                await _productRepository.GetProductVariantsByProductIdAsync(dto.ProductId);
 
-			_productRepository.RemoveRangeProductVariantAsync(pvToDeleteList);
+            if (productVariantExistingInDatabase == null)
+                throw new EntityNotFoundException();
 
-			foreach (var variant in dto.Variants)
-			{
-				if (variant.Id > 0 ||
-					productVariantExistingInDatabase.Any(ev => ev.VariantName == variant.VariantName))
-				{
-					var existing = productVariantExistingInDatabase!
-						.FirstOrDefault(ev => (ev.Id == variant.Id) || (ev.VariantName == variant.VariantName));
+            var incomingIdList = dto.Variants.Select(v => v.Id).ToList();
 
-					if (existing != null)
-					{
-						existing.VariantName = variant.VariantName;
-						existing.Price = variant.Price;
-						existing.IsDeleted = false;
-					}
-				}
-				else
-				{
-					var newVariant = new ProductVariant()
-					{
-						ProductId = dto.ProductId,
-						VariantName = variant.VariantName,
-						Price = variant.Price
-					};
+            var pvToDeleteList = productVariantExistingInDatabase
+                .Where(pv => !incomingIdList.Contains(pv.Id)).ToList();
 
-					await _productRepository.AddProductVariantAsync(newVariant);
-				}
-			}
+            _productRepository.RemoveRangeProductVariantAsync(pvToDeleteList);
 
-			await EnsureSaveChangesAsync();
-		}
+            foreach (var variant in dto.Variants)
+            {
+                if (variant.Id > 0 ||
+                    productVariantExistingInDatabase.Any(ev => ev.VariantName == variant.VariantName))
+                {
+                    var existing = productVariantExistingInDatabase!
+                        .FirstOrDefault(ev => (ev.Id == variant.Id) || (ev.VariantName == variant.VariantName));
 
-		public async Task<ProductFormDto> GetProductEditDtoAsync(string productSlug)
-		{
-			var product = await _productRepository
-				.GetProductAsync(productSlug, isFiltered: true, includeCategory: false, includeVariants: false);
-			var categories = await _categoryRepository.GetAllCategoriesAsync();
+                    if (existing != null)
+                    {
+                        existing.VariantName = variant.VariantName;
+                        existing.Price = variant.Price;
+                        existing.IsDeleted = false;
+                    }
+                }
+                else
+                {
+                    var newVariant = new ProductVariant()
+                    {
+                        ProductId = dto.ProductId,
+                        VariantName = variant.VariantName,
+                        Price = variant.Price
+                    };
 
-			if (product == null || categories == null)
-				throw new EntityNotFoundException();
+                    await _productRepository.AddProductVariantAsync(newVariant);
+                }
+            }
 
-			return new ProductFormDto
-			{
-				Id = product.Id,
-				Name = product.Name,
-				Description = product.Description,
-				Price = product.Price,
-				MainImageUrl = product.MainImageUrl,
-				CategoryId = product.CategoryId,
-				Categories = categories
-					.OrderBy(c => c.Name)
-					.Select(c => new CategorySelectDto()
-					{
-						Id = c.Id,
-						Name = c.Name,
-					})
-					.ToList()
-			};
-		}
+            await EnsureSaveChangesAsync();
+        }
 
-		public async Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormDto dto)
-		{
-			var product = await _productRepository.GetProductAsync(dto.Id);
+        public async Task<ProductFormDto> GetProductEditDtoAsync(string productSlug)
+        {
+            var product = await _productRepository
+                .GetProductAsync(productSlug, isFiltered: true, includeCategory: false, includeVariants: false);
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
 
-			if (product == null)
-				throw new EntityNotFoundException();
+            if (product == null || categories == null)
+                throw new EntityNotFoundException();
 
-			var categorySlug = product.Category.Slug;
+            return new ProductFormDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                MainImageUrl = product.MainImageUrl,
+                CategoryId = product.CategoryId,
+                Categories = categories
+                    .OrderBy(c => c.Name)
+                    .Select(c => new CategorySelectDto()
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                    })
+                    .ToList()
+            };
+        }
 
-			if (categorySlug == null)
-				throw new EntityNotFoundException();
+        public async Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormDto dto)
+        {
+            var product = await _productRepository.GetProductAsync(dto.Id);
 
-			product.Name = dto.Name;
-			product.Description = dto.Description;
-			product.Price = dto.Price;
-			product.MainImageUrl = dto.MainImageUrl;
-			product.CategoryId = dto.CategoryId;
-			product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-			product.Slug = GenerateSlug(dto.Name);
+            if (product == null)
+                throw new EntityNotFoundException();
 
-			_productRepository.ProductUpdate(product);
+            var categorySlug = product.Category.Slug;
 
-			await EnsureSaveChangesAsync();
+            if (categorySlug == null)
+                throw new EntityNotFoundException();
 
-			return (categorySlug, product.Slug);
-		}
+            product.Name = dto.Name;
+            product.Description = dto.Description;
+            product.Price = dto.Price;
+            product.MainImageUrl = dto.MainImageUrl;
+            product.CategoryId = dto.CategoryId;
+            product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+            product.Slug = GenerateSlug(dto.Name);
 
-		public async Task SoftDeleteProductAsync(string productSlug)
-		{
-			var product = await _productRepository
-				.GetProductAsync(productSlug, isFiltered: true, includeCategory: false, includeVariants: true);
+            _productRepository.ProductUpdate(product);
 
-			if (product == null)
-				throw new EntityNotFoundException();
+            await EnsureSaveChangesAsync();
 
-			var cartItemsForRemoving = await _shoppingCartRepository.GetCartItemsByProductSlugAsync(product.Slug);
+            return (categorySlug, product.Slug);
+        }
 
-			if (cartItemsForRemoving == null)
-				throw new EntityNotFoundException();
+        public async Task SoftDeleteProductAsync(string productSlug)
+        {
+            var product = await _productRepository
+                .GetProductAsync(productSlug, isFiltered: true, includeCategory: false, includeVariants: true);
 
-			if(cartItemsForRemoving.Any() && product.IsPublished)
-				_shoppingCartRepository.CartItemsRemoveRange(cartItemsForRemoving);
+            if (product == null)
+                throw new EntityNotFoundException();
 
-			_productRepository.SoftDeleteProduct(product);
+            var cartItemsForRemoving = await _shoppingCartRepository.GetCartItemsByProductSlugAsync(product.Slug);
 
-			await EnsureSaveChangesAsync();
-		}
+            if (cartItemsForRemoving == null)
+                throw new EntityNotFoundException();
 
-		public async Task RestoreProductAsync(string productSlug)
-		{
-			var product = await _productRepository
-				.GetProductAsync(productSlug, isFiltered: false, includeCategory: false, includeVariants: true);
+            if (cartItemsForRemoving.Any() && product.IsPublished)
+                _shoppingCartRepository.CartItemsRemoveRange(cartItemsForRemoving);
 
-			if (product == null)
-				throw new EntityNotFoundException();
+            _productRepository.SoftDeleteProduct(product);
 
-			if (product.IsPublished == false)
-				_productRepository.RestoreProduct(product);
+            await EnsureSaveChangesAsync();
+        }
 
-			await EnsureSaveChangesAsync();
-		}
+        public async Task RestoreProductAsync(string productSlug)
+        {
+            var product = await _productRepository
+                .GetProductAsync(productSlug, isFiltered: false, includeCategory: false, includeVariants: true);
 
-		private static string GenerateSlug(string name)
-		{
-			name = name.ToLowerInvariant();
-			name = Regex.Replace(name, @"[^a-z0-9\s]", "");
-			name = Regex.Replace(name, @"\s+", "-");
-			name = name.Trim('-');
-			return name;
-		}
+            if (product == null)
+                throw new EntityNotFoundException();
 
-		private async Task EnsureSaveChangesAsync()
-		{
-			int changes = await _productRepository.SaveChangesAsync();
+            if (product.IsPublished == false)
+                _productRepository.RestoreProduct(product);
 
-			var successAdd = changes > 0;
+            await EnsureSaveChangesAsync();
+        }
 
-			if (!successAdd)
-			{
-				throw new EntityPersistFailureException();
-			}
-		}
-	}
+        private static string GenerateSlug(string name)
+        {
+            name = name.ToLowerInvariant();
+            name = Regex.Replace(name, @"[^a-z0-9\s]", "");
+            name = Regex.Replace(name, @"\s+", "-");
+            name = name.Trim('-');
+            return name;
+        }
+
+        private async Task EnsureSaveChangesAsync()
+        {
+            int changes = await _productRepository.SaveChangesAsync();
+
+            var successAdd = changes > 0;
+
+            if (!successAdd)
+            {
+                throw new EntityPersistFailureException();
+            }
+        }
+    }
 }
