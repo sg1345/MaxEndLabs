@@ -19,11 +19,16 @@ namespace MaxEndLabs.Data.Repository
 				.ToArrayAsync();
 		}
 
-		public async Task<Category?> GetCategoryBySlugAsync(string slug)
+		public async Task<Category?> GetCategoryAsync(string slug)
 		{
 			return await DbContext.Categories
 				.SingleOrDefaultAsync(c => c.Slug == slug);
 		}
 
-	}
+        public async Task<Category?> GetCategoryAsync(int id)
+        {
+            return await DbContext.Categories
+                .SingleOrDefaultAsync(c => c.Id == id);
+        }
+    }
 }

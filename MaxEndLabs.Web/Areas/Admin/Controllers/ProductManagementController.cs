@@ -363,7 +363,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			catch (EntityPersistFailureException e)
 			{
 				TempData[WarningTempDataKey] = NoChangesWereMade;
-				return RedirectToAction("Index", "Home");
+				return RedirectToAction("Index", "ProductManagement");
 			}
             catch (InvalidOperationException e)
             {

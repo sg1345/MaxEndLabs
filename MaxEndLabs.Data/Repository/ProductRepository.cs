@@ -136,21 +136,9 @@ namespace MaxEndLabs.Data.Repository
 				.ToListAsync();
 		}
 
-		public void RemoveRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants)
+		public void UpdateRangeProductVariantAsync(IEnumerable<ProductVariant> productVariants)
 		{
-			bool changesMade = false;
-			foreach (var productVariant in productVariants)
-			{
-				if (productVariant.IsDeleted == false)
-				{
-					productVariant.IsDeleted = true;
-					changesMade = true;
-				}
-			}
-
-			if(changesMade)
-				DbContext!.UpdateRange(productVariants);
-
+            DbContext!.UpdateRange(productVariants);
 		}
 
 		public async Task AddProductVariantAsync(ProductVariant productVariant)
@@ -158,35 +146,9 @@ namespace MaxEndLabs.Data.Repository
 			await DbContext!.ProductVariants.AddAsync(productVariant);
 		}
 
-		public void SoftDeleteProduct(Product product)
-		{
-			if (product.IsPublished)
-			{
-				product.IsPublished = false;
-				product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-				product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
-
-				foreach (var productVariant in product.ProductVariants)
-				{
-					productVariant.IsDeleted = true;
-				}
-
-				DbContext!.Products.Update(product);
-			}
-		}
-
 		public void RestoreProduct(Product product)
 		{
-			string pattern = @"-\d{8}-\d{6}$";
-
-			product.IsPublished = true;
-			product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-			product.Slug = Regex.Replace(product.Slug, pattern, string.Empty);
-
-			foreach (var productVariant in product.ProductVariants)
-			{
-				productVariant.IsDeleted = false;
-			}
+			
 
 			DbContext!.Products.Update(product);
 			DbContext!.ProductVariants.UpdateRange(product.ProductVariants);

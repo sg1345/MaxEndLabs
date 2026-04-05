@@ -6,6 +6,7 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	public interface ICategoryRepository
 	{
 		Task<IEnumerable<Category>> GetAllCategoriesAsync();
-		Task<Category?> GetCategoryBySlugAsync(string slug);
-	}
+		Task<Category?> GetCategoryAsync(string slug);
+        Task<Category?> GetCategoryAsync(int id);
+    }
 }

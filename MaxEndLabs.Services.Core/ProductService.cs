@@ -1,11 +1,14 @@
-﻿using System.Text.RegularExpressions;
-
-using MaxEndLabs.Data.Models;
+﻿using MaxEndLabs.Data.Models;
 using MaxEndLabs.Data.Repository.Contracts;
 using MaxEndLabs.GCommon.Exceptions;
 using MaxEndLabs.Service.Models.Category;
 using MaxEndLabs.Service.Models.Product;
 using MaxEndLabs.Services.Core.Contracts;
+
+using System.Text.RegularExpressions;
+using Category = MaxEndLabs.Data.Models.Category;
+using Product = MaxEndLabs.Data.Models.Product;
+using ProductVariant = MaxEndLabs.Data.Models.ProductVariant;
 
 namespace MaxEndLabs.Services.Core
 {
@@ -120,7 +123,7 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<ProductsPageDto> GetProductsByCategoryAsync(string categorySlug)
         {
-            Category? category = await _categoryRepository.GetCategoryBySlugAsync(categorySlug);
+            Category? category = await _categoryRepository.GetCategoryAsync(categorySlug);
 
             if (category == null)
                 throw new EntityNotFoundException();
@@ -273,7 +276,18 @@ namespace MaxEndLabs.Services.Core
             var pvToDeleteList = productVariantExistingInDatabase
                 .Where(pv => !incomingIdList.Contains(pv.Id)).ToList();
 
-            _productRepository.RemoveRangeProductVariantAsync(pvToDeleteList);
+            bool changesMade = false;
+            foreach (var productVariant in pvToDeleteList)
+            {
+                if (productVariant.IsDeleted == false)
+                {
+                    productVariant.IsDeleted = true;
+                    changesMade = true;
+                }
+            }
+
+            if (changesMade)
+                _productRepository.UpdateRangeProductVariantAsync(pvToDeleteList);
 
             foreach (var variant in dto.Variants)
             {
@@ -336,6 +350,10 @@ namespace MaxEndLabs.Services.Core
 
         public async Task<(string categorySlug, string productSlug)> EditProductAsync(ProductFormDto dto)
         {
+            var category = await _categoryRepository.GetCategoryAsync(dto.CategoryId);
+            if (category == null)
+                throw new EntityNotFoundException();
+
             var product = await _productRepository.GetProductAsync(dto.Id);
 
             if (product == null)
@@ -346,19 +364,30 @@ namespace MaxEndLabs.Services.Core
             if (categorySlug == null)
                 throw new EntityNotFoundException();
 
-            product.Name = dto.Name;
-            product.Description = dto.Description;
-            product.Price = dto.Price;
-            product.MainImageUrl = dto.MainImageUrl;
-            product.CategoryId = dto.CategoryId;
-            product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-            product.Slug = GenerateSlug(dto.Name);
+            bool changesMade = false;
+            if (product.Name != dto.Name || product.Description != dto.Description ||
+                product.Price != dto.Price || product.MainImageUrl != dto.MainImageUrl ||
+                product.CategoryId != dto.CategoryId)
+            {
+                product.Name = dto.Name;
+                product.Description = dto.Description;
+                product.Price = dto.Price;
+                product.MainImageUrl = dto.MainImageUrl;
+                product.CategoryId = dto.CategoryId;
+                
+                changesMade = true;
+            }
 
-            _productRepository.ProductUpdate(product);
+            if (changesMade)
+            {
+                product.Slug = GenerateSlug(dto.Name);
+                product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+                _productRepository.ProductUpdate(product);
+            }
 
             await EnsureSaveChangesAsync();
 
-            return (categorySlug, product.Slug);
+            return (category.Slug, product.Slug);
         }
 
         public async Task SoftDeleteProductAsync(string productSlug)
@@ -369,7 +398,8 @@ namespace MaxEndLabs.Services.Core
             if (product == null)
                 throw new EntityNotFoundException();
 
-            var cartItemsForRemoving = await _shoppingCartRepository.GetCartItemsByProductSlugAsync(product.Slug);
+            var cartItemsForRemoving = await _shoppingCartRepository
+                .GetCartItemsByProductSlugAsync(product.Slug);
 
             if (cartItemsForRemoving == null)
                 throw new EntityNotFoundException();
@@ -377,7 +407,19 @@ namespace MaxEndLabs.Services.Core
             if (cartItemsForRemoving.Any() && product.IsPublished)
                 _shoppingCartRepository.CartItemsRemoveRange(cartItemsForRemoving);
 
-            _productRepository.SoftDeleteProduct(product);
+            if (product.IsPublished)
+            {
+                product.IsPublished = false;
+                product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+                product.Slug = $"{product.Slug}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+
+                foreach (var productVariant in product.ProductVariants)
+                {
+                    productVariant.IsDeleted = true;
+                }
+
+                _productRepository.ProductUpdate(product);
+            }
 
             await EnsureSaveChangesAsync();
         }
@@ -391,8 +433,21 @@ namespace MaxEndLabs.Services.Core
                 throw new EntityNotFoundException();
 
             if (product.IsPublished == false)
-                _productRepository.RestoreProduct(product);
+            {
+                string pattern = @"-\d{8}-\d{6}$";
 
+                product.IsPublished = true;
+                product.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+                product.Slug = Regex.Replace(product.Slug, pattern, string.Empty);
+
+                foreach (var productVariant in product.ProductVariants)
+                {
+                    productVariant.IsDeleted = false;
+                }
+
+                _productRepository.RestoreProduct(product);
+            }
+            
             await EnsureSaveChangesAsync();
         }
 
