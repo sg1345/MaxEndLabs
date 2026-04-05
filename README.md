@@ -45,6 +45,7 @@ Fluent API configurations.
 The project also integrates ASP.NET Core Identity for authentication and
 user management, providing a solid foundation for role-based access 
 control and secure user interactions.
+
 ------------------------------------------------------------------------
 
 ## 🛠️ Technologies Used
@@ -247,6 +248,6 @@ MIT License.
 
 ## 📬 Contact
 
-**Dimitar Karabashev** – [https://github.com/sg1345] (https://github.com/sg1345)
+**Dimitar Karabashev** – [https://github.com/sg1345]
 
 Project Link: [https://github.com/sg1345/MaxEndLabs](https://github.com/sg1345/MaxEndLabs)
