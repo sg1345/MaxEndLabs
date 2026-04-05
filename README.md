@@ -1,8 +1,8 @@
 # 🚀 MaxEndLabs
 
-> An ASP.NET Core MVC e-commerce application for managing products,
-> product variants and a shopping cart, built with layered architecture
-> and Entity Framework Core.
+> A layered ASP.NET Core MVC e-commerce application supporting product 
+> and variant management, shopping cart functionality, order processing, 
+> and secure payments via Stripe, built with Entity Framework Core.
 
 ![.NET Version](https://img.shields.io/badge/.NET-8.0-purple) 
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-8.0-blue)
@@ -29,16 +29,22 @@
 
 ## 📖 About the Project
 
-**MaxEndLabs** is a multi-layered ASP.NET Core MVC web application that
-represents a small online store. The system allows users to browse
-products, view detailed information and manage a shopping cart, while
-administrators can create, edit and manage products and product
-variants.
+MaxEndLabs is a layered ASP.NET Core (.NET 8) MVC web application that 
+simulates a modern e-commerce platform. It enables users to browse 
+products, explore detailed product variants, manage a personalized 
+shopping cart, and place orders, while administrators can manage the 
+product catalog through full CRUD operations and order control.
 
-The project is structured using separate layers for data access,
-business logic and presentation in order to demonstrate clean
-architecture, service abstraction and Entity Framework Core usage.
+The application is built using a clean, multi-layered architecture, 
+separating the presentation layer (MVC), business logic (services), and 
+data access (Entity Framework Core). This structure promotes
+maintainability, scalability, and testability while demonstrating best
+practices such as service abstraction, dependency injection, and 
+Fluent API configurations.
 
+The project also integrates ASP.NET Core Identity for authentication and
+user management, providing a solid foundation for role-based access 
+control and secure user interactions.
 ------------------------------------------------------------------------
 
 ## 🛠️ Technologies Used
@@ -81,7 +87,7 @@ dotnet restore
 ### 3. Apply database migrations
 Make sure the connection string is correct and run:
 ```bash
-dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs
+dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
 ```
 ### 4. Run the application
 
@@ -94,7 +100,7 @@ dotnet run --project MaxEndLabs
 
     MaxEndLabs.sln
     │
-    ├── MaxEndLabs/
+    ├── MaxEndLabs.Web/
     ├── MaxEndLabs.Data/
     ├── MaxEndLabs.Data.Models/
     ├── MaxEndLabs.Services.Core/
@@ -105,24 +111,47 @@ dotnet run --project MaxEndLabs
 
 ## ✨ Features
 
--   User registration and login
--   Product catalog with categories
--   Product details with variants
--   Product and variant management
--   Shopping cart and checkout
--   Layered architecture
+- **Auth & 2FA:** User registration, login, and Google Authenticator (QR code) support.
+- **Product Catalog:** Categories, search, and detailed variants.
+- **Shopping Cart:** Real-time cart management and Stripe payment integration.
+- **Admin Dashboard:** Full CRUD for products/variants and order status management.
+- **Bot Protection:** Integrated Google reCAPTCHA for secure forms.
+- **Architecture:** Multi-layered project structure with EF Core Code-First
 
 ------------------------------------------------------------------------
 
 ## 💻 Usage
 
-After starting the application:
+### Account & Security
+* **Access:** Login/Register is required to shop.
+* **User Manager:** All users can update profiles and enable **2FA** (Authenticator App/QR Code) for 6-digit security codes.
 
-1.  Register a new user from the Register page.
-2.  Browse products from the main products page.
-3.  Open a product to view its details and available variants.
-4.  Add Products to your shopping cart.
-5.  Open the shopping cart and proceed to checkout.
+---
+
+### 👤 Customer Workflow
+1. **Shop:** Browse the catalogue and select product.
+2. **Cart:** Add, or remove items (only available when logged in).
+3. **Checkout:** Create an order and pay securely via **Stripe**.
+4. **Orders:** Track personal order history and status on the homepage.
+
+---
+
+### 🛡️ Administrator Workflow
+* **Product Management:** Full **CRUD** (Create/Edit/Delete) for products and variants.
+* **Order Management:** View all customer orders and update status.
+* **Catalogue:** Quick link in the header to view products as they appear to users.
+* *Note: Admins cannot use the shopping cart or make purchases.*
+
+---
+
+### 🚦 Quick Access Guide
+| Feature | Guest | Customer | Admin |
+| :--- | :---: | :---: | :---: |
+| Browse Products | ✅ | ✅ | ✅ |
+| Shopping Cart | ❌ | ✅ | ❌ |
+| Order/Pay | ❌ | ✅ | ❌ |
+| Product CRUD | ❌ | ❌ | ✅ |
+| Manage 2FA | ❌ | ✅ | ✅ |
 
 ### 🔐 Administrative access
 
@@ -157,7 +186,7 @@ Connection string is configured in `appsettings.json`:
 To create and seed the database:
 
 ``` bash
-dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs
+dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
 ```
 
 ------------------------------------------------------------------------
@@ -176,9 +205,31 @@ dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+  "GoogleReCaptcha": {
+    "SiteKey": "",
+    "SecretKey": ""
+  },
+  "Stripe": {
+    "SecretKey": "",
+    "PublishableKey": ""
+  }
 }
 ```
+
+------------------------------------------------------------------------
+
+## 🔑 Secret Keys Configuration
+
+Please set the following Environment Variables in your IDE 
+(Visual Studio/VS Code) before running the project:
+
+| Environment Variable Name | Value |
+| :--- | :--- |
+| **Stripe__SecretKey** | `sk_test_51TBnryPsf4pfhoRSGR5vAM4TuqXfs9O8eQ7KjSBX2ut13bgmq40TSMhZuHQhTLzBMm5tvPgj0i0Qqjc3S8swM4Nj00m4bXPAAA` |
+| **Stripe__PublishableKey** | `pk_test_51TBnryPsf4pfhoRSXTAZ7CxTrn1Nt9fQgOBcdL3jPKXbJl05iu5uzEy5z8ygc2fOek7EQq4875Id0HpkcN42oT5h00ilFIILSf` |
+| **GoogleReCaptcha__SiteKey** | `6Lf3BpQsAAAAAFXo0dIMuCEakNWG8dCNenga8TmG` |
+| **GoogleReCaptcha__SecretKey** | `6Lf3BpQsAAAAANp82boiFqoLLaBtuMUzy2NF9Grz` |
 
 ------------------------------------------------------------------------
 
@@ -196,6 +247,6 @@ MIT License.
 
 ## 📬 Contact
 
-**Dimitar Karabashev** – [@your-github] (https://github.com/sg1345)
+**Dimitar Karabashev** – [https://github.com/sg1345] (https://github.com/sg1345)
 
 Project Link: [https://github.com/sg1345/MaxEndLabs](https://github.com/sg1345/MaxEndLabs)
