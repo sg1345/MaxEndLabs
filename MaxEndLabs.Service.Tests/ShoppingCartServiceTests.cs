@@ -261,7 +261,7 @@ namespace MaxEndLabs.Service.Tests
             };
 
             shoppingCartRepositoryMock.Setup(scr =>
-                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.Quantity))
+                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.ProductVariantId))
                 .ReturnsAsync((CartItem?)null);
 
             CartItem capturedCartItem = null!;
@@ -298,6 +298,7 @@ namespace MaxEndLabs.Service.Tests
                 ProductVariantId = 1,
                 Quantity = 2
             };
+            var initialDate = DateTime.UtcNow.AddDays(-1);
 
             CartItem cartItem = new CartItem
             {
@@ -305,19 +306,13 @@ namespace MaxEndLabs.Service.Tests
                 ProductId = dto.ProductId,
                 ProductVariantId = dto.ProductVariantId,
                 Quantity = 1,
-                AddedAt = DateTime.UtcNow,
+                AddedAt = initialDate,
                 IsPublished = false
             };
 
             shoppingCartRepositoryMock.Setup(scr =>
-                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.Quantity))
+                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.ProductVariantId))
                 .ReturnsAsync(cartItem);
-
-            CartItem capturedCartItem = null!;
-
-            shoppingCartRepositoryMock.Setup(scr => scr.AddToCartAsync(It.IsAny<CartItem>()))
-                .Callback<CartItem>(ci => capturedCartItem = ci)
-                .Returns(Task.CompletedTask);
 
             shoppingCartRepositoryMock.Setup(scr => scr.SaveChangesAsync())
                 .ReturnsAsync(1);
@@ -328,13 +323,12 @@ namespace MaxEndLabs.Service.Tests
             //Assert
             Assert.Multiple(() =>
             {
-                Assert.That(capturedCartItem.CartId, Is.EqualTo(dto.CartId));
-                Assert.That(capturedCartItem.ProductId, Is.EqualTo(dto.ProductId));
-                Assert.That(capturedCartItem.ProductVariantId, Is.EqualTo(dto.ProductVariantId));
-                Assert.That(capturedCartItem.Quantity, Is.EqualTo(dto.Quantity));
-                Assert.That(capturedCartItem.IsPublished, Is.EqualTo(true));
-                Assert.That(capturedCartItem.AddedAt, Is.Not.EqualTo(cartItem.AddedAt));
+                Assert.That(cartItem.Quantity, Is.EqualTo(dto.Quantity));
+                Assert.That(cartItem.IsPublished, Is.EqualTo(true));
+                Assert.That(cartItem.AddedAt, Is.GreaterThan(initialDate));
             });
+
+            shoppingCartRepositoryMock.Verify(scr => scr.AddToCartAsync(It.IsAny<CartItem>()), Times.Never);
         }
 
         [Test]
@@ -349,21 +343,11 @@ namespace MaxEndLabs.Service.Tests
                 Quantity = 2
             };
 
-            CartItem cartItem = new CartItem
-            {
-                Quantity = 1,
-                IsPublished = true
-            };
+            CartItem cartItem = new CartItem { Quantity = 1, IsPublished = true };
 
             shoppingCartRepositoryMock.Setup(scr =>
-                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.Quantity))
+                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.ProductVariantId))
                 .ReturnsAsync(cartItem);
-
-            CartItem capturedCartItem = null!;
-
-            shoppingCartRepositoryMock.Setup(scr => scr.AddToCartAsync(It.IsAny<CartItem>()))
-                .Callback<CartItem>(ci => capturedCartItem = ci)
-                .Returns(Task.CompletedTask);
 
             shoppingCartRepositoryMock.Setup(scr => scr.SaveChangesAsync())
                 .ReturnsAsync(1);
@@ -372,7 +356,24 @@ namespace MaxEndLabs.Service.Tests
             await shoppingCartService.AddProductToShoppingCartAsync(dto);
 
             //Assert
-            Assert.That(capturedCartItem.Quantity, Is.EqualTo(dto.Quantity));
+            Assert.That(cartItem.Quantity, Is.EqualTo(3));
+            shoppingCartRepositoryMock.Verify(scr => scr.AddToCartAsync(It.IsAny<CartItem>()), Times.Never);
+        }
+
+        [Test]
+        public void AddProductToShoppingCartAsync_SaveFails_ThrowsEntityPersistFailureException()
+        {
+            // Arrange
+            CartItemCreateDto dto = new CartItemCreateDto { CartId = 1, ProductId = 1, ProductVariantId = 1, Quantity = 1 };
+
+            shoppingCartRepositoryMock.Setup(scr =>
+                    scr.GetCartItemIgnoreFilterAsync(dto.CartId, dto.ProductId, dto.ProductVariantId))
+                .ReturnsAsync((CartItem?)null);
+
+            shoppingCartRepositoryMock.Setup(scr => scr.SaveChangesAsync()).ReturnsAsync(0);
+
+            Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
+                await shoppingCartService.AddProductToShoppingCartAsync(dto));
         }
 
         [Test]
@@ -494,18 +495,9 @@ namespace MaxEndLabs.Service.Tests
 
             var cartItemList = new List<CartItem>
             {
-                new CartItem
-                {
-                    IsPublished = false
-                },
-                new CartItem
-                {
-                    IsPublished = false
-                },
-                new CartItem
-                {
-                    IsPublished = false
-                }
+                new CartItem { IsPublished = false },
+                new CartItem { IsPublished = false },
+                new CartItem { IsPublished = false }
             };
 
             shoppingCartRepositoryMock.Setup(scr =>
@@ -600,6 +592,21 @@ namespace MaxEndLabs.Service.Tests
 
             //Assert
             Assert.That(result, Is.EqualTo(expectedCartId));
+        }
+
+        [Test]
+        public void GetOrCreateShoppingCartAsync_SaveFails_ThrowsEntityPersistFailureException()
+        {
+            // Arrange
+            string userId = "user123";
+
+            shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
+                .ReturnsAsync(0);
+
+            shoppingCartRepositoryMock.Setup(scr => scr.SaveChangesAsync()).ReturnsAsync(0);
+
+            Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
+                await shoppingCartService.GetOrCreateShoppingCartAsync(userId));
         }
     }
 }

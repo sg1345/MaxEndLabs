@@ -198,9 +198,6 @@ namespace MaxEndLabs.Services.Core
 
 			var statuses = Enum.GetNames(typeof(OrderStatus)).ToList();
 
-			if (!statuses.Any())
-				throw new BadRequestException();
-
 			var orderDetailsDto = new OrderDetailsDto
 			{
 				OwnerUserId = order.UserId,

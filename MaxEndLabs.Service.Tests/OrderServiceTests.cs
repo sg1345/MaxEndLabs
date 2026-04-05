@@ -1029,6 +1029,54 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
+        public async Task CreateOrderAsync_ValidRequest_SavesOrderWithCorrectFormatAndAddress()
+        {
+            //Arrange 
+            var dto = new AddressOrderDto
+            {
+                UserId = "User_123",
+                StreetAddress = "123 Coder Lane",
+                City = "TestCity",
+                Postcode = "12345"
+            };
+
+            var cartItems = new List<CartItem>
+            {
+                new CartItem {
+                    ProductId = 1,
+                    Product = new Product { Price = 10m },
+                    ProductVariant = new ProductVariant { Price = 15m },
+                    Quantity = 1
+                }
+            };
+
+            shoppingCartRepositoryMock.Setup(r => r.GetCartItemsByUserIdAsync(dto.UserId))
+                .ReturnsAsync(cartItems);
+            shoppingCartRepositoryMock.Setup(r => r.GetShoppingCartIdAsync(dto.UserId))
+                .ReturnsAsync(1);
+
+            Order capturedOrder = null!;
+            orderRepositoryMock.Setup(r => r.AddOrderAsync(It.IsAny<Order>()))
+                .Callback<Order>(o => capturedOrder = o)
+                .Returns(Task.CompletedTask);
+
+            orderRepositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
+            // Act
+            await orderService.CreateOrderAsync(dto);
+
+            // Assert
+            string pattern = @"^ORD-\d{8}-[A-Z0-9]{4}$";
+
+            Assert.That(capturedOrder, Is.Not.Null, "Order was not passed to Repository");
+            Assert.That(capturedOrder.OrderNumber, Does.Match(pattern),
+                $"OrderNumber {capturedOrder.OrderNumber} does not match format ORD-yyyyMMdd-XXXX");
+
+            string expectedDatePart = DateTime.UtcNow.ToString("yyyyMMdd");
+            Assert.That(capturedOrder.OrderNumber, Does.Contain(expectedDatePart));
+        }
+
+        [Test]
         public async Task GetOrderAsync_OrderDoesNotExist_ReturnNull()
         {
             //Arrange
@@ -1108,7 +1156,7 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
-        public async Task GetOrderDetailsAsync_OrderDoesNotExist_throwsEntityNotFoundException()
+        public void GetOrderDetailsAsync_OrderDoesNotExist_throwsEntityNotFoundException()
         {
             //Arrange
             int orderId = 1;
@@ -1230,6 +1278,58 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
+        [TestCase(OrderStatus.Paid, "bg-info-subtle text-info-emphasis border border-info-subtle")]
+        [TestCase(OrderStatus.Shipped, "bg-primary-subtle text-primary-emphasis border border-primary-subtle")]
+        [TestCase(OrderStatus.Completed, "bg-success-subtle text-success-emphasis border border-success-subtle")]
+        [TestCase(OrderStatus.Cancelled, "badge bg-danger-subtle text-danger-emphasis border border-danger-subtle")]
+        [TestCase(OrderStatus.Refunded, "badge bg-danger-subtle text-danger-emphasis border border-danger-subtle")]
+        public async Task GetOrderDetailsAsync_VariousStatuses_ReturnsCorrectBadge(OrderStatus status, string expectedBadge)
+        {
+            // Arrange
+            int orderId = 1;
+            var order = new Order
+            {
+                Id = orderId,
+                UserId = "User_123",
+                User = new ApplicationUser { UserName = "test", FullName = "test" },
+                Status = status,
+                OrderItems = new List<OrderItem>()
+            };
+
+            orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, false, true, true))
+                .ReturnsAsync(order);
+
+            // Act
+            var result = await orderService.GetOrderDetailsAsync(orderId);
+
+            // Assert
+            Assert.That(result.StatusBadge, Is.EqualTo(expectedBadge));
+        }
+
+        [Test]
+        public async Task GetOrderDetailsAsync_UnknownStatus_ReturnsEmptyBadge()
+        {
+            // Arrange
+            int orderId = 1;
+            var order = new Order
+            {
+                Id = orderId,
+                Status = (OrderStatus)999,
+                User = new ApplicationUser { FullName = "Name", UserName = "User" },
+                OrderItems = new List<OrderItem>()
+            };
+
+            orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, false, true, true))
+                .ReturnsAsync(order);
+
+            // Act
+            var result = await orderService.GetOrderDetailsAsync(orderId);
+
+            // Assert
+            Assert.That(result.StatusBadge, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
         [TestCase("Pending")]
         public async Task MarkOrderAsPaidAsync_OrderStatusIsPending_ReturnCorrectStatus(string status)
         {
@@ -1267,6 +1367,7 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
+        [TestCase("Paid")]
         [TestCase("Shipped")]
         [TestCase("Completed")]
         [TestCase("Cancelled")]
@@ -1275,10 +1376,11 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             int orderId = 1;
-
+            var originalTime = new DateTime(2020, 1, 1);
             var order = new Order
             {
                 Id = orderId,
+                UpdatedAt = originalTime,
                 Status = Enum.Parse<OrderStatus>(status),
             };
 
@@ -1294,7 +1396,12 @@ namespace MaxEndLabs.Service.Tests
             var result = await orderService.MarkOrderAsPaidAsync(orderId);
 
             //Assert
-            Assert.That(result, Is.EqualTo(status));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(status));
+                Assert.That(order.UpdatedAt, Is.EqualTo(originalTime));
+            });
+            
         }
 
         [Test]
@@ -1312,6 +1419,25 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
+        public void MarkOrderAsPaidAsync_SaveFails_ThrowsEntityPersistFailureException()
+        {
+            // Arrange
+            int orderId = 1;
+            var order = new Order { Id = orderId, Status = OrderStatus.Pending };
+
+            orderRepositoryMock.Setup(or => or.
+                    GetOrderByIdAsync(orderId, true, false, false))
+                .ReturnsAsync(order);
+
+            orderRepositoryMock.Setup(or => or.SaveChangesAsync())
+                .ReturnsAsync(0); 
+
+            // Act & Assert
+            Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
+                await orderService.MarkOrderAsPaidAsync(orderId));
+        }
+
+        [Test]
         public void GetOrderStatusAsync_OrderIsNull_ThrowsEntityNotFoundException()
         {
             //Arrange
@@ -1322,7 +1448,7 @@ namespace MaxEndLabs.Service.Tests
                 .ReturnsAsync((Order?)null);
 
 
-            Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.MarkOrderAsPaidAsync(orderId));
+            Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderStatusAsync(orderId));
         }
 
         [Test]
@@ -1414,11 +1540,31 @@ namespace MaxEndLabs.Service.Tests
             int orderId = 1;
 
 
-            orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
+            orderRepositoryMock.Setup(or => or.
+                    GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
 
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
+                await orderService.ChangeOrderStatus(newStatus, orderId));
+        }
+
+        [Test]
+        public void ChangeOrderStatus_SaveFails_ThrowsEntityPersistFailureException()
+        {
+            // Arrange
+            int orderId = 1;
+            string newStatus = "Shipped";
+            var order = new Order { Id = orderId, Status = OrderStatus.Paid };
+
+            orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
+                .ReturnsAsync(order);
+
+            orderRepositoryMock.Setup(or => or.SaveChangesAsync())
+                .ReturnsAsync(0); 
+
+            // Act & Assert
+            Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await orderService.ChangeOrderStatus(newStatus, orderId));
         }
     }
