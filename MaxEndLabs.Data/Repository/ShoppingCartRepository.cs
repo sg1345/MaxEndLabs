@@ -79,7 +79,14 @@ namespace MaxEndLabs.Data.Repository
 
 		}
 
-		public async Task AddShoppingCartAsync(ShoppingCart shoppingCart)
+        public async Task<IEnumerable<CartItem>> GetCartItemsByProductIdAndVariantIdAsync(int productId, int variantId)
+        {
+            return await DbContext.CartItems
+                .Where(ci => ci.ProductId == productId && ci.ProductVariantId == variantId)
+                .ToArrayAsync();
+        }
+
+        public async Task AddShoppingCartAsync(ShoppingCart shoppingCart)
 		{
 			await DbContext.ShoppingCarts.AddAsync(shoppingCart);
 		}

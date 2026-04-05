@@ -13,7 +13,8 @@ namespace MaxEndLabs.Data.Repository.Contracts
 		Task<IEnumerable<CartItem>> GetCartItemsByCartIdAsync(int cartId);
 		Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(string userId);
 		Task<IEnumerable<CartItem>> GetCartItemsByProductSlugAsync(string productSlug);
-		Task AddShoppingCartAsync(ShoppingCart shoppingCart);
+        Task<IEnumerable<CartItem>> GetCartItemsByProductIdAndVariantIdAsync(int productId, int variantId);
+        Task AddShoppingCartAsync(ShoppingCart shoppingCart);
 		Task<int> SaveChangesAsync();
 		void CartItemsRemoveRange(IEnumerable<CartItem> cartItems);
 	}

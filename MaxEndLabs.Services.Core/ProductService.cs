@@ -282,6 +282,14 @@ namespace MaxEndLabs.Services.Core
                 if (productVariant.IsDeleted == false)
                 {
                     productVariant.IsDeleted = true;
+
+                    var cartItemsForRemoving = await _shoppingCartRepository
+                        .GetCartItemsByProductIdAndVariantIdAsync(productVariant.ProductId, productVariant.Id);
+                    if (cartItemsForRemoving.Any())
+                    {
+                        _shoppingCartRepository.CartItemsRemoveRange(cartItemsForRemoving);
+                    }
+
                     changesMade = true;
                 }
             }
