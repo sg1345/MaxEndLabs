@@ -1445,5 +1445,60 @@ namespace MaxEndLabs.Service.Tests
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.RestoreProductAsync(fakeSlug));
         }
+
+        [Test]
+        public async Task ManageProductVariantsAsync_VariantDeleted_RemovesAssociatedCartItems()
+        {
+            //Arrange
+            int productId = 1;
+            int variantIdToDelete = 99;
+
+            
+            var existingVariants = new List<ProductVariant>
+            {
+                new ProductVariant { Id = variantIdToDelete, ProductId = productId, VariantName = "Discontinued Size", IsDeleted = false }
+            };
+
+            var dto = new ProductVariantListDto
+            {
+                ProductId = productId,
+                Variants = new List<ProductVariantDto>()
+            };
+
+            var cartItems = new List<CartItem>
+            {
+                new CartItem { Id = 500, ProductId = productId, ProductVariantId = variantIdToDelete },
+                new CartItem { Id = 501, ProductId = productId, ProductVariantId = variantIdToDelete }
+            };
+
+            productRepositoryMock
+                .Setup(r => r.GetProductVariantsByProductIdAsync(productId))
+                .ReturnsAsync(existingVariants);
+
+            shoppingCartRepositoryMock
+                .Setup(r => r.GetCartItemsByProductIdAndVariantIdAsync(productId, variantIdToDelete))
+                .ReturnsAsync(cartItems);
+
+            productRepositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
+            //Act
+            await productService.ManageProductVariantsAsync(dto);
+
+            //Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(existingVariants.First().IsDeleted, Is.True);
+
+                shoppingCartRepositoryMock.Verify(r =>
+                    r.CartItemsRemoveRange(It.Is<IEnumerable<CartItem>>(list => list.Count() == 2)),
+                    Times.Once);
+
+                productRepositoryMock.Verify(r =>
+                    r.UpdateRangeProductVariantAsync(It.IsAny<IEnumerable<ProductVariant>>()),
+                    Times.Once);
+
+                productRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.AtLeastOnce);
+            });
+        }
     }
 }
