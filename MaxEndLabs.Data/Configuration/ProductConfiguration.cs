@@ -143,8 +143,151 @@ namespace MaxEndLabs.Data.Configuration
 					CreatedAt = new DateOnly(2026, 2, 10),
 					UpdatedAt = new DateOnly(2026, 2, 10),
 					IsPublished = true
-				}
-			];
+				},//
+                new Product
+                {
+                    Id = Guid.Parse("3b89e3a0-8d5a-4e2b-9e45-8f6a9c1d3e2a"),
+                    Name = "Elite Leather Belt",
+                    Slug = "elite-leather-belt",
+                    Description = "The extra soft leather makes this belt feel like it’s been yours for years, providing you with the support and strength you need in training and competition.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 110.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/brownbelt1.png",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("7f1c2d9e-4b6a-485c-89a1-2d3e4f5a6b7c"),
+                    Name = "Lasha Signature Leather Belt",
+                    Slug = "lasha-signature-leather-belt",
+                    Description = "Lasha’s 492kg total changed the game. Now it’s time to change yours with the Lasha Signature Leather Belt - in collaboration with Lasha Talakhadze.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 135.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/50_1846030d-fcec-4ca4-88c8-25da74598781.jpg",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },//
+                new Product
+                {
+                    Id = Guid.Parse("9e8d7c6b-5a4f-3e2d-1c9b-8a7b6c5d4e3f"),
+                    Name = "Nasar Neoprene Belt",
+                    Slug = "nasar-neoprene-belt",
+                    Description = "Karlos took the existing WLHOUSE neoprene belt which he deemed perfect and added his own personalised branding and signature, allowing his fans who prefer velcro to still be a part of his collection.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 65.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/nasar_neoprene_2.jpg?",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("1a2b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6"),
+                    Name = "Nasar 7mm Soft Knee Sleeves",
+                    Slug = "nasar-7mm-soft-knee-sleeves",
+                    Description = "Designed by Olympic Champion Karlos Nasar with one purpose in mind—to break more world records. Now you can lift in the exact same knee sleeves as the greatest weightlifter of the generation.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 97.50m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/nasar_sleeves_1.jpg",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("d6c5b4a3-2f1e-d0c9-b8a7-f6e5d4c3b2a1"),
+                    Name = "Heavy Duty 7mm Knee Sleeves",
+                    Slug = "heavy-duty-7mm-knee-sleeves",
+                    Description = "Our Heavy Duty 7mm Knee Sleeves are designed to have an immediate impact on your leg strength. Built with tough neoprene and durable external materials they are the most powerful knee sleeves in weightlifting.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 79.95m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/66.png",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("e5d4c3b2-a1f0-e9d8-c7b6-a5b4c3d2e1f0"),
+                    Name = "Chinese 1.5mm Knee Sleeves",
+                    Slug = "chinese-1.5mm-knee-sleeves",
+                    Description = "Lift with an optimal combination of warmth and support in our Chinese-style Weightlifting Knee Sleeves. At just 1.5mm thick, these sleeves offer warmth and comfort to the knee without compromising any mobility, perfect for snatches, cleans and deep squats.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 39.99m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/93.png",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("f0e1d2c3-b4a5-6b7c-8d9e-0f1a2b3c4d5e"),
+                    Name = "Leather Wrist Wraps",
+                    Slug = "leather-wrist-wraps",
+                    Description = "Enjoy extra wrist support with the WLHOUSE Leather Wrist Wraps. Soft genuine leather and a stainless steel buckle provide strength and support where it’s needed.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 35.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/88.png",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("5e4d3c2b-1a0f-e9d8-c7b6-a5b4c3d2e1f0"),
+                    Name = "Weightlifting Thumb Tape",
+                    Slug = "weightlifting-thumb-tape",
+                    Description = "Protecting the thumbs of weightlifters since 2019. If you’ve been to a weightlifting gym you’ve seen Weightlifting House Thumb Tape.",
+                    CategoryId = Guid.Parse("26a46720-ae3a-43bd-b5de-2e2dd4048dee"), // Accessories
+                    Price = 14.95m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/4.jpg",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("c3d2e1f0-a5b4-c7b6-e9d8-1a0f5e4d3c2b"),
+                    Name = "90s Training Sweatshirt",
+                    Slug = "90s-training-sweatshirt",
+                    Description = "Inspired by the early ’90s training hall aesthetic, most memorably Ronnie Weller at the ’93 World Champs, featuring a WLHOUSE logo on the back that echoes Team Japan’s 1990 kit.",
+                    CategoryId = Guid.Parse("cb8ceb6a-6623-4937-a6c4-777b4b498e1e"), // Upper Body
+                    Price = 30.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/Jumperblack_red1.jpg",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("b4c5d6e7-f8a9-0b1c-2d3e-4f5a6b7c8d9e"),
+                    Name = "Rahmat Unchained T-Shirt",
+                    Slug = "rahmat-unchained-tshirt",
+                    Description = "In collaboration with one of the greatest clean & jerkers of the generation comes the official WLHOUSE x Rahmat collab, featuring the Rahmat Unchained T-Shirt.",
+                    CategoryId = Guid.Parse("cb8ceb6a-6623-4937-a6c4-777b4b498e1e"), // Upper Body
+                    Price = 35.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/Rahmattee1.jpg",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                },
+                new Product
+                {
+                    Id = Guid.Parse("a1b2c3d4-e5f6-7a8b-9c0d-1a2b3c4d5e6f"),
+                    Name = "90s Training Sweatpants",
+                    Slug = "90s-training-sweatpants",
+                    Description = "Inspired by the baggy, oversized looks of the ’90s, elevated with the soft, stretchy fabrics of today, featuring an elasticated waistband, cuffed legs and a soft fleece interior. ",
+                    CategoryId = Guid.Parse("6f026985-b5c2-4b05-9ac4-088b88982ec8"), // Lower Body
+                    Price = 65.00m,
+                    MainImageUrl = "https://eustore.weightliftinghouse.com/cdn/shop/files/BlackPants1.jpg",
+                    CreatedAt = new DateOnly(2026, 2, 10),
+                    UpdatedAt = new DateOnly(2026, 2, 10),
+                    IsPublished = true
+                }
+            ];
 		}
 	}
 }

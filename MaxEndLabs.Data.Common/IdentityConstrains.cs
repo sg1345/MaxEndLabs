@@ -5,6 +5,7 @@
 		public static class ApplicationUser
 		{
             public static readonly Guid AdminUserId = Guid.Parse("06313180-fa45-42b5-ac33-1333f673455d");
+            public static readonly Guid TestUserId = Guid.Parse("9d2b0228-4d0d-4c23-8b49-01a698857709");
         }
 
 		public static class IdentityRole

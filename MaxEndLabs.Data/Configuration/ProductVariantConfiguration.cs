@@ -226,8 +226,148 @@ namespace MaxEndLabs.Data.Configuration
 						Id = Guid.Parse("21b6185b-b955-46c4-a48f-1e8b037fa265"),
 						ProductId = Guid.Parse("c4ed28d4-92cb-4532-8949-044be6a66e28"),
 						VariantName = "Color: Black and Green"
-					}
-				];
+					},
+                    // Elite Leather Belt
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("f472b8d1-9c65-4d1a-a89e-32cf4b918a11"),
+                        ProductId = Guid.Parse("3b89e3a0-8d5a-4e2b-9e45-8f6a9c1d3e2a"),
+                        VariantName = "Color: Brown"
+                    },
+
+                    // Lasha Signature Leather Belt
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("8d12e9b4-3a76-4f81-b51c-918d2a6c4f33"),
+                        ProductId = Guid.Parse("7f1c2d9e-4b6a-485c-89a1-2d3e4f5a6b7c"),
+                        VariantName = "Color: White and Red"
+                    },
+
+                    // Nasar Neoprene Belt
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("1b8c3a9d-7e42-4658-8d1f-b3a2c5e9d411"),
+                        ProductId = Guid.Parse("9e8d7c6b-5a4f-3e2d-1c9b-8a7b6c5d4e3f"),
+                        VariantName = "Color: Black"
+                    },
+
+                    // Nasar 7mm Soft Knee Sleeves
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("5c4d9e2a-1b8f-4a36-9d7c-8e1f2a3b4c55"),
+                        ProductId = Guid.Parse("1a2b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6"),
+                        VariantName = "Color: Black and Green"
+                    },
+
+                    // Heavy Duty 7mm Knee Sleeves
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("9e1f2a3b-4c5d-6e7f-8a9b-0c1d2e3f4a55"),
+                        ProductId = Guid.Parse("d6c5b4a3-2f1e-d0c9-b8a7-f6e5d4c3b2a1"),
+                        VariantName = "Color: Black"
+                    },
+
+                    // Chinese 1.5mm Knee Sleeves
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("2a3b4c5d-6e7f-8a9b-0c1d-e1f2a3b4c5d6"),
+                        ProductId = Guid.Parse("e5d4c3b2-a1f0-e9d8-c7b6-a5b4c3d2e1f0"),
+                        VariantName = "Color: Blue"
+                    },
+
+                    // Leather Wrist Wraps
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("6e7f8a9b-0c1d-2e3f-4a5b-c6d7e8f9a0b1"),
+                        ProductId = Guid.Parse("f0e1d2c3-b4a5-6b7c-8d9e-0f1a2b3c4d5e"),
+                        VariantName = "Color: Blue"
+                    },
+
+                    // Weightlifting Thumb Tape
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("0c1d2e3f-4a5b-6c7d-8e9f-a0b1c2d3e4f5"),
+                        ProductId = Guid.Parse("5e4d3c2b-1a0f-e9d8-c7b6-a5b4c3d2e1f0"),
+                        VariantName = "Color: Black and Gold"
+                    },
+                    // 90s Training Sweatshirt
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"),
+                        ProductId = Guid.Parse("c3d2e1f0-a5b4-c7b6-e9d8-1a0f5e4d3c2b"),
+                        VariantName = "Size S / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e"),
+                        ProductId = Guid.Parse("c3d2e1f0-a5b4-c7b6-e9d8-1a0f5e4d3c2b"),
+                        VariantName = "Size M / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f"),
+                        ProductId = Guid.Parse("c3d2e1f0-a5b4-c7b6-e9d8-1a0f5e4d3c2b"),
+                        VariantName = "Size L / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a"),
+                        ProductId = Guid.Parse("c3d2e1f0-a5b4-c7b6-e9d8-1a0f5e4d3c2b"),
+                        VariantName = "Size XL / Color: Black"
+                    },
+
+                    // Rahmat Unchained T-Shirt
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b"),
+                        ProductId = Guid.Parse("b4c5d6e7-f8a9-0b1c-2d3e-4f5a6b7c8d9e"),
+                        VariantName = "Size S / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c"),
+                        ProductId = Guid.Parse("b4c5d6e7-f8a9-0b1c-2d3e-4f5a6b7c8d9e"),
+                        VariantName = "Size M / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d"),
+                        ProductId = Guid.Parse("b4c5d6e7-f8a9-0b1c-2d3e-4f5a6b7c8d9e"),
+                        VariantName = "Size L / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e"),
+                        ProductId = Guid.Parse("b4c5d6e7-f8a9-0b1c-2d3e-4f5a6b7c8d9e"),
+                        VariantName = "Size XL / Color: Black"
+                    },
+                    // 90s Training Sweatpants
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f"),
+                        ProductId = Guid.Parse("a1b2c3d4-e5f6-7a8b-9c0d-1a2b3c4d5e6f"),
+                        VariantName = "Size S / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("d0e1f2a3-b4c5-4d6e-7f8a-9b0c1d2e3f4a"),
+                        ProductId = Guid.Parse("a1b2c3d4-e5f6-7a8b-9c0d-1a2b3c4d5e6f"),
+                        VariantName = "Size M / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b"),
+                        ProductId = Guid.Parse("a1b2c3d4-e5f6-7a8b-9c0d-1a2b3c4d5e6f"),
+                        VariantName = "Size L / Color: Black"
+                    },
+                    new ProductVariant
+                    {
+                        Id = Guid.Parse("f2a3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c"),
+                        ProductId = Guid.Parse("a1b2c3d4-e5f6-7a8b-9c0d-1a2b3c4d5e6f"),
+                        VariantName = "Size XL / Color: Black"
+                    }
+
+                ];
 		}
 	}
 }

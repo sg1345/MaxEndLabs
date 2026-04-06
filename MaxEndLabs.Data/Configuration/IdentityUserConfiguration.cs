@@ -1,4 +1,5 @@
-﻿using MaxEndLabs.Data.Models;
+﻿using MaxEndLabs.Data.Common;
+using MaxEndLabs.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -30,7 +31,21 @@ namespace MaxEndLabs.Data.Configuration
 				PasswordHash = "AQAAAAIAAYagAAAAEP9JzX0YwKm6N+luPkuHrobdVlv+8FQxWWME12rmICorZgnbmrHziPC+5WxRG5/6aw=="
 			};
 
-			return [adminUser];
+            var testUser = new ApplicationUser
+            {
+                Id = TestUserId,
+                FullName = "Bill Clinton",
+                UserName = "test@labs.com",
+                NormalizedUserName = "TEST@LABS.COM",
+                Email = "test@labs.com",
+                NormalizedEmail = "TEST@LABS.COM",
+                EmailConfirmed = true,
+                ConcurrencyStamp = "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d", 
+                SecurityStamp = "12345678-1234-1234-1234-123456789abc",
+                PasswordHash = "AQAAAAIAAYagAAAAEP9JzX0YwKm6N+luPkuHrobdVlv+8FQxWWME12rmICorZgnbmrHziPC+5WxRG5/6aw=="
+            };
+
+            return [adminUser,testUser];
 		}
 	}
 }

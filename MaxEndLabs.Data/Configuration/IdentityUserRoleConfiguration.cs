@@ -21,8 +21,13 @@ namespace MaxEndLabs.Data.Configuration
 				{
 					UserId = AdminUserId,
 					RoleId = AdminRoleId
-				}
-			];
+				},
+                new IdentityUserRole<Guid>
+                {
+                    UserId = TestUserId,
+                    RoleId = UserRoleId
+                }
+            ];
 		}
 	}
 }

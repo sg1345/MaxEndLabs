@@ -10,16 +10,6 @@
 
 ------------------------------------------------------------------------
 
-## Live Demo
-
-**🔗 [MaxEndLabs Store on Render](https://maxendlabstest.onrender.com)**  
-
-**Demo Credentials:**
- - Email: admin@labs.com
- - Password: admin
-
-------------------------------------------------------------------------
-
 ## 📋 Table of Contents
 
 -   [About the Project](#about-the-project)
@@ -29,8 +19,8 @@
 -   [Project Structure](#project-structure)
 -   [Features](#features)
 -   [Usage](#usage)
+-   [Database Setup](#database-setup)
 -   [Configuration](#configuration)
--   [Secret Keys Configuration](#secret-keys-configuration)
 -   [Contributing](#contributing)
 -   [License](#license)
 -   [Contact](#contact)
@@ -90,13 +80,21 @@ Follow these steps to get the project running locally.
 git clone https://github.com/sg1345/MaxEndLabs
 cd MaxEndLabs
 ```
-
-### 2. Run the application
+### 2. Restore dependencies
 
 ```bash
-dotnet run --project MaxEndLabs.Web
+dotnet restore
 ```
+### 3. Apply database migrations
+Make sure the connection string is correct and run:
+```bash
+dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
+```
+### 4. Run the application
 
+```bash
+dotnet run --project MaxEndLabs
+```
 ------------------------------------------------------------------------
 
 ## 📁 Project Structure
@@ -174,14 +172,33 @@ product variants.
 
 ------------------------------------------------------------------------
 
+## 🗄️ Database Setup
+
+The project uses **Entity Framework Core** with a Code-First approach.
+
+Connection string is configured in `appsettings.json`:
+
+```json
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=.;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;"
+  }
+```
+
+To create and seed the database:
+
+``` bash
+dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
+```
+
+------------------------------------------------------------------------
+
 ## ⚙️ Configuration
 
 ``` json
 {
-  "DatabaseProvider": "SqlServer",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=aspnet_MaxEndLabs_2026_Test2;Trusted_Connection=True;Encrypt=False;",
-    "PostgresConnection": "Host=dpg-d79vb4k50q8c73b967s0-a;maxendlabs_dbnewgen;Username=maxendlabs_dbnewgen_user;Password=oN6X9w2Qs5l0RCTxj1xRaCHnGLxMLc4I;Port=5432;SSL Mode=Require;Trust Server Certificate=true"
+    "DefaultConnection": "Server=.;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;",
+    "MaxEndLabsDbContextConnection": ""
   },
   "Logging": {
     "LogLevel": {

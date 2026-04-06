@@ -1,9 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 using MaxEndLabs.Data.Models.Enum;
-using Microsoft.AspNetCore.Identity;
 
 using static MaxEndLabs.GCommon.EntityValidation.Order;
 
