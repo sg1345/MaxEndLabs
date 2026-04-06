@@ -29,8 +29,8 @@
 -   [Project Structure](#project-structure)
 -   [Features](#features)
 -   [Usage](#usage)
--   [Database Setup](#database-setup)
 -   [Configuration](#configuration)
+-   [Secret Keys Configuration](#secret-keys-configuration)
 -   [Contributing](#contributing)
 -   [License](#license)
 -   [Contact](#contact)
@@ -90,21 +90,13 @@ Follow these steps to get the project running locally.
 git clone https://github.com/sg1345/MaxEndLabs
 cd MaxEndLabs
 ```
-### 2. Restore dependencies
+
+### 2. Run the application
 
 ```bash
-dotnet restore
+dotnet run --project MaxEndLabs.Web
 ```
-### 3. Apply database migrations
-Make sure the connection string is correct and run:
-```bash
-dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
-```
-### 4. Run the application
 
-```bash
-dotnet run --project MaxEndLabs
-```
 ------------------------------------------------------------------------
 
 ## 📁 Project Structure
@@ -179,26 +171,6 @@ The admin account is seeded automatically when the application starts.
 
 Only users with the Admin role can create, edit and delete products and
 product variants.
-
-------------------------------------------------------------------------
-
-## 🗄️ Database Setup
-
-The project uses **Entity Framework Core** with a Code-First approach.
-
-Connection string is configured in `appsettings.json`:
-
-```json
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;"
-  }
-```
-
-To create and seed the database:
-
-``` bash
-dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
-```
 
 ------------------------------------------------------------------------
 
