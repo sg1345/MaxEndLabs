@@ -9,7 +9,7 @@ namespace MaxEndLabs.ViewModels.Order
 {
     public class OrderDetailsViewModel
     {
-	    public string OwnerUserId { get; set; } = null!;
+	    public Guid OwnerUserId { get; set; }
         public string OwnerFullName { get; set; } = null!;
         public string OwnerUsername { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
@@ -19,7 +19,7 @@ namespace MaxEndLabs.ViewModels.Order
         public string City { get; set; } = null!;
         public string Postcode { get; set; } = null!;
         public decimal TotalAmount { get; set; }
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public string OrderNumber { get; set; } = null!;
         public List<OrderItemViewModel> OrderItems { get; set; } = [];
 

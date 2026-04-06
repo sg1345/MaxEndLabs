@@ -8,7 +8,7 @@ namespace MaxEndLabs.Service.Models.Order
 {
     public class OrderDetailsDto
     {
-	    public string OwnerUserId { get; set; } = null!; 
+	    public Guid OwnerUserId { get; set; }
         public string OwnerFullName { get; set; } = null!;
         public string OwnerUsername { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
@@ -18,7 +18,7 @@ namespace MaxEndLabs.Service.Models.Order
         public string City { get; set; } = null!;
         public string Postcode { get; set; } = null!;
         public decimal TotalAmount { get; set; }
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public string OrderNumber { get; set; } = null!;
         public List<OrderItemDetailsDto> LineItems { get; set; } = [];
         public List<string> Statuses = [];

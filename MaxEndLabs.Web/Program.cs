@@ -21,14 +21,32 @@ namespace MaxEndLabs.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            
+            var dbProvider = builder.Configuration.GetValue<string>("DatabaseProvider");
+
             builder.Services.AddDbContext<MaxEndLabsDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            
+            {
+                // This dynamically gets the name of your Data project (MaxEndLabs.Data)
+                var migrationsAssembly = typeof(MaxEndLabsDbContext).Assembly.FullName;
+
+                if (dbProvider == "PostgreSQL")
+                {
+                    var postgresConn = builder.Configuration.GetConnectionString("PostgresConnection")
+                                       ?? throw new InvalidOperationException("Connection string 'PostgresConnection' not found.");
+
+                    options.UseNpgsql(postgresConn, b => b.MigrationsAssembly(migrationsAssembly));
+                }
+                else
+                {
+                    var sqlConn = builder.Configuration.GetConnectionString("DefaultConnection")
+                                  ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+                    options.UseSqlServer(sqlConn, b => b.MigrationsAssembly(migrationsAssembly));
+                }
+            });
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireDigit = false;
@@ -94,6 +112,22 @@ namespace MaxEndLabs.Web
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MaxEndLabsDbContext>();
+                var currentProvider = builder.Configuration.GetValue<string>("DatabaseProvider");
+
+                if (currentProvider == "PostgreSQL")
+                {
+                    // Render.com:
+                    dbContext.Database.Migrate();
+                }
+                else
+                {
+                    dbContext.Database.EnsureCreated();
+                }
+            }
 
             StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Value;
 

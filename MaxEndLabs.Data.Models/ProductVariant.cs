@@ -7,10 +7,10 @@
     public class ProductVariant
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [ForeignKey(nameof(Product))]
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
         public virtual Product Product { get; set; } = null!;
 
         [Required]
@@ -18,7 +18,7 @@
         public string VariantName { get; set; } = null!;
 
 
-        [Column(TypeName = PriceColumnType)]
+        //[Column(TypeName = PriceColumnType)]
         public decimal? Price { get; set; }
 
         [Required]

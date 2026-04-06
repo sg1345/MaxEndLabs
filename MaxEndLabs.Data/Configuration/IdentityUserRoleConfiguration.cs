@@ -6,18 +6,18 @@ using static MaxEndLabs.Data.Common.IdentityConstrains.IdentityRole;
 
 namespace MaxEndLabs.Data.Configuration
 {
-	public class IdentityUserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
+	public class IdentityUserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<Guid>>
 	{
-		public void Configure(EntityTypeBuilder<IdentityUserRole<string>> entity)
+		public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> entity)
 		{
 			entity.HasData(SeedUserRole());
 		}
 
-		private IdentityUserRole<string>[] SeedUserRole()
+		private IdentityUserRole<Guid>[] SeedUserRole()
 		{
 			return 
 			[
-				new IdentityUserRole<string>
+				new IdentityUserRole<Guid>
 				{
 					UserId = AdminUserId,
 					RoleId = AdminRoleId

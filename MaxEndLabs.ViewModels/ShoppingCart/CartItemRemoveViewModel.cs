@@ -2,8 +2,8 @@
 {
     public class CartItemRemoveViewModel
     {
-        public int ProductId { get; set; }
-        public int ProductVariantId { get; set; }
-        public int CartId { get; set; }
+        public Guid ProductId { get; set; }
+        public Guid ProductVariantId { get; set; }
+        public Guid CartId { get; set; }
     }
 }

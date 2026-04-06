@@ -52,7 +52,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Details(int orderId)
+		public async Task<IActionResult> Details(Guid orderId)
 		{
 			try
 			{
@@ -102,7 +102,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
         }
 
 		[HttpPost]
-		public async Task<IActionResult> UpdateStatus(int orderId, string newStatus)
+		public async Task<IActionResult> UpdateStatus(Guid orderId, string newStatus)
 		{
             try
             {

@@ -31,15 +31,15 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderForUsersAsync_UserHasOrder_ReturnsCorrectPopulatedDto()
         {
             //Arrange
-            string userId = "ValidUserId";
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
             int page = 1;
             int pageSize = 2;
 
 
             Order order1 = new Order
             {
-                Id = 1,
-                UserId = "ValidUserId",
+                Id = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1"),
+                UserId = userId,
                 OrderNumber = "ValidOrderNumber",
                 City = "ValidCity",
                 StreetAddress = "ValidAddress",
@@ -74,7 +74,7 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new OrderDto
                     {
-                        Id = 1,
+                        Id = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1"),
                         OrderNumber = "ValidOrderNumber",
                         TotalAmount = 67.67m,
                         Status = nameof(OrderStatus.Completed),
@@ -105,7 +105,7 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderForUsersAsync_UserWithoutOrder_ReturnsCorrectEmptyOrders()
         {
             //Arrange
-            string userId = "InvalidUserId";
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
             int page = 1;
             int pageSize = 2;
 
@@ -130,7 +130,7 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrdersForUserAsync_VariousPages_CallsRepoWithCorrectSkip(int page, int pageSize, int expectedSkip)
         {
             // Arrange
-            var userId = "user-123";
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
 
             orderRepositoryMock.Setup(r => r.GetPageOrdersAsync(userId, It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new List<Order>());
@@ -156,7 +156,7 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrdersForUserAsync_MultipleScenarios_CalculatesTotalPagesCorrectly(int totalCount, int pageSize, int expectedPages)
         {
             // Arrange
-            var userId = "user-123";
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
             orderRepositoryMock.Setup(r => r.GetPageOrdersAsync(userId, It.IsAny<int>(), pageSize))
                 .ReturnsAsync(new List<Order>());
             orderRepositoryMock.Setup(r => r.GetCountAsync(userId))
@@ -173,7 +173,7 @@ namespace MaxEndLabs.Service.Tests
         public void GetOrderForUsersAsync_OrdersNotFound_ThrowsEntityNotFoundException()
         {
             //Arrange
-            string userId = "NoUserId";
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
             int page = 2;
             int pageSize = 2;
 
@@ -195,7 +195,7 @@ namespace MaxEndLabs.Service.Tests
             (int page, int pageSize, int totalCount, bool hasPrevious, bool hasNext)
         {
             //Arrange
-            string userId = "user_123";
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
             orderRepositoryMock.Setup(r => r.GetPageOrdersAsync(userId, It.IsAny<int>(), pageSize))
                 .ReturnsAsync(new List<Order>());
             orderRepositoryMock.Setup(r => r.GetCountAsync(userId))
@@ -221,11 +221,13 @@ namespace MaxEndLabs.Service.Tests
             int page = 1;
             int pageSize = 2;
 
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid orderId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
 
             Order order1 = new Order
             {
-                Id = 1,
-                UserId = "ValidUserId",
+                Id = orderId,
+                UserId = userId,
                 OrderNumber = "ValidOrderNumber",
                 City = "ValidCity",
                 StreetAddress = "ValidAddress",
@@ -262,7 +264,7 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new OrderDto
                     {
-                        Id = 1,
+                        Id = orderId,
                         OrderNumber = "ValidOrderNumber",
                         TotalAmount = 67.67m,
                         Status = nameof(OrderStatus.Completed),
@@ -411,8 +413,11 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderCreateDtoAsync_HasUser_ReturnPopulatedDto()
         {
             //Arrange
-            string userId = "ValidUserId";
-            int shoppingCartId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
+            Guid productId = Guid.Parse("057e6259-55b4-4ddd-9d0f-c1b11cb1f2f0");
+            Guid variantId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+            Guid categoryId = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
 
             shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
                 .ReturnsAsync(shoppingCartId);
@@ -422,30 +427,30 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new CartItem
                     {
-                        Id = 1,
+                        Id = shoppingCartId,
                         CartId = shoppingCartId,
                         Quantity = 2,
                         AddedAt = DateTime.UtcNow,
                         IsPublished = true,
-                        ProductId = 50,
+                        ProductId = productId,
                         Product = new Product
                         {
-                            Id = 50,
+                            Id = productId,
                             Name = "Gaming Mouse",
                             Slug = "gaming-mouse-v1",
                             Description = "High-precision ergonomic mouse.",
-                            CategoryId = 3,
+                            CategoryId = categoryId,
                             Price = 59.99m,
                             MainImageUrl = "https://cdn.example.com/images/mouse.jpg",
                             CreatedAt = new DateOnly(2026, 1, 15),
                             UpdatedAt = new DateOnly(2026, 3, 10),
                             IsPublished = true
                         },
-                        ProductVariantId = 101,
+                        ProductVariantId = variantId,
                         ProductVariant = new ProductVariant
                         {
-                            Id = 101,
-                            ProductId = 50,
+                            Id = variantId,
+                            ProductId = productId,
                             VariantName = "Matte Black",
                             Price = 64.99m,
                             IsDeleted = false
@@ -464,9 +469,9 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new CartItemDto
                     {
-                        ProductId = 50,
+                        ProductId = productId,
                         ProductName = "Gaming Mouse",
-                        ProductVariantId = 101,
+                        ProductVariantId = variantId,
                         VariantName = "Matte Black",
                         UnitPrice = 64.99m,
                         MainImageUrl = "https://cdn.example.com/images/mouse.jpg",
@@ -495,8 +500,8 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderCreateDtoAsync_HasUserNoCartItems_ReturnCorrectCout()
         {
             //Arrange
-            string userId = "ValidUserId";
-            int shoppingCartId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
 
             shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
                 .ReturnsAsync(shoppingCartId);
@@ -527,8 +532,8 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderCreateDtoAsync_MultipleVariants_ReturnCorrectUnitPrice(decimal? variantPrice, decimal productPrice, decimal expectedPrice)
         {
             //Arrange
-            string userId = "ValidUserId";
-            int shoppingCartId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
 
             shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
                 .ReturnsAsync(shoppingCartId);
@@ -564,8 +569,8 @@ namespace MaxEndLabs.Service.Tests
             (int[] unitPriceIntArr, int[] quantityArr, int expectedTotalInt)
         {
             //Arrange
-            string userId = "ValidUserId";
-            int shoppingCartId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
 
             decimal[] unitPriceDecimalArr = new decimal[2];
             decimal expectedTotal = expectedTotalInt / 100m;
@@ -618,8 +623,11 @@ namespace MaxEndLabs.Service.Tests
         public void GetOrderCreateDtoAsync_UserHasNoCart_ThrowsEntityNotFoundException()
         {
             //Arrange
-            string userId = "ValidUserId";
-            int shoppingCartIdNotFound = 0;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartIdNotFound = Guid.Empty;
+            Guid productId = Guid.Parse("057e6259-55b4-4ddd-9d0f-c1b11cb1f2f0");
+            Guid variantId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+            Guid categoryId = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
 
             shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
                 .ReturnsAsync(shoppingCartIdNotFound);
@@ -631,8 +639,8 @@ namespace MaxEndLabs.Service.Tests
         public void GetOrderCreateDtoAsync_UsersCartItemAreNull_ThrowsEntityNotFoundException()
         {
             //Arrange
-            string userId = "ValidUserId";
-            int shoppingCartId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
 
             shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
                 .ReturnsAsync(shoppingCartId);
@@ -647,9 +655,17 @@ namespace MaxEndLabs.Service.Tests
         public async Task CreateOrderAsync_HasUser_ReturnOrderId()
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
+            Guid productId = Guid.Parse("057e6259-55b4-4ddd-9d0f-c1b11cb1f2f0");
+            Guid variantId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+            Guid categoryId = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+            Guid cartItemId = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -660,30 +676,30 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new CartItem
                     {
-                        Id = 1,
-                        CartId = 1,
+                        Id = cartItemId,
+                        CartId = shoppingCartId,
                         Quantity = 1,
                         AddedAt = DateTime.UtcNow,
                         IsPublished = true,
-                        ProductId = 1,
+                        ProductId = productId,
                         Product = new Product
                         {
-                            Id = 1,
+                            Id = productId,
                             Name = "Default Name",
                             Slug = "default-slug",
                             Description = "Default Description",
-                            CategoryId = 1,
+                            CategoryId = categoryId,
                             Price = 10.00m,
                             MainImageUrl = "http://example.com/image.png",
                             CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                             UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                             IsPublished = true
                         },
-                        ProductVariantId = 1,
+                        ProductVariantId = variantId,
                         ProductVariant = new ProductVariant
                         {
-                            Id = 1,
-                            ProductId = 1,
+                            Id = variantId,
+                            ProductId = productId,
                             VariantName = "Default Variant Name",
                             Price = 15.00m,
                             IsDeleted = false
@@ -691,10 +707,12 @@ namespace MaxEndLabs.Service.Tests
                     }
                 });
 
+            var expected = orderId;
+
             orderRepositoryMock.Setup(or => or.AddOrderAsync(It.IsAny<Order>()))
                 .Callback<Order>(order =>
                 {
-                    order.Id = 1;
+                    order.Id = orderId;
                 })
                 .Returns(Task.CompletedTask);
 
@@ -705,16 +723,18 @@ namespace MaxEndLabs.Service.Tests
             var result = await orderService.CreateOrderAsync(orderDto);
 
             //Assert
-            Assert.That(result, Is.EqualTo(1));
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test]
         public void CreateOrderAsync_HasUserWithoutCartItems_ThrowsEntityNotFoundException()
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -730,9 +750,11 @@ namespace MaxEndLabs.Service.Tests
         public void CreateOrderAsync_CartItemsAreNull_ThrowsEntityNotFoundException()
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -748,9 +770,16 @@ namespace MaxEndLabs.Service.Tests
         public void CreateOrderAsync_NoChangesWereMade_ThrowsEntityPersistFailureException()
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
+            Guid productId = Guid.Parse("057e6259-55b4-4ddd-9d0f-c1b11cb1f2f0");
+            Guid variantId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+            Guid categoryId = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
+            Guid cartItemId = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -761,30 +790,30 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new CartItem
                     {
-                        Id = 1,
-                        CartId = 1,
+                        Id = cartItemId,
+                        CartId = shoppingCartId,
                         Quantity = 1,
                         AddedAt = DateTime.UtcNow,
                         IsPublished = true,
-                        ProductId = 1,
+                        ProductId = productId,
                         Product = new Product
                         {
-                            Id = 1,
+                            Id = productId,
                             Name = "Default Name",
                             Slug = "default-slug",
                             Description = "Default Description",
-                            CategoryId = 1,
+                            CategoryId = categoryId,
                             Price = 10.00m,
                             MainImageUrl = "http://example.com/image.png",
                             CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                             UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
                             IsPublished = true
                         },
-                        ProductVariantId = 1,
+                        ProductVariantId = variantId,
                         ProductVariant = new ProductVariant
                         {
-                            Id = 1,
-                            ProductId = 1,
+                            Id = variantId,
+                            ProductId = productId,
                             VariantName = "Default Variant Name",
                             Price = 15.00m,
                             IsDeleted = false
@@ -808,9 +837,11 @@ namespace MaxEndLabs.Service.Tests
             (int[] quantity, object?[] variantPriceObj, int[] productPriceInt, int expectedTotalInt)
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -881,9 +912,11 @@ namespace MaxEndLabs.Service.Tests
     (int[] quantity, object?[] variantPriceObj, int[] productPriceInt, int[] expectedLineTotalInt)
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -906,26 +939,14 @@ namespace MaxEndLabs.Service.Tests
                     new CartItem
                     {
                         Quantity = itemOneQuantity,
-                        Product = new Product
-                        {
-                            Price = itemOneProductPrice
-                        },
-                        ProductVariant = new ProductVariant
-                        {
-                            Price = itemOneVariantPrice
-                        }
+                        Product = new Product { Price = itemOneProductPrice },
+                        ProductVariant = new ProductVariant { Price = itemOneVariantPrice }
                     },
                     new CartItem
                     {
                         Quantity = itemTwoQuantity,
-                        Product = new Product
-                        {
-                            Price = itemTwoProductPrice
-                        },
-                        ProductVariant = new ProductVariant
-                        {
-                            Price = itemTwoVariantPrice
-                        }
+                        Product = new Product { Price = itemTwoProductPrice },
+                        ProductVariant = new ProductVariant { Price = itemTwoVariantPrice }
                     }
                 });
 
@@ -959,9 +980,11 @@ namespace MaxEndLabs.Service.Tests
     (int[] quantity, object?[] variantPriceObj, int[] productPriceInt, int[] expectedUnitPriceInt)
         {
             //Arrange
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+
             AddressOrderDto orderDto = new AddressOrderDto()
             {
-                UserId = "user123",
+                UserId = userId,
                 City = "validCity",
                 StreetAddress = "validAddress",
                 Postcode = "validCode"
@@ -984,26 +1007,14 @@ namespace MaxEndLabs.Service.Tests
                     new CartItem
                     {
                         Quantity = itemOneQuantity,
-                        Product = new Product
-                        {
-                            Price = itemOneProductPrice
-                        },
-                        ProductVariant = new ProductVariant
-                        {
-                            Price = itemOneVariantPrice
-                        }
+                        Product = new Product { Price = itemOneProductPrice },
+                        ProductVariant = new ProductVariant { Price = itemOneVariantPrice }
                     },
                     new CartItem
                     {
                         Quantity = itemTwoQuantity,
-                        Product = new Product
-                        {
-                            Price = itemTwoProductPrice
-                        },
-                        ProductVariant = new ProductVariant
-                        {
-                            Price = itemTwoVariantPrice
-                        }
+                        Product = new Product { Price = itemTwoProductPrice },
+                        ProductVariant = new ProductVariant { Price = itemTwoVariantPrice }
                     }
                 });
 
@@ -1032,9 +1043,13 @@ namespace MaxEndLabs.Service.Tests
         public async Task CreateOrderAsync_ValidRequest_SavesOrderWithCorrectFormatAndAddress()
         {
             //Arrange 
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid shoppingCartId = Guid.Parse("ac9bb5d0-7714-4e09-8070-5f62666f8322");
+            Guid productId = Guid.Parse("057e6259-55b4-4ddd-9d0f-c1b11cb1f2f0");
+
             var dto = new AddressOrderDto
             {
-                UserId = "User_123",
+                UserId = userId,
                 StreetAddress = "123 Coder Lane",
                 City = "TestCity",
                 Postcode = "12345"
@@ -1043,7 +1058,7 @@ namespace MaxEndLabs.Service.Tests
             var cartItems = new List<CartItem>
             {
                 new CartItem {
-                    ProductId = 1,
+                    ProductId = productId,
                     Product = new Product { Price = 10m },
                     ProductVariant = new ProductVariant { Price = 15m },
                     Quantity = 1
@@ -1053,7 +1068,7 @@ namespace MaxEndLabs.Service.Tests
             shoppingCartRepositoryMock.Setup(r => r.GetCartItemsByUserIdAsync(dto.UserId))
                 .ReturnsAsync(cartItems);
             shoppingCartRepositoryMock.Setup(r => r.GetShoppingCartIdAsync(dto.UserId))
-                .ReturnsAsync(1);
+                .ReturnsAsync(shoppingCartId);
 
             Order capturedOrder = null!;
             orderRepositoryMock.Setup(r => r.AddOrderAsync(It.IsAny<Order>()))
@@ -1080,7 +1095,7 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderAsync_OrderDoesNotExist_ReturnNull()
         {
             //Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, false, true, false))
                 .ReturnsAsync((Order?)null);
@@ -1095,7 +1110,8 @@ namespace MaxEndLabs.Service.Tests
         [Test]
         public async Task GetOrderAsync_OrderExist_ReturnCorrectDto()
         {
-            int orderId = 1;
+            //Arrange
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             Order? order = new Order
             {
@@ -1105,16 +1121,8 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new OrderItem
                     {
-                        Product = new Product
-                        {
-                            Name = "Test Product",
-                            MainImageUrl = "someImg"
-                        },
-                        ProductVariant = new ProductVariant
-                        {
-                            VariantName = "Large",
-
-                        },
+                        Product = new Product { Name = "Test Product", MainImageUrl = "someImg" },
+                        ProductVariant = new ProductVariant { VariantName = "Large", },
                         Quantity = 2,
                         UnitPrice = 60.00m,
                     }
@@ -1123,7 +1131,7 @@ namespace MaxEndLabs.Service.Tests
 
             var expected = new StripeSessionDto
             {
-                OrderId = 1,
+                OrderId = orderId,
                 OrderNumber = "ORD-2024-001",
                 LineItems = order.OrderItems.Select(oi => new StripeOrderItemDto
                 {
@@ -1159,7 +1167,7 @@ namespace MaxEndLabs.Service.Tests
         public void GetOrderDetailsAsync_OrderDoesNotExist_throwsEntityNotFoundException()
         {
             //Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, false, true, true))
                 .ReturnsAsync((Order?)null);
@@ -1171,12 +1179,13 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderDetailsAsync_OrderExist_returnCorrectDto()
         {
             //Arrange
-            int orderId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             var order = new Order
             {
                 Id = orderId,
-                UserId = "User_123",
+                UserId = userId,
                 User = new ApplicationUser
                 {
                     UserName = "testuser@example.com",
@@ -1193,15 +1202,8 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new OrderItem
                     {
-                        Product = new Product
-                        {
-                            Name = "Test Product",
-                            MainImageUrl = "testImg"
-                        },
-                        ProductVariant = new ProductVariant
-                        {
-                            VariantName = "Large",
-                        },
+                        Product = new Product { Name = "Test Product", MainImageUrl = "testImg" },
+                        ProductVariant = new ProductVariant { VariantName = "Large", },
                         Quantity = 2,
                         UnitPrice = 60.00m,
                         LineTotal = 120.00m
@@ -1286,11 +1288,13 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderDetailsAsync_VariousStatuses_ReturnsCorrectBadge(OrderStatus status, string expectedBadge)
         {
             // Arrange
-            int orderId = 1;
+            Guid userId = Guid.Parse("399a1b4e-8ec4-4203-8f63-46ee1c37cfd1");
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+
             var order = new Order
             {
                 Id = orderId,
-                UserId = "User_123",
+                UserId = userId,
                 User = new ApplicationUser { UserName = "test", FullName = "test" },
                 Status = status,
                 OrderItems = new List<OrderItem>()
@@ -1310,7 +1314,8 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderDetailsAsync_UnknownStatus_ReturnsEmptyBadge()
         {
             // Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+
             var order = new Order
             {
                 Id = orderId,
@@ -1334,7 +1339,7 @@ namespace MaxEndLabs.Service.Tests
         public async Task MarkOrderAsPaidAsync_OrderStatusIsPending_ReturnCorrectStatus(string status)
         {
             //Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             var order = new Order
             {
@@ -1375,7 +1380,7 @@ namespace MaxEndLabs.Service.Tests
         public async Task MarkOrderAsPaidAsync_OrderStatusIsNotPending_NoChangesAreMade(string status)
         {
             //Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
             var originalTime = new DateTime(2020, 1, 1);
             var order = new Order
             {
@@ -1408,13 +1413,13 @@ namespace MaxEndLabs.Service.Tests
         public void MarkOrderAsPaidAsync_OrderIsNull_ThrowsEntityNotFoundException()
         {
             //Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
-
+            // Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.MarkOrderAsPaidAsync(orderId));
         }
 
@@ -1422,7 +1427,7 @@ namespace MaxEndLabs.Service.Tests
         public void MarkOrderAsPaidAsync_SaveFails_ThrowsEntityPersistFailureException()
         {
             // Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
             var order = new Order { Id = orderId, Status = OrderStatus.Pending };
 
             orderRepositoryMock.Setup(or => or.
@@ -1441,13 +1446,12 @@ namespace MaxEndLabs.Service.Tests
         public void GetOrderStatusAsync_OrderIsNull_ThrowsEntityNotFoundException()
         {
             //Arrange
-            int orderId = 1;
-
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
-
+            // Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderStatusAsync(orderId));
         }
 
@@ -1461,18 +1465,12 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetOrderStatusAsync_HasOrderStatus_ReturnCorrectStatus(string status)
         {
             //Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
-            var order = new Order
-            {
-                Id = orderId,
-                Status = Enum.Parse<OrderStatus>(status),
-            };
-
+            var order = new Order { Id = orderId, Status = Enum.Parse<OrderStatus>(status), };
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync(order);
-
 
             //Act
             var result = await orderService.GetOrderStatusAsync(orderId);
@@ -1486,15 +1484,10 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string newStatus = "Completed";
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
             OrderStatus orderStatus = OrderStatus.Shipped;
 
-            Order? order = new Order
-            {
-                Id = orderId,
-                Status = orderStatus,
-                UpdatedAt = DateTime.UtcNow,
-            };
+            Order? order = new Order { Id = orderId, Status = orderStatus, UpdatedAt = DateTime.UtcNow, };
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync(order);
@@ -1514,20 +1507,15 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string newStatus = "InvalidStatus";
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
             OrderStatus orderStatus = OrderStatus.Shipped;
 
-            Order? order = new Order
-            {
-                Id = orderId,
-                Status = orderStatus,
-                UpdatedAt = DateTime.UtcNow,
-            };
+            Order? order = new Order { Id = orderId, Status = orderStatus, UpdatedAt = DateTime.UtcNow, };
 
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync(order);
 
-
+            // Act & Assert
             Assert.ThrowsAsync<BadRequestException>(async () =>
                 await orderService.ChangeOrderStatus(newStatus, orderId));
         }
@@ -1537,14 +1525,13 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string newStatus = "Paid";
-            int orderId = 1;
-
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
 
             orderRepositoryMock.Setup(or => or.
                     GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
-
+            // Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await orderService.ChangeOrderStatus(newStatus, orderId));
         }
@@ -1553,7 +1540,7 @@ namespace MaxEndLabs.Service.Tests
         public void ChangeOrderStatus_SaveFails_ThrowsEntityPersistFailureException()
         {
             // Arrange
-            int orderId = 1;
+            Guid orderId = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
             string newStatus = "Shipped";
             var order = new Order { Id = orderId, Status = OrderStatus.Paid };
 

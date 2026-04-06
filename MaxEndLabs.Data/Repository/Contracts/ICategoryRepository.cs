@@ -7,6 +7,6 @@ namespace MaxEndLabs.Data.Repository.Contracts
 	{
 		Task<IEnumerable<Category>> GetAllCategoriesAsync();
 		Task<Category?> GetCategoryAsync(string slug);
-        Task<Category?> GetCategoryAsync(int id);
+        Task<Category?> GetCategoryAsync(Guid id);
     }
 }

@@ -11,7 +11,7 @@ namespace MaxEndLabs.Data.Repository
 		{
 		}
 
-		public async Task<int> GetShoppingCartIdAsync(string userId)
+		public async Task<Guid> GetShoppingCartIdAsync(Guid userId)
 		{
 			return await DbContext.ShoppingCarts
 				.AsNoTracking()
@@ -30,7 +30,7 @@ namespace MaxEndLabs.Data.Repository
             DbContext.CartItems.Update(cartItem);
         }
 
-		public async Task<CartItem?> GetCartItemIgnoreFilterAsync(int cartId, int productId, int productVariantId)
+		public async Task<CartItem?> GetCartItemIgnoreFilterAsync(Guid cartId, Guid productId, Guid productVariantId)
 		{
 			return await DbContext.CartItems
 				.IgnoreQueryFilters()
@@ -40,7 +40,7 @@ namespace MaxEndLabs.Data.Repository
 
 		}
 
-		public async Task<CartItem?> GetCartItemAsync(int cartId, int productId, int productVariantId)
+		public async Task<CartItem?> GetCartItemAsync(Guid cartId, Guid productId, Guid productVariantId)
 		{
 			return await DbContext.CartItems
 				.SingleOrDefaultAsync(ci => ci.CartId == cartId &&
@@ -54,14 +54,14 @@ namespace MaxEndLabs.Data.Repository
             DbContext.CartItems.UpdateRange(cartItemList);
         }
 
-		public async Task<IEnumerable<CartItem>> GetCartItemsByCartIdAsync(int cartId)
+		public async Task<IEnumerable<CartItem>> GetCartItemsByCartIdAsync(Guid cartId)
 		{
 			return await DbContext.CartItems
 				.Where(c => c.CartId == cartId)
 				.ToListAsync();
 		}
 
-		public async Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(string userId)
+		public async Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(Guid userId)
 		{
 			return await DbContext.CartItems
 				.AsNoTracking()
@@ -79,7 +79,7 @@ namespace MaxEndLabs.Data.Repository
 
 		}
 
-        public async Task<IEnumerable<CartItem>> GetCartItemsByProductIdAndVariantIdAsync(int productId, int variantId)
+        public async Task<IEnumerable<CartItem>> GetCartItemsByProductIdAndVariantIdAsync(Guid productId, Guid variantId)
         {
             return await DbContext.CartItems
                 .Where(ci => ci.ProductId == productId && ci.ProductVariantId == variantId)

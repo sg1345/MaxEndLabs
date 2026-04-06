@@ -11,7 +11,7 @@ namespace MaxEndLabs.Data.Repository
 		{
 		}
 
-		public async Task<IEnumerable<Order>> GetPageOrdersAsync(string userId, int skip, int take)
+		public async Task<IEnumerable<Order>> GetPageOrdersAsync(Guid userId, int skip, int take)
 		{
 			return await DbContext.Orders
 				.AsNoTracking()
@@ -53,7 +53,7 @@ namespace MaxEndLabs.Data.Repository
 
 		}
 
-		public async Task<int> GetCountAsync(string userId)
+		public async Task<int> GetCountAsync(Guid userId)
 		{
 			return await DbContext.Orders
 				.AsNoTracking()
@@ -79,7 +79,7 @@ namespace MaxEndLabs.Data.Repository
 			return 0;
 		}
 
-		public async Task<Order?> GetOrderByIdAsync(int id, bool isFiltered,  bool includeOrderItems, bool includeUser)
+		public async Task<Order?> GetOrderByIdAsync(Guid id, bool isFiltered,  bool includeOrderItems, bool includeUser)
 		{
 			IQueryable<Order> query = DbContext.Orders
 				.AsNoTracking();

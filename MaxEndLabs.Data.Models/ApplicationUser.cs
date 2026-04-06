@@ -4,7 +4,7 @@ using static MaxEndLabs.GCommon.EntityValidation.ApplicationUser;
 
 namespace MaxEndLabs.Data.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<Guid>
     {
         [Required]
         [MaxLength(FullNameMaxLength)]

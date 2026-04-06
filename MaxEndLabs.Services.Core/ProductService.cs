@@ -27,7 +27,7 @@ namespace MaxEndLabs.Services.Core
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<bool> ProductExistsAsync(string productName, int productId)
+        public async Task<bool> ProductExistsAsync(string productName, Guid productId)
         {
             var productSlug = GenerateSlug(productName);
 
@@ -299,11 +299,11 @@ namespace MaxEndLabs.Services.Core
 
             foreach (var variant in dto.Variants)
             {
-                if (variant.Id > 0 ||
+                if (!variant.Id.Equals(Guid.Empty) ||
                     productVariantExistingInDatabase.Any(ev => ev.VariantName == variant.VariantName))
                 {
                     var existing = productVariantExistingInDatabase!
-                        .FirstOrDefault(ev => (ev.Id == variant.Id) || (ev.VariantName == variant.VariantName));
+                        .FirstOrDefault(ev => (ev.Id.Equals(variant.Id)) || (ev.VariantName == variant.VariantName));
 
                     if (existing != null)
                     {

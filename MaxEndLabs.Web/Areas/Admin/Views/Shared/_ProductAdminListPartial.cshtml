@@ -22,7 +22,7 @@
                                     <td class="ps-4">
                                 @if (!string.IsNullOrEmpty(product.MainImageUrl))
                                 {
-                                                <img src="@product.MainImageUrl" alt="@product.Name" class="rounded shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">
+	                                <img src="@product.MainImageUrl" alt="@product.Name" class="rounded shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">
                                 }
                                 else
                                 {
@@ -44,15 +44,15 @@
                                     <td>
                                 @if (product.IsPublished)
                                 {
-                                                <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle">
-                                                    <i class="fa-solid fa-eye me-1"></i> Published
-                                                </span>
+                                    <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle">
+                                        <i class="fa-solid fa-eye me-1"></i> Published
+                                    </span>
                                 }
                                 else
                                 {
-                                                <span class="badge rounded-pill bg-dark-subtle text-dark-emphasis border border-dark-subtle">
-                                                    <i class="fa-solid fa-eye-slash me-1"></i> Draft
-                                                </span>
+                                    <span class="badge rounded-pill bg-dark-subtle text-dark-emphasis border border-dark-subtle">
+                                        <i class="fa-solid fa-eye-slash me-1"></i> Draft
+                                    </span>
                                 }
                                     </td>
                                     <td class="text-end pe-4">
@@ -98,11 +98,11 @@
                         {
                             if (i > 0 && i <= Model.TotalPages)
                             {
-                                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                                <a class="page-link border-0 rounded-3 mx-1" asp-action="Index" 
-                                                   asp-route-page="@i" 
-                                                   asp-route-searchTerm="@Model.SearchTerm">@i</a>
-                                            </li>
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link border-0 rounded-3 mx-1" asp-action="Index" 
+                                       asp-route-page="@i" 
+                                       asp-route-searchTerm="@Model.SearchTerm">@i</a>
+                                </li>
                             }
                         }
 

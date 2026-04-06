@@ -5,25 +5,25 @@ using static MaxEndLabs.Data.Common.IdentityConstrains.IdentityRole;
 
 namespace MaxEndLabs.Data.Configuration
 {
-	public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+	public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole<Guid>>
 	{
-		public void Configure(EntityTypeBuilder<IdentityRole> entity)
+		public void Configure(EntityTypeBuilder<IdentityRole<Guid>> entity)
 		{
 			entity
 				.HasData(SeedIdentityRole());
 		}
 
-		private IdentityRole[] SeedIdentityRole()
+		private IdentityRole<Guid>[] SeedIdentityRole()
 		{
 			return
 			[
-				new IdentityRole
+				new IdentityRole<Guid>
 				{
 					Id = AdminRoleId,
 					Name = "Admin",
 					NormalizedName = "ADMIN"
 				},
-				new IdentityRole
+				new IdentityRole<Guid>
 				{
 					Id = UserRoleId,
 					Name = "User",

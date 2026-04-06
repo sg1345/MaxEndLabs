@@ -20,7 +20,7 @@ namespace MaxEndLabs.Services.Core
 			_shoppingCartRepository = shoppingCartRepository;
 		}
 
-        public async Task<OrderPaginationDto> GetOrdersForUserAsync(string userId, int page, int pageSize)
+        public async Task<OrderPaginationDto> GetOrdersForUserAsync(Guid userId, int page, int pageSize)
 		{
 			int skip = (page - 1) * pageSize;
 			var orders = await _orderRepository.GetPageOrdersAsync(userId, skip, pageSize);
@@ -82,13 +82,13 @@ namespace MaxEndLabs.Services.Core
 
 		}
 
-		public async Task<OrderCreateDto> GetOrderCreateDtoAsync(string userId)
+		public async Task<OrderCreateDto> GetOrderCreateDtoAsync(Guid userId)
 		{
-			int shoppingCartId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
+			Guid shoppingCartId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
 
 			var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(userId);
 
-			if (cartItemList == null || shoppingCartId == 0)
+			if (cartItemList == null || shoppingCartId.Equals(Guid.Empty))
 				throw new EntityNotFoundException();
 
 			var cartItemListDto = cartItemList
@@ -114,7 +114,7 @@ namespace MaxEndLabs.Services.Core
 			return orderCreateDto;
 		}
 
-		public async Task<int> CreateOrderAsync(AddressOrderDto dto)
+		public async Task<Guid> CreateOrderAsync(AddressOrderDto dto)
 		{
 			string orderNumber = GenerateOrderNumber();
 
@@ -153,7 +153,7 @@ namespace MaxEndLabs.Services.Core
 			return order.Id;
 		}
 
-		public async Task<StripeSessionDto> GetOrderAsync(int orderId)
+		public async Task<StripeSessionDto> GetOrderAsync(Guid orderId)
         {
             Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: false, includeOrderItem: true, includeUser: false);
             
@@ -178,7 +178,7 @@ namespace MaxEndLabs.Services.Core
 			return stripeSessionDto;
 		}
 
-		public async Task<OrderDetailsDto> GetOrderDetailsAsync(int orderId)
+		public async Task<OrderDetailsDto> GetOrderDetailsAsync(Guid orderId)
         {
             Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: false, includeOrderItem: true, includeUser: true);
 			
@@ -228,7 +228,7 @@ namespace MaxEndLabs.Services.Core
 			return orderDetailsDto;
 		}
 
-		public async Task<string> MarkOrderAsPaidAsync(int orderId)
+		public async Task<string> MarkOrderAsPaidAsync(Guid orderId)
 		{
 			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
             
@@ -247,7 +247,7 @@ namespace MaxEndLabs.Services.Core
 			return order.Status.ToString();
 		}
 
-		public async Task<string?> GetOrderStatusAsync(int orderId)
+		public async Task<string?> GetOrderStatusAsync(Guid orderId)
 		{
 			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
 
@@ -257,7 +257,7 @@ namespace MaxEndLabs.Services.Core
 			return order.Status.ToString();
 		}
 
-		public async Task ChangeOrderStatus(string status, int orderId)
+		public async Task ChangeOrderStatus(string status, Guid orderId)
 		{
 			Order? order = await _orderRepository.GetOrderByIdAsync(orderId, isFiltered: true, includeOrderItem: false, includeUser: false);
 

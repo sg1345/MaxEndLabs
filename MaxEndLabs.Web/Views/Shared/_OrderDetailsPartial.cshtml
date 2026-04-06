@@ -80,7 +80,7 @@
 <div class="modal-footer bg-white">
 	<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
 
-	@if (Model.Status == "Pending" && Model.OwnerUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+	@if (Model.Status == "Pending" && Model.OwnerUserId.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier))
 	{
 		<a asp-controller="Order" asp-action="StripeCheckout" asp-route-orderId="@Model.OrderId" class="btn btn-primary">Pay Now</a>
 	}

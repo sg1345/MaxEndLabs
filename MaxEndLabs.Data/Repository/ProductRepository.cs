@@ -12,7 +12,7 @@ namespace MaxEndLabs.Data.Repository
 		{
 		}
 
-		public async Task<bool> SlugExistsAsync(string slug, int productId)
+		public async Task<bool> SlugExistsAsync(string slug, Guid productId)
 		{
 			return await DbContext.Products
 				.AnyAsync(p => p.Slug == slug && p.Id != productId);
@@ -81,7 +81,7 @@ namespace MaxEndLabs.Data.Repository
 				.ToArrayAsync();
 		}
 
-		public async Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId)
+		public async Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(Guid categoryId)
 		{
 			return await DbContext.Products
 				.Include(p => p.Category)
@@ -116,7 +116,7 @@ namespace MaxEndLabs.Data.Repository
                 .SingleOrDefaultAsync(p => p.Slug == slug);
         }
 
-		public async Task<Product?> GetProductAsync(int id)
+		public async Task<Product?> GetProductAsync(Guid id)
 		{
 			return await DbContext.Products
 				.Include(p => p.Category)
@@ -128,7 +128,7 @@ namespace MaxEndLabs.Data.Repository
 			await DbContext!.Products.AddAsync(product);
 		}
 
-		public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductIdAsync(int productId)
+		public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductIdAsync(Guid productId)
 		{
 			return await DbContext.ProductVariants
 				.IgnoreQueryFilters()

@@ -20,6 +20,16 @@ namespace MaxEndLabs.Service.Tests
         private Mock<IProductRepository> productRepositoryMock;
         private Mock<ICategoryRepository> categoryRepositoryMock;
 
+        private Guid _productId;
+        private Guid _variantId1;
+        private Guid _variantId2;
+        private Guid _variantId3;
+        private Guid _categoryId1;
+        private Guid _categoryId2;
+        private Guid _categoryId3;
+        private Guid _cartItemId1;
+        private Guid _cartItemId2;
+
         [SetUp]
         public void Setup()
         {
@@ -31,6 +41,16 @@ namespace MaxEndLabs.Service.Tests
                 productRepositoryMock.Object,
                 shoppingCartRepositoryMock.Object,
                 categoryRepositoryMock.Object);
+
+            _productId = Guid.Parse("057e6259-55b4-4ddd-9d0f-c1b11cb1f2f0");
+            _variantId1 = Guid.Parse("1d3c10bc-ee5f-4423-8130-e9cd31603392");
+            _variantId2 = Guid.Parse("a24671ae-0d78-430e-b5f5-f4b01de473a1");
+            _variantId3 = Guid.Parse("76428bde-2653-4a65-a896-80f4cd26c592");
+            _categoryId1 = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
+            _categoryId2 = Guid.Parse("11fb7c7b-571e-40d3-b81f-56b4e4a53e1f");
+            _categoryId3 = Guid.Parse("5ee35de2-a2b7-4adc-9a3b-00199b427c1c");
+            _cartItemId1 = Guid.Parse("01c3ab5c-7f7d-4340-b28e-39fc72156472");
+            _cartItemId2 = Guid.Parse("00d38a13-7f09-4df4-a924-de41bc22ea5d");
         }
 
         [Test]
@@ -38,7 +58,7 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string productName = "Test Shirt";
-            int productId = 1;
+            Guid productId = _productId;
             string productSlug = "test-shirt";
 
             productRepositoryMock.Setup(pr => pr.SlugExistsAsync(productSlug, productId))
@@ -55,7 +75,7 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string productName = "Test Shirt";
-            int productId = 1;
+            var productId = _productId;
             string productSlug = "test-shirt";
 
             productRepositoryMock.Setup(pr => pr.SlugExistsAsync(productSlug, productId))
@@ -113,7 +133,7 @@ namespace MaxEndLabs.Service.Tests
 
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Ultra-Light Wireless Mouse",
                 Slug = "ultra-light-wireless-mouse",
                 Category = new Category { Name = "Electronics", Slug = "electronics" },
@@ -148,7 +168,7 @@ namespace MaxEndLabs.Service.Tests
                 {
                     new ProductPaginationEntityDto
                     {
-                        Id = 1,
+                        Id = _productId,
                         Name = product.Name,
                         Price = product.Price,
                         Slug = product.Slug,
@@ -299,18 +319,12 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetAllCategoriesAsync_CategoriesExist_ReturnCorrectCategories()
         {
             //Arrange
-            var category = new Category
-            {
-                Id = 1,
-                Name = "a category",
-                Slug = "a-category"
-            };
+            var category = new Category { Id = _categoryId1, Name = "a category", Slug = "a-category" };
+
+            var expected = new CategoryDto { Id = _categoryId1, Name = "a category", Slug = "a-category" };
 
             categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
-                .ReturnsAsync(new List<Category>
-                {
-                    category
-                });
+                .ReturnsAsync(new List<Category> { category });
 
             //Act
             var result = await productService.GetAllCategoriesAsync();
@@ -320,9 +334,9 @@ namespace MaxEndLabs.Service.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(resultList.Count, Is.EqualTo(1));
-                Assert.That(resultList[0].Id, Is.EqualTo(category.Id));
-                Assert.That(resultList[0].Name, Is.EqualTo(category.Name));
-                Assert.That(resultList[0].Slug, Is.EqualTo(category.Slug));
+                Assert.That(resultList[0].Id, Is.EqualTo(expected.Id));
+                Assert.That(resultList[0].Name, Is.EqualTo(expected.Name));
+                Assert.That(resultList[0].Slug, Is.EqualTo(expected.Slug));
             });
         }
 
@@ -384,13 +398,10 @@ namespace MaxEndLabs.Service.Tests
             {
                 new Product
                 {
-                    Id = 1,
+                    Id = _productId,
                     Name = "Ultra-Light Wireless Mouse",
                     Slug = "ultra-light-wireless-mouse",
-                    Category = new Category
-                    {
-                        Slug = "electronics"
-                    },
+                    Category = new Category { Slug = "electronics" },
                     Price = 89.99m,
                     MainImageUrl = mainImageUrl,
                 }
@@ -402,17 +413,17 @@ namespace MaxEndLabs.Service.Tests
             var result = await productService.GetAllProductsAsync();
 
             //Assert
-            var procutsResult = result.Products.ToList();
+            var productsResult = result.Products.ToList();
             Assert.Multiple(() =>
             {
                 Assert.That(result.Title, Is.EqualTo("All Products"));
-                Assert.That(procutsResult.Count(), Is.EqualTo(1));
-                Assert.That(procutsResult[0].Id, Is.EqualTo(products[0].Id));
-                Assert.That(procutsResult[0].Name, Is.EqualTo(products[0].Name));
-                Assert.That(procutsResult[0].Slug, Is.EqualTo(products[0].Slug));
-                Assert.That(procutsResult[0].Price, Is.EqualTo(products[0].Price));
-                Assert.That(procutsResult[0].MainImageUrl, Is.EqualTo(products[0].MainImageUrl));
-                Assert.That(procutsResult[0].CategorySlug, Is.EqualTo(products[0].Category.Slug));
+                Assert.That(productsResult.Count(), Is.EqualTo(1));
+                Assert.That(productsResult[0].Id, Is.EqualTo(products[0].Id));
+                Assert.That(productsResult[0].Name, Is.EqualTo(products[0].Name));
+                Assert.That(productsResult[0].Slug, Is.EqualTo(products[0].Slug));
+                Assert.That(productsResult[0].Price, Is.EqualTo(products[0].Price));
+                Assert.That(productsResult[0].MainImageUrl, Is.EqualTo(products[0].MainImageUrl));
+                Assert.That(productsResult[0].CategorySlug, Is.EqualTo(products[0].Category.Slug));
             });
 
         }
@@ -429,14 +440,10 @@ namespace MaxEndLabs.Service.Tests
             {
                 new Product
                 {
-                    Id = 1,
+                    Id = _productId,
                     Name = "Ultra-Light Wireless Mouse",
                     Slug = "ultra-light-wireless-mouse",
-                    Category = new Category
-                    {
-                        Id = 1,
-                        Slug = "electronics"
-                    },
+                    Category = new Category { Id = _categoryId1, Slug = "electronics" },
                     Price = 89.99m,
                     MainImageUrl = mainImageUrl,
                 }
@@ -474,15 +481,14 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string categorySlug = "slug";
-            int categoryId = 1;
 
             categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(categorySlug))
                 .ReturnsAsync(new Category
                 {
-                    Id = categoryId,
+                    Id = _categoryId1,
                 });
 
-            productRepositoryMock.Setup(pr => pr.GetProductsByCategoryIdAsync(categoryId))
+            productRepositoryMock.Setup(pr => pr.GetProductsByCategoryIdAsync(_categoryId1))
                 .ReturnsAsync(new List<Product>());
 
             //Act
@@ -498,14 +504,13 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
             string categorySlug = "slug";
-            int categoryId = 1;
 
             categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(categorySlug))
                 .ReturnsAsync(new Category
                 {
-                    Id = categoryId,
+                    Id = _categoryId1,
                 });
-            productRepositoryMock.Setup(pr => pr.GetProductsByCategoryIdAsync(categoryId))
+            productRepositoryMock.Setup(pr => pr.GetProductsByCategoryIdAsync(_categoryId1))
                 .ReturnsAsync((List<Product>)null!);
 
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
@@ -549,7 +554,7 @@ namespace MaxEndLabs.Service.Tests
 
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Ultra-Light Wireless Mouse",
                 Slug = "ultra-light-wireless-mouse",
                 Description = description,
@@ -562,27 +567,9 @@ namespace MaxEndLabs.Service.Tests
                 MainImageUrl = mainImageUrl,
                 ProductVariants = new List<ProductVariant>()
                 {
-                    new ProductVariant()
-                    {
-                        Id = 1,
-                        VariantName = "Ultra white",
-                        Price = 69.69m,
-                        IsDeleted = false
-                    },
-                    new ProductVariant()
-                    {
-                        Id = 2,
-                        VariantName = "Giga Black",
-                        Price = null,
-                        IsDeleted = false
-                    },
-                    new ProductVariant()
-                    {
-                        Id = 3,
-                        VariantName = "Cyber Myber",
-                        Price = null,
-                        IsDeleted = true
-                    }
+                    new ProductVariant() { Id = _variantId1, VariantName = "Ultra white", Price = 69.69m, IsDeleted = false },
+                    new ProductVariant() { Id = _variantId2, VariantName = "Giga Black", Price = null, IsDeleted = false },
+                    new ProductVariant() { Id = _variantId3, VariantName = "Cyber Myber", Price = null, IsDeleted = true }
                 }
             };
             var expected = new ProductDetailsDto()
@@ -596,18 +583,8 @@ namespace MaxEndLabs.Service.Tests
                 MainImageUrl = product.MainImageUrl,
                 ProductVariants = new List<ProductVariantDto>()
                 {
-                    new ProductVariantDto()
-                    {
-                        Id = 1,
-                        VariantName = "Ultra white",
-                        Price = 69.69m,
-                    },
-                    new ProductVariantDto()
-                    {
-                        Id = 2,
-                        VariantName = "Giga Black",
-                        Price = 89.99m
-                    }
+                    new ProductVariantDto() { Id = _variantId1, VariantName = "Ultra white", Price = 69.69m, },
+                    new ProductVariantDto() { Id = _variantId2, VariantName = "Giga Black", Price = 89.99m }
                 }
             };
             var expectedVariantsArr = expected.ProductVariants.ToArray();
@@ -655,16 +632,16 @@ namespace MaxEndLabs.Service.Tests
             //Arrange
             var categories = new List<Category>()
             {
-                new Category() { Id = 1, Name = "A" },
-                new Category() { Id = 2, Name = "C" },
-                new Category() { Id = 3, Name = "B" }
+                new Category() { Id = _categoryId1, Name = "A" },
+                new Category() { Id = _categoryId2, Name = "C" },
+                new Category() { Id = _categoryId3, Name = "B" }
             };
 
             var expectedCat = new List<Category>()
             {
-                new Category() { Id = 1, Name = "A" },
-                new Category() { Id = 3, Name = "B" },
-                new Category() { Id = 2, Name = "C" }
+                new Category() { Id = _categoryId1, Name = "A" },
+                new Category() { Id = _categoryId3, Name = "B" },
+                new Category() { Id = _categoryId2, Name = "C" }
             };
 
             categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
@@ -693,7 +670,7 @@ namespace MaxEndLabs.Service.Tests
         {
             ProductCreateDto dto = new ProductCreateDto()
             {
-                CategoryId = 1,
+                CategoryId = _categoryId1,
                 Description = description,
                 MainImageUrl = description,
                 Name = "Product Name",
@@ -701,7 +678,7 @@ namespace MaxEndLabs.Service.Tests
             };
             Product expected = new Product()
             {
-                Id = 1,
+                Id = _productId,
                 CategoryId = dto.CategoryId,
                 Description = description,
                 MainImageUrl = mainImageUrl,
@@ -713,11 +690,7 @@ namespace MaxEndLabs.Service.Tests
             Product capturedProduct = null!;
 
             productRepositoryMock.Setup(or => or.AddProductAsync(It.IsAny<Product>()))
-                .Callback<Product>(p =>
-                {
-                    p.Id = 1;
-                    capturedProduct = p;
-                })
+                .Callback<Product>(p => { p.Id = _productId; capturedProduct = p; })
                 .Returns(Task.CompletedTask);
 
             productRepositoryMock.Setup(pr => pr.SaveChangesAsync())
@@ -748,20 +721,16 @@ namespace MaxEndLabs.Service.Tests
 
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Ultra-Light Wireless Mouse",
                 Slug = "ultra-light-wireless-mouse",
-                Category = new Category
-                {
-                    Name = "Electronics",
-                    Slug = "electronics"
-                },
+                Category = new Category { Name = "Electronics", Slug = "electronics" },
                 Price = 89.99m,
                 ProductVariants = new List<ProductVariant>()
                 {
-                    new ProductVariant { Id = 1, VariantName = "Ultra white", Price = 69.69m, IsDeleted = false},
-                    new ProductVariant { Id = 2, VariantName = "Giga Black", Price = null, IsDeleted = false },
-                    new ProductVariant { Id = 3, VariantName = "Cyber Myber", Price = null, IsDeleted = true }
+                    new ProductVariant { Id = _variantId1, VariantName = "Ultra white", Price = 69.69m, IsDeleted = false},
+                    new ProductVariant { Id = _variantId2, VariantName = "Giga Black", Price = null, IsDeleted = false },
+                    new ProductVariant { Id = _variantId3, VariantName = "Cyber Myber", Price = null, IsDeleted = true }
                 }
             };
 
@@ -773,8 +742,8 @@ namespace MaxEndLabs.Service.Tests
                 CategorySlug = product.Category.Slug,
                 Variants = new List<ProductVariantDto>
                 {
-                    new ProductVariantDto { Id = 1, VariantName = "Ultra white", Price = 69.69m },
-                    new ProductVariantDto { Id = 2, VariantName = "Giga Black", Price = null }
+                    new ProductVariantDto { Id = _variantId1, VariantName = "Ultra white", Price = 69.69m },
+                    new ProductVariantDto { Id = _variantId2, VariantName = "Giga Black", Price = null }
                 }
             };
 
@@ -818,12 +787,12 @@ namespace MaxEndLabs.Service.Tests
             //Arrange
             ProductVariantListDto dto = new ProductVariantListDto()
             {
-                ProductId = 1,
+                ProductId = _productId,
             };
 
             productRepositoryMock.Setup(pr => pr.GetProductVariantsByProductIdAsync(dto.ProductId))
                 .ReturnsAsync((IEnumerable<ProductVariant>)null!);
-
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.ManageProductVariantsAsync(dto));
         }
 
@@ -831,32 +800,35 @@ namespace MaxEndLabs.Service.Tests
         public async Task ManageProductVariantsAsync_ShouldHandle_DeleteUpdateAndAdd()
         {
             //Arrange
-            int productId = 10;
 
             var existingVariants = new List<ProductVariant>
             {
-                new ProductVariant { Id = 1, ProductId = productId, VariantName = "Old - To Delete", IsDeleted = false },
-                new ProductVariant { Id = 2, ProductId = productId, VariantName = "Old - To Update", IsDeleted = false, Price = 10m }
+                new ProductVariant { Id = _variantId1, ProductId = _productId, VariantName = "Old - To Delete", IsDeleted = false },
+                new ProductVariant { Id = _variantId2, ProductId = _productId, VariantName = "Old - To Update", IsDeleted = false, Price = 10m }
             };
 
             var dto = new ProductVariantListDto
             {
-                ProductId = productId,
+                ProductId = _productId,
                 Variants = new List<ProductVariantDto>
                 {
-                    new ProductVariantDto { Id = 2, VariantName = "Updated Name", Price = 20m },
-                    new ProductVariantDto { Id = 0, VariantName = "Brand New", Price = 30m }
+                    new ProductVariantDto { Id = _variantId2, VariantName = "Updated Name", Price = 20m },
+                    new ProductVariantDto { Id = Guid.Empty, VariantName = "Brand New", Price = 30m }
                 }
             };
 
             productRepositoryMock
-                .Setup(r => r.GetProductVariantsByProductIdAsync(productId))
+                .Setup(r => r.GetProductVariantsByProductIdAsync(_productId))
                 .ReturnsAsync(existingVariants);
 
             IEnumerable<ProductVariant> capturedDeleted = null!;
             productRepositoryMock
                 .Setup(r => r.UpdateRangeProductVariantAsync(It.IsAny<IEnumerable<ProductVariant>>()))
-                .Callback<IEnumerable<ProductVariant>>(pvl => capturedDeleted = pvl.ToList());
+                .Callback<IEnumerable<ProductVariant>>(pvl => capturedDeleted = pvl);
+
+            ProductVariant capturedNewVariant = null!;
+            productRepositoryMock.Setup(r => r.AddProductVariantAsync(It.IsAny<ProductVariant>()))
+                .Callback<ProductVariant>(v => capturedNewVariant = v);
 
             productRepositoryMock
                 .Setup(r => r.SaveChangesAsync())
@@ -870,18 +842,18 @@ namespace MaxEndLabs.Service.Tests
             {
                 //Soft Delete
                 Assert.That(capturedDeleted, Is.Not.Null);
-                var deleted = capturedDeleted.First(v => v.Id == 1);
+                var deleted = capturedDeleted.First(v => v.Id == _variantId1);
                 Assert.That(deleted.IsDeleted, Is.True);
 
                 // Update
-                var updated = existingVariants.First(v => v.Id == 2);
-                Assert.That(updated.VariantName, Is.EqualTo("Updated Name"));
-                Assert.That(updated.Price, Is.EqualTo(20m));
+                var capturedDeletedList = capturedDeleted.ToList();
+                Assert.That(capturedDeletedList[0].IsDeleted, Is.True);
+                Assert.That(existingVariants[1].VariantName, Is.EqualTo("Updated Name"));
 
                 // Add
-                productRepositoryMock.Verify(r => r.AddProductVariantAsync(
-                    It.Is<ProductVariant>(v => v.VariantName == "Brand New" && v.Price == 30m)
-                ), Times.Once);
+                Assert.That(capturedNewVariant.VariantName, Is.EqualTo("Brand New"));
+                Assert.That(capturedNewVariant.Price, Is.EqualTo(30m));
+                productRepositoryMock.Verify(r => r.AddProductVariantAsync(It.IsAny<ProductVariant>()), Times.Once);
 
                 //Save was called
                 productRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.AtLeastOnce);
@@ -900,12 +872,14 @@ namespace MaxEndLabs.Service.Tests
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductEditDtoAsync(productSlug));
         }
 
-
         [Test]
         public void GetProductEditDtoAsync_CategoriesDoesNotExist_ThrowEntityNotFoundException()
         {
             //Arrange
             string productSlug = "slug";
+
+            productRepositoryMock.Setup(pr => pr.GetProductAsync(productSlug, true, false, false))
+                .ReturnsAsync(new Product());
 
             categoryRepositoryMock.Setup(pr =>
                     pr.GetAllCategoriesAsync())
@@ -925,7 +899,7 @@ namespace MaxEndLabs.Service.Tests
 
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Ultra-Light Wireless Mouse",
                 Slug = "ultra-light-wireless-mouse",
                 Price = 89.99m,
@@ -934,9 +908,9 @@ namespace MaxEndLabs.Service.Tests
             };
             var categories = new List<Category>
             {
-                new Category { Id = 1, Name = "B" },
-                new Category { Id = 2, Name = "C" },
-                new Category { Id = 3, Name = "A" }
+                new Category { Id = _categoryId1, Name = "B" },
+                new Category { Id = _categoryId2, Name = "C" },
+                new Category { Id = _categoryId3, Name = "A" }
             };
 
             var expected = new ProductFormDto
@@ -949,9 +923,9 @@ namespace MaxEndLabs.Service.Tests
                 CategoryId = product.CategoryId,
                 Categories = new List<CategorySelectDto>
                 {
-                    new CategorySelectDto{ Id = 3, Name = "A" },
-                    new CategorySelectDto{ Id = 1, Name = "B" },
-                    new CategorySelectDto{ Id = 2, Name = "C" }
+                    new CategorySelectDto{ Id = _categoryId3, Name = "A" },
+                    new CategorySelectDto{ Id = _categoryId1, Name = "B" },
+                    new CategorySelectDto{ Id = _categoryId2, Name = "C" }
                 }
             };
 
@@ -982,27 +956,30 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
-        [TestCase(null, "Some Img", "Mouse", 8999, 3, "A", "mouse")]
-        [TestCase("Bad Mouse", "Some Img", "Mouse", 8999, 3, "A", "mouse")]
-        [TestCase("Good Mouse", null, "Mouse", 8999, 3, "A", "mouse")]
-        [TestCase("Good Mouse", "Other Img", "Mouse", 8999, 3, "A", "mouse")]
-        [TestCase("Good Mouse", "Some Img", "New Mouse", 8999, 3, "A", "new-mouse")]
-        [TestCase("Good Mouse", "Some Img", "Mouse", 1999, 3, "A", "mouse")]
-        [TestCase("Good Mouse", "Some Img", "Mouse", 8999, 2, "B", "mouse")]
+        [TestCase(null, "Some Img", "Mouse", 8999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "mouse")]
+        [TestCase("Bad Mouse", "Some Img", "Mouse", 8999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "mouse")]
+        [TestCase("Good Mouse", null, "Mouse", 8999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "mouse")]
+        [TestCase("Good Mouse", "Other Img", "Mouse", 8999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "mouse")]
+        [TestCase("Good Mouse", "Some Img", "New Mouse", 8999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "new-mouse")]
+        [TestCase("Good Mouse", "Some Img", "Mouse", 1999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "mouse")]
+        [TestCase("Good Mouse", "Some Img", "Mouse", 8999, "11fb7c7b-571e-40d3-b81f-56b4e4a53e1f", "B", "mouse")]
         public async Task EditProductAsync_ProductAndCategoriesExist_ReturnPopulatedDto
-            (string? description, string? mainImageUrl, string name, int priceInt, int categoryId, string categorySlug, string productSlug)
+            (string? description, string? mainImageUrl, string name, int priceInt, string categoryId, string categorySlug, string productSlug)
         {
             //Arrange
             decimal price = priceInt / 100m;
+
+            Guid guidCategoryId = Guid.Parse(categoryId);
+
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Mouse",
                 Slug = "mouse",
                 Price = 89.99m,
                 Description = "Good Mouse",
                 MainImageUrl = "Some Img",
-                CategoryId = 3,
+                CategoryId = _categoryId3,
                 Category = new Category { Slug = "A" }
             };
 
@@ -1013,7 +990,7 @@ namespace MaxEndLabs.Service.Tests
                 Description = description,
                 Price = price,
                 MainImageUrl = mainImageUrl,
-                CategoryId = categoryId,
+                CategoryId = guidCategoryId,
             };
 
             var expected = new Product
@@ -1030,7 +1007,7 @@ namespace MaxEndLabs.Service.Tests
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
                 .ReturnsAsync(new Category
                 {
-                    Id = categoryId,
+                    Id = guidCategoryId,
                     Slug = categorySlug
                 });
 
@@ -1061,21 +1038,24 @@ namespace MaxEndLabs.Service.Tests
         }
 
         [Test]
-        [TestCase("Good Mouse", "Some Img", "Mouse", 8999, 3, "A", "mouse")]
+        [TestCase("Good Mouse", "Some Img", "Mouse", 8999, "5ee35de2-a2b7-4adc-9a3b-00199b427c1c", "A", "mouse")]
         public void EditProductAsync_ProductIsNotChanged_ThrowEntityPersistFailureException
-    (string? description, string? mainImageUrl, string name, int priceInt, int categoryId, string categorySlug, string productSlug)
+        (string? description, string? mainImageUrl, string name, int priceInt, string categoryId, string categorySlug, string productSlug)
         {
             //Arrange
             decimal price = priceInt / 100m;
+
+            Guid guidCategoryId = Guid.Parse(categoryId);
+
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Mouse",
                 Slug = "mouse",
                 Price = 89.99m,
                 Description = "Good Mouse",
                 MainImageUrl = "Some Img",
-                CategoryId = 3,
+                CategoryId = _categoryId3,
                 Category = new Category { Slug = "A" }
             };
 
@@ -1086,7 +1066,7 @@ namespace MaxEndLabs.Service.Tests
                 Description = description,
                 Price = price,
                 MainImageUrl = mainImageUrl,
-                CategoryId = categoryId,
+                CategoryId = guidCategoryId,
             };
 
             var expected = new Product
@@ -1103,7 +1083,7 @@ namespace MaxEndLabs.Service.Tests
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
                 .ReturnsAsync(new Category
                 {
-                    Id = categoryId,
+                    Id = guidCategoryId,
                     Slug = categorySlug
                 });
 
@@ -1125,20 +1105,20 @@ namespace MaxEndLabs.Service.Tests
             //Arrange
             var product = new Product
             {
-                Id = 1,
+                Id = _productId,
                 Name = "Mouse",
                 Slug = "mouse",
                 Price = 89.99m,
                 Description = "Good Mouse",
                 MainImageUrl = "Some Img",
-                CategoryId = 3,
+                CategoryId = _categoryId3,
                 Category = new Category { Slug = null! }
             };
 
             var receivedDto = new ProductFormDto
             {
-                Id = 67,
-                CategoryId = 3
+                Id = Guid.Parse("cf00db59-20c4-4417-8fd2-313b9b9d205e"),
+                CategoryId = _categoryId3
             };
 
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
@@ -1156,11 +1136,7 @@ namespace MaxEndLabs.Service.Tests
         {
             //Arrange
 
-            var receivedDto = new ProductFormDto
-            {
-                Id = 67,
-                CategoryId = 3
-            };
+            var receivedDto = new ProductFormDto { Id = _productId, CategoryId = _categoryId3 };
 
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
                 .ReturnsAsync(new Category());
@@ -1176,15 +1152,10 @@ namespace MaxEndLabs.Service.Tests
         public void EditProductAsync_DtoCategoryIdDoesNotExist_ThrowEntityNotFoundException()
         {
             //Arrange
-
-            var receivedDto = new ProductFormDto
-            {
-                CategoryId = 3
-            };
+            var receivedDto = new ProductFormDto { CategoryId = _categoryId3 };
 
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
                 .ReturnsAsync((Category)null!);
-
 
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.EditProductAsync(receivedDto));
@@ -1211,10 +1182,7 @@ namespace MaxEndLabs.Service.Tests
             //Arrange
             string productSlug = "slug";
 
-            Product product = new Product
-            {
-                Slug = productSlug
-            };
+            Product product = new Product { Slug = productSlug };
 
             var category = productRepositoryMock.Setup(pr =>
                     pr.GetProductAsync(productSlug, true, false, true))
@@ -1240,15 +1208,15 @@ namespace MaxEndLabs.Service.Tests
                 IsPublished = true,
                 ProductVariants = new List<ProductVariant>
                 {
-                    new ProductVariant { Id = 1, IsDeleted = false },
-                    new ProductVariant { Id = 2, IsDeleted = false }
+                    new ProductVariant { Id = _variantId1, IsDeleted = false },
+                    new ProductVariant { Id = _variantId2, IsDeleted = false }
                 }
             };
 
             var cartItems = new List<CartItem>
             {
-                new CartItem { Id = 67 },
-                new CartItem { Id = 69 }
+                new CartItem { Id = _cartItemId1 },
+                new CartItem { Id = _cartItemId2 }
             };
 
             productRepositoryMock
@@ -1267,10 +1235,12 @@ namespace MaxEndLabs.Service.Tests
             //Assert
             Assert.Multiple(() =>
             {
+                var variantList = product.ProductVariants.ToList();
                 Assert.That(product.IsPublished, Is.False);
                 Assert.That(product.Slug, Does.StartWith(slug + "-"));
                 Assert.That(product.UpdatedAt, Is.EqualTo(DateOnly.FromDateTime(DateTime.UtcNow)));
-                Assert.That(product.ProductVariants.All(v => v.IsDeleted), Is.True);
+                Assert.That(variantList[0].IsDeleted, Is.True);
+                Assert.That(variantList[1].IsDeleted, Is.True);
 
                 //Cart Cleanup 
                 shoppingCartRepositoryMock.Verify(r =>
@@ -1291,13 +1261,10 @@ namespace MaxEndLabs.Service.Tests
             {
                 Slug = slug,
                 IsPublished = false,
-                ProductVariants = new List<ProductVariant>
-                {
-                    new ProductVariant { Id = 1, IsDeleted = true }
-                }
+                ProductVariants = new List<ProductVariant> { new ProductVariant { Id = _variantId1, IsDeleted = true } }
             };
 
-            var cartItems = new List<CartItem> { new() { Id = 55 } };
+            var cartItems = new List<CartItem> { new() { Id = _cartItemId1 } };
 
             productRepositoryMock
                 .Setup(r => r.GetProductAsync(slug, true, false, true))
@@ -1322,10 +1289,7 @@ namespace MaxEndLabs.Service.Tests
             {
                 Slug = slug,
                 IsPublished = true,
-                ProductVariants = new List<ProductVariant>
-                {
-                    new ProductVariant { Id = 1, IsDeleted = false }
-                }
+                ProductVariants = new List<ProductVariant> { new ProductVariant { Id = _variantId1, IsDeleted = false } }
             };
 
             productRepositoryMock
@@ -1374,8 +1338,8 @@ namespace MaxEndLabs.Service.Tests
                 IsPublished = false,
                 ProductVariants = new List<ProductVariant>
                 {
-                    new ProductVariant { Id = 1, IsDeleted = true },
-                    new ProductVariant { Id = 2, IsDeleted = true }
+                    new ProductVariant { Id = _variantId1, IsDeleted = true },
+                    new ProductVariant { Id = _variantId2, IsDeleted = true }
                 }
             };
 
@@ -1414,8 +1378,8 @@ namespace MaxEndLabs.Service.Tests
                 IsPublished = true,
                 ProductVariants = new List<ProductVariant>
                 {
-                    new ProductVariant { Id = 1, IsDeleted = true },
-                    new ProductVariant { Id = 2, IsDeleted = true }
+                    new ProductVariant { Id = _variantId1, IsDeleted = true },
+                    new ProductVariant { Id = _variantId2, IsDeleted = true }
                 }
             };
 
@@ -1450,33 +1414,29 @@ namespace MaxEndLabs.Service.Tests
         public async Task ManageProductVariantsAsync_VariantDeleted_RemovesAssociatedCartItems()
         {
             //Arrange
-            int productId = 1;
-            int variantIdToDelete = 99;
-
-            
             var existingVariants = new List<ProductVariant>
             {
-                new ProductVariant { Id = variantIdToDelete, ProductId = productId, VariantName = "Discontinued Size", IsDeleted = false }
+                new ProductVariant { Id = _variantId1, ProductId = _productId, VariantName = "Discontinued Size", IsDeleted = false }
             };
 
             var dto = new ProductVariantListDto
             {
-                ProductId = productId,
+                ProductId = _productId,
                 Variants = new List<ProductVariantDto>()
             };
 
             var cartItems = new List<CartItem>
             {
-                new CartItem { Id = 500, ProductId = productId, ProductVariantId = variantIdToDelete },
-                new CartItem { Id = 501, ProductId = productId, ProductVariantId = variantIdToDelete }
+                new CartItem { Id = _cartItemId1, ProductId = _productId, ProductVariantId = _variantId1 },
+                new CartItem { Id = _cartItemId2, ProductId = _productId, ProductVariantId = _variantId1 }
             };
 
             productRepositoryMock
-                .Setup(r => r.GetProductVariantsByProductIdAsync(productId))
+                .Setup(r => r.GetProductVariantsByProductIdAsync(_productId))
                 .ReturnsAsync(existingVariants);
 
             shoppingCartRepositoryMock
-                .Setup(r => r.GetCartItemsByProductIdAndVariantIdAsync(productId, variantIdToDelete))
+                .Setup(r => r.GetCartItemsByProductIdAndVariantIdAsync(_productId, _variantId1))
                 .ReturnsAsync(cartItems);
 
             productRepositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);

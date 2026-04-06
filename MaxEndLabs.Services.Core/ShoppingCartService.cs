@@ -17,9 +17,9 @@ namespace MaxEndLabs.Services.Core
 			_shoppingCartRepository = shoppingCartRepository;
 		}
 
-		public async Task<ShoppingCartIndexDto> GetAllCartItemsAsync(string userId)
+		public async Task<ShoppingCartIndexDto> GetAllCartItemsAsync(Guid userId)
 		{
-			int shoppingCartId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
+			Guid shoppingCartId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
 
 			var cartItemList = await _shoppingCartRepository.GetCartItemsByUserIdAsync(userId);
 
@@ -100,7 +100,7 @@ namespace MaxEndLabs.Services.Core
             await EnsureSaveChangesAsync();
 		}
 
-		public async Task DeleteAllCartItemsFromShoppingCartAsync(int cartId)
+		public async Task DeleteAllCartItemsFromShoppingCartAsync(Guid cartId)
 		{
 			var cartItemList = await _shoppingCartRepository
 				.GetCartItemsByCartIdAsync(cartId);
@@ -125,11 +125,11 @@ namespace MaxEndLabs.Services.Core
             await EnsureSaveChangesAsync();
 		}
 
-		public async Task<int> GetOrCreateShoppingCartAsync(string userId)
+		public async Task<Guid> GetOrCreateShoppingCartAsync(Guid userId)
 		{
 			var carId = await _shoppingCartRepository.GetShoppingCartIdAsync(userId);
 
-			if (carId == 0)
+			if (carId.Equals(Guid.Empty))
 			{
 				var newShoppingCart = new ShoppingCart
 				{

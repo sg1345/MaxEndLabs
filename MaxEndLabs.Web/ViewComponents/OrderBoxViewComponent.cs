@@ -22,10 +22,10 @@ namespace MaxEndLabs.Web.ViewComponents
 
 		public async Task<IViewComponentResult> InvokeAsync(int page = 1)
 		{
-			var userId = _userManager.GetUserId((ClaimsPrincipal)User);
+			var userIdString = _userManager.GetUserId((ClaimsPrincipal)User);
 
-			if (string.IsNullOrEmpty(userId))
-			{
+            if (!Guid.TryParse(userIdString, out Guid userId) || userId == Guid.Empty)
+            {
 				return View(new OrderPaginationViewModel());
 			}
 

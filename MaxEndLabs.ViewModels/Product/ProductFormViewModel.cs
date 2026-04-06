@@ -6,7 +6,7 @@ namespace MaxEndLabs.ViewModels.Product
 {
     public class ProductFormViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Please enter a product name")]
         [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessage = "Name must be between {2} and {1} characters")]
@@ -16,9 +16,9 @@ namespace MaxEndLabs.ViewModels.Product
         [StringLength(DescriptionMaxLength, ErrorMessage = "Description cannot be more than {1} characters")]
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Please pick a Category")]
-        [Range(CategoryIdMinValue, CategoryIdMaxValue)]
-        public int CategoryId { get; set; }
+        //[Required(ErrorMessage = "Please pick a Category")]
+        //[Range(CategoryIdMinValue, CategoryIdMaxValue)]
+        public Guid CategoryId { get; set; }
 
         [Required(ErrorMessage = "Please enter a product price")]
         [Range(PriceMinValue, PriceMaxValue, ErrorMessage = "Price must be between 0.01 and 9,999,999.99")]

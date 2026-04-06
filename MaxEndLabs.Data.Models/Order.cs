@@ -12,10 +12,10 @@ namespace MaxEndLabs.Data.Models
 	public class Order
 	{
 		[Key]
-		public int Id { get; set; }
+		public Guid Id { get; set; }
 
 		[ForeignKey(nameof(User))]
-		public string UserId { get; set; } = null!;
+		public Guid UserId { get; set; }
 		public virtual ApplicationUser User { get; set; } = null!;
 
 		[Required]
@@ -38,7 +38,7 @@ namespace MaxEndLabs.Data.Models
 		public OrderStatus Status { get; set; }
 
 		[Required]
-		[Column(TypeName = TotalAmountColumnType)]
+		//[Column(TypeName = TotalAmountColumnType)]
 		public decimal TotalAmount { get; set; }
 
 		[Required]

@@ -35,7 +35,7 @@ namespace MaxEndLabs.Web.Controllers
 		[Authorize]
 		public async Task<IActionResult> Checkout()
 		{
-			string userId = GetUserId()!;
+			Guid userId = Guid.Parse(GetUserId()!);
 
 			try
 			{
@@ -68,7 +68,7 @@ namespace MaxEndLabs.Web.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -77,8 +77,8 @@ namespace MaxEndLabs.Web.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Checkout(CheckoutViewModel model) 
 		{
-			string userId = GetUserId()!;
-			var token = Request.Form["g-recaptcha-response"];
+            Guid userId = Guid.Parse(GetUserId()!);
+            var token = Request.Form["g-recaptcha-response"];
 			var ok = await _captchaService.VerifyAsync(token);
 
 			try
@@ -110,7 +110,7 @@ namespace MaxEndLabs.Web.Controllers
 				};
 
 				var orderId = await _orderService.CreateOrderAsync(createOrderDto);
-				if (orderId == 0)
+				if (orderId == Guid.Empty)
 					return RedirectToAction("Index", "ShoppingCart");
 
 				var cartId = await _shoppingCartService.GetOrCreateShoppingCartAsync(userId);
@@ -136,11 +136,11 @@ namespace MaxEndLabs.Web.Controllers
 
 		[HttpGet]
 		[Authorize]
-		public async Task<IActionResult> StripeCheckout(int orderId)
+		public async Task<IActionResult> StripeCheckout(Guid orderId)
 		{
 			try
 			{
-                var userId = GetUserId()!;
+                Guid userId = Guid.Parse(GetUserId()!);
                 var stripeSessionDto = await _orderService.GetOrderAsync(orderId);
 
                 var baseUrl = Environment.GetEnvironmentVariable("APP__PUBLICBASEURL")
@@ -166,7 +166,7 @@ namespace MaxEndLabs.Web.Controllers
 
 		[HttpGet]
 		[Authorize]
-		public async Task<IActionResult> PaymentSuccess(int orderId,
+		public async Task<IActionResult> PaymentSuccess(Guid orderId,
 			[FromQuery(Name = "session_id")] string sessionId)
 		{
 			if (string.IsNullOrWhiteSpace(sessionId))
@@ -222,7 +222,7 @@ namespace MaxEndLabs.Web.Controllers
 
 		[HttpGet]
 		[Authorize]
-		public async Task<IActionResult> Details(int orderId)
+		public async Task<IActionResult> Details(Guid orderId)
 		{
 			try
 			{
@@ -272,7 +272,7 @@ namespace MaxEndLabs.Web.Controllers
 
         }
 
-		private async Task RefillCheckoutModel(CheckoutViewModel model, string userId)
+		private async Task RefillCheckoutModel(CheckoutViewModel model, Guid userId)
 		{
 			var checkOutDto = await _orderService.GetOrderCreateDtoAsync(userId);
 

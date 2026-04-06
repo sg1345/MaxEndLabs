@@ -8,7 +8,7 @@ namespace MaxEndLabs.Service.Models.Order
 {
     public class AddressOrderDto
     {
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; }
         public string StreetAddress { get; set; } = null!;
         public string City { get; set; } = null!;
         public string Postcode { get; set; } = null!;

@@ -26,13 +26,14 @@ namespace MaxEndLabs.Web.Controllers
 		[Authorize(Roles = "User")]
 		public async Task<IActionResult> Index()
 		{
-			string? userId = GetUserId();
-			if (string.IsNullOrEmpty(userId))
-			{
-				return RedirectToPage("/Account/Login", new { area = "Identity" });
-			}
+            string? userIdString = GetUserId()!;
+            if (!Guid.TryParse(userIdString, out Guid userId) || userId == Guid.Empty)
+            {
+                // The user is either not logged in, or their cookie contains a bad ID.
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
 
-			try
+            try
 			{
 				var dto = await _shoppingCartService
 					.GetAllCartItemsAsync(userId);
@@ -70,15 +71,15 @@ namespace MaxEndLabs.Web.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> AddToCart(CartItemCreateViewModel model)
-		{
-			string? userId = GetUserId();
-			if (string.IsNullOrEmpty(userId))
-			{
-				return RedirectToPage("/Account/Login", new { area = "Identity" });
+        {
+            string? userIdString = GetUserId()!;
+            if (!Guid.TryParse(userIdString, out Guid userId) || userId == Guid.Empty)
+            {
+                // The user is either not logged in, or their cookie contains a bad ID.
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
 
-			}
-
-			try
+            try
 			{
 				if (!ModelState.IsValid)
 				{
@@ -183,7 +184,7 @@ namespace MaxEndLabs.Web.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 	}

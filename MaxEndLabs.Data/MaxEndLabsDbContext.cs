@@ -7,7 +7,7 @@
 
     using Models;
 
-    public class MaxEndLabsDbContext : IdentityDbContext<ApplicationUser>
+    public class MaxEndLabsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public MaxEndLabsDbContext(DbContextOptions<MaxEndLabsDbContext> options)
             : base(options)
@@ -24,34 +24,6 @@
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-			//TODO: configurations for OrderItem and Order
-			//OrderItem
-			builder.Entity<OrderItem>()
-		        .HasKey(oi => new { oi.OrderId, oi.ProductId, oi.ProductVariantId });
-
-	        builder.Entity<OrderItem>()
-		        .HasOne(oi => oi.Order)
-		        .WithMany(o => o.OrderItems)
-		        .HasForeignKey(oi => oi.OrderId)
-		        .OnDelete(DeleteBehavior.Cascade);
-
-	        builder.Entity<OrderItem>()
-		        .HasOne(oi => oi.Product)
-		        .WithMany(p => p.OrderItems)
-		        .HasForeignKey(oi => oi.ProductId)
-		        .OnDelete(DeleteBehavior.Restrict);
-
-	        builder.Entity<OrderItem>()
-		        .HasOne(oi => oi.ProductVariant)
-		        .WithMany(pv => pv.OrderItems)
-		        .HasForeignKey(oi => oi.ProductVariantId)
-		        .OnDelete(DeleteBehavior.Restrict);
-            
-	        //Order
-	        builder.Entity<Order>()
-		        .HasIndex(o => o.OrderNumber)
-		        .IsUnique();
-
             base.OnModelCreating(builder);
 
             //Configurations
@@ -64,6 +36,8 @@
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new ProductVariantConfiguration());
             builder.ApplyConfiguration(new CartItemConfiguration());
-		}
+            builder.ApplyConfiguration(new OrderItemConfiguration());
+            builder.ApplyConfiguration(new OrderConfiguration());
+        }
 	}
 }

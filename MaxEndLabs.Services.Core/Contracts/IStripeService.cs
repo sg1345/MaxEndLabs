@@ -5,6 +5,6 @@ namespace MaxEndLabs.Services.Core.Contracts
 {
 	public interface IStripeService
 	{
-		SessionCreateOptions CreateCheckoutSessionAsync(StripeSessionDto dto, string successUrl, string cancelUrl,string userId);
+		SessionCreateOptions CreateCheckoutSessionAsync(StripeSessionDto dto, string successUrl, string cancelUrl, Guid userId);
 	}
 }

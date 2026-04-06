@@ -7,12 +7,12 @@
     public class ShoppingCart
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [ForeignKey(nameof(User))]
         [MaxLength(UserIdMaxLength)]
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; }
 		public virtual ApplicationUser User { get; set; } = null!;
 
 		[Required]

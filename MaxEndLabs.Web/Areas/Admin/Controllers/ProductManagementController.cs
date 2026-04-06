@@ -306,13 +306,8 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
         }
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(int id, ProductFormViewModel model)
+		public async Task<IActionResult> Edit(Guid id, ProductFormViewModel model)
 		{
-			if (await _productService.ProductExistsAsync(model.Name, model.Id))
-			{
-				ModelState.AddModelError("Name", "Product with this name Already exists.");
-			}
-
 			try
 			{
 				if (!ModelState.IsValid)

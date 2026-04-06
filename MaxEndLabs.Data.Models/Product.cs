@@ -7,7 +7,7 @@
     public class Product
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [MaxLength(NameMaxLength)]
@@ -21,10 +21,10 @@
         public string? Description { get; set; }
 
         [ForeignKey(nameof(Category))]
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
         [Required]
-        [Column(TypeName = PriceColumnType)]
+        //[Column(TypeName = PriceColumnType)]
         public decimal Price { get; set; }
 
         //nvarchar(max) in on purpose to allow for long URLs 

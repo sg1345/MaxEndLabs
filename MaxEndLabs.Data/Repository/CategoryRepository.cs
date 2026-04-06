@@ -25,7 +25,7 @@ namespace MaxEndLabs.Data.Repository
 				.SingleOrDefaultAsync(c => c.Slug == slug);
 		}
 
-        public async Task<Category?> GetCategoryAsync(int id)
+        public async Task<Category?> GetCategoryAsync(Guid id)
         {
             return await DbContext.Categories
                 .SingleOrDefaultAsync(c => c.Id == id);

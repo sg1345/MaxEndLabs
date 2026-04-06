@@ -5,7 +5,7 @@ namespace MaxEndLabs.ViewModels.Product
 {
     public class VariantEditViewModel
     {
-        public int? Id { get; set; }
+        public Guid? Id { get; set; }
 
         [Required(ErrorMessage = "Please enter a Option Name")]
         [StringLength(VariantNameMaxLength, MinimumLength = VariantNameMinLength, ErrorMessage = "Option should be between {2} and {1} characters")]

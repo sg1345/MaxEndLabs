@@ -8,7 +8,7 @@ namespace MaxEndLabs.Service.Models.Order
 {
 	public class StripeSessionDto
 	{
-		public int OrderId { get; set; }
+		public Guid OrderId { get; set; }
 		public string OrderNumber { get; set; } = null!;
 		public List<StripeOrderItemDto> LineItems { get; set; } = [];
 	}

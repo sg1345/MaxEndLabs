@@ -46,7 +46,7 @@ namespace MaxEndLabs.Web.Controllers
 
                     if (session?.Metadata != null &&
                         session.Metadata.TryGetValue("orderId", out var orderIdStr) &&
-                        int.TryParse(orderIdStr, out var orderId))
+                        Guid.TryParse(orderIdStr, out var orderId))
                     {
                         await _orderService.MarkOrderAsPaidAsync(orderId);
                     }

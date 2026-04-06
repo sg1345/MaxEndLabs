@@ -7,7 +7,7 @@ namespace MaxEndLabs.Services.Core
 	public class StripeService : IStripeService
 	{
 		public SessionCreateOptions CreateCheckoutSessionAsync(
-			StripeSessionDto dto, string successUrl, string cancelUrl, string userId)
+			StripeSessionDto dto, string successUrl, string cancelUrl, Guid userId)
 		{
 			var lineItems = dto.LineItems
 				.Select(li => new SessionLineItemOptions
@@ -41,7 +41,7 @@ namespace MaxEndLabs.Services.Core
 				Metadata = new Dictionary<string, string>
 				{
 					["orderId"] = dto.OrderId.ToString(),
-					["userId"] = userId
+					["userId"] = userId.ToString()
 				}
 			};
 		}

@@ -8,7 +8,7 @@ namespace MaxEndLabs.ViewModels.Order
 {
 	public class OrderViewModel
 	{
-		public int Id { get; set; }
+		public Guid Id { get; set; }
 		public string OrderNumber { get; set; } = null!;
 		public string Status { get; set; } = null!;
 		public decimal TotalAmount { get; set; }

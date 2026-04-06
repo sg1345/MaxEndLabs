@@ -5,7 +5,7 @@ namespace MaxEndLabs.Services.Core.Contracts
 {
     public interface IProductService
 	{
-		Task<bool> ProductExistsAsync(string productName, int productId);
+		Task<bool> ProductExistsAsync(string productName, Guid productId);
 		Task<bool> ProductExistsAsync(string productName);
         Task<ProductPaginationDto> GetProductSearchAsync(string searchTerm, int page, int pageSize);
 		Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync();
