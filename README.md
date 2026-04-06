@@ -10,6 +10,16 @@
 
 ------------------------------------------------------------------------
 
+## Live Demo
+
+**🔗 [MaxEndLabs Store on Render](https://maxendlabstest.onrender.com)**  
+
+**Demo Credentials:**
+ - Email: admin@labs.com
+ - Password: admin
+
+------------------------------------------------------------------------
+
 ## 📋 Table of Contents
 
 -   [About the Project](#about-the-project)
@@ -196,9 +206,10 @@ dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs
 
 ``` json
 {
+  "DatabaseProvider": "SqlServer",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;",
-    "MaxEndLabsDbContextConnection": ""
+    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=aspnet_MaxEndLabs_2026_Test2;Trusted_Connection=True;Encrypt=False;",
+    "PostgresConnection": "Host=dpg-d79vb4k50q8c73b967s0-a;maxendlabs_dbnewgen;Username=maxendlabs_dbnewgen_user;Password=oN6X9w2Qs5l0RCTxj1xRaCHnGLxMLc4I;Port=5432;SSL Mode=Require;Trust Server Certificate=true"
   },
   "Logging": {
     "LogLevel": {
