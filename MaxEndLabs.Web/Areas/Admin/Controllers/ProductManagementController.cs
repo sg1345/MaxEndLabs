@@ -399,6 +399,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             }
         }
 
+		[HttpPost]
 		public async Task<IActionResult> Restore(string productSlug)
 		{
 			try

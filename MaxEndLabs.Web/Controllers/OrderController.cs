@@ -75,7 +75,7 @@ namespace MaxEndLabs.Web.Controllers
 		[HttpPost]
 		[Authorize]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Checkout(CheckoutViewModel model)
+		public async Task<IActionResult> Checkout(CheckoutViewModel model) 
 		{
 			string userId = GetUserId()!;
 			var token = Request.Form["g-recaptcha-response"];

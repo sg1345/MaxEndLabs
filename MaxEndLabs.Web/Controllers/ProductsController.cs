@@ -18,6 +18,7 @@ namespace MaxEndLabs.Web.Controllers
 			_productService = productService;
 		}
 
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
@@ -42,6 +43,7 @@ namespace MaxEndLabs.Web.Controllers
 	        }
         }
 
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> AllProducts()
         {
@@ -66,6 +68,7 @@ namespace MaxEndLabs.Web.Controllers
             return View("ProductsPage", products);
         }
 
+        [HttpGet]
         [AllowAnonymous]
         [Route("Products/ByCategory/{slug}")]
         public async Task<IActionResult> ByCategory(string slug)
@@ -103,6 +106,7 @@ namespace MaxEndLabs.Web.Controllers
             }
         }
 
+        [HttpGet]
         [AllowAnonymous]
 		[Route("Products/ByCategory/{categorySlug}/{productSlug}")]
 		public async Task<IActionResult> Details(string categorySlug, string productSlug)

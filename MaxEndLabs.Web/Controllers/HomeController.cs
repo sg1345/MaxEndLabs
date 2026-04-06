@@ -19,6 +19,7 @@ namespace MaxEndLabs.Web.Controllers
 			return ViewComponent("OrderBox", new { page = page });
 		}
 
+		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Index()
 		{
@@ -30,18 +31,21 @@ namespace MaxEndLabs.Web.Controllers
 			return View();
 		}
 
+		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult Privacy()
 		{
 			return View();
 		}
 
+		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult KarlosNasarStory()
 		{
 			return View();
 		}
 
+		[HttpGet]
 		[AllowAnonymous]
 		public IActionResult AboutUs()
 		{
@@ -57,9 +61,9 @@ namespace MaxEndLabs.Web.Controllers
 				return View("NotFound");
 			}
 
-			if (statusCode == StatusCodes.Status500InternalServerError)
+			if (statusCode == StatusCodes.Status400BadRequest)
 			{
-				return View("ServerError");
+				return View("BadRequest");
 			}
 
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
