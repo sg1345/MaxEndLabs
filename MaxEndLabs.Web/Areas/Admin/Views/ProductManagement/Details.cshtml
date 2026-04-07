@@ -38,7 +38,7 @@
 				<div class="mb-3">
 					<label for="variantSelect" class="form-label">Options</label>
 						<select id="variantSelect" name="ProductVariantId" class="form-select">
-						<option value="@Guid.Empty">-- Select an Option --</option>
+						<option value="">-- Select an Option --</option>
 						@foreach (var variant in Model.ProductVariants)
 						{
 							<option value="@variant.Id" data-price="@variant.Price">

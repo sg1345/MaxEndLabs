@@ -1,12 +1,32 @@
 # 🚀 MaxEndLabs
 
-> A layered ASP.NET Core MVC e-commerce application supporting product 
-> and variant management, shopping cart functionality, order processing, 
-> and secure payments via Stripe, built with Entity Framework Core.
+[![Demo Video](https://img.shields.io/badge/YouTube-Watch_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/aZA5kkqmWxg)
 
 ![.NET Version](https://img.shields.io/badge/.NET-8.0-purple) 
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-8.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+
+------------------------------------------------------------------------
+
+## Live Demo
+
+**🔗 [MaxEndLabs OnlineStore on Render](https://maxendlabstest.onrender.com)**  
+
+**Demo Credentials:**
+*Admin*
+ - Email: admin@labs.com
+ - Password: admin
+
+ *User*
+ - Email: test@labs.com
+ - Password: admin
+
+ *Stripe Cretid Cart for testing*
+ - Cart Number: 5555 5555 5555 4444
+ - Date: Any date
+ - CVC: Any 3 digits
+ 
+*(Deployed live on Render using a PostgreSQL database. For local development, the application utilizes SQL Server with a zero-configuration automated seeding process (EnsureCreated).)*
 
 ------------------------------------------------------------------------
 
@@ -19,8 +39,8 @@
 -   [Project Structure](#project-structure)
 -   [Features](#features)
 -   [Usage](#usage)
--   [Database Setup](#database-setup)
 -   [Configuration](#configuration)
+-   [Secret Keys Configuration](#secret-keys-configuration)
 -   [Contributing](#contributing)
 -   [License](#license)
 -   [Contact](#contact)
@@ -80,32 +100,28 @@ Follow these steps to get the project running locally.
 git clone https://github.com/sg1345/MaxEndLabs
 cd MaxEndLabs
 ```
-### 2. Restore dependencies
 
-```bash
-dotnet restore
-```
-### 3. Apply database migrations
-Make sure the connection string is correct and run:
-```bash
-dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
-```
-### 4. Run the application
+### 2. Run the application
 
 ```bash
 dotnet run --project MaxEndLabs
 ```
+
 ------------------------------------------------------------------------
 
 ## 📁 Project Structure
 
     MaxEndLabs.sln
     │
-    ├── MaxEndLabs.Web/
     ├── MaxEndLabs.Data/
+    ├── MaxEndLabs.Data.Common/
     ├── MaxEndLabs.Data.Models/
     ├── MaxEndLabs.Services.Core/
+    ├── MaxEndLabs.Services.Models/
+    ├── MaxEndLabs.Services.Tests/
     ├── MaxEndLabs.ViewModels/
+    ├── MaxEndLabs.Web/
+    ├── MaxEndLabs.Web.Common/
     └── MaxEndLabs.GCommon
 
 ------------------------------------------------------------------------
@@ -154,6 +170,8 @@ dotnet run --project MaxEndLabs
 | Product CRUD | ❌ | ❌ | ✅ |
 | Manage 2FA | ❌ | ✅ | ✅ |
 
+---
+
 ### 🔐 Administrative access
 
 **Creating, editing and deleting** products and product variants is
@@ -170,25 +188,16 @@ The admin account is seeded automatically when the application starts.
 Only users with the Admin role can create, edit and delete products and
 product variants.
 
-------------------------------------------------------------------------
+---
 
-## 🗄️ Database Setup
+### 👨‍💼 Additional User Access
 
-The project uses **Entity Framework Core** with a Code-First approach.
+The application contains a **pre-seeded user account** specifically designed to demonstrate user-facing features without requiring manual data entry.his account comes pre-loaded with a robust history of 30 orders to showcase the application's pagination, sorting, and UI capabilities.
 
-Connection string is configured in `appsettings.json`:
+To explore a fully populated customer dashboard, log in with:
 
-```json
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;"
-  }
-```
-
-To create and seed the database:
-
-``` bash
-dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs.Web
-```
+-   **Email: test@labs.com**
+-   **Password: admin**
 
 ------------------------------------------------------------------------
 
@@ -196,9 +205,10 @@ dotnet ef database update --project MaxEndLabs.Data --startup-project MaxEndLabs
 
 ``` json
 {
+  "DatabaseProvider": "SqlServer",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;",
-    "MaxEndLabsDbContextConnection": ""
+    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;",
+    "PostgresConnection": "Host=dpg-d79vb4k50q8c73b967s0-a;maxendlabs_dbnewgen;Username=maxendlabs_dbnewgen_user;Password=oN6X9w2Qs5l0RCTxj1xRaCHnGLxMLc4I;Port=5432;SSL Mode=Require;Trust Server Certificate=true"
   },
   "Logging": {
     "LogLevel": {
@@ -248,6 +258,23 @@ MIT License.
 
 ## 📬 Contact
 
-**Dimitar Karabashev** – [https://github.com/sg1345]
+**Dimitar Karabashev** – [https://github.com/sg1345](https://github.com/sg1345)
 
 Project Link: [https://github.com/sg1345/MaxEndLabs](https://github.com/sg1345/MaxEndLabs)
+
+---
+
+![Home Page Guest](./Images/guest-home.png)
+![Home Page User](./Images/user-home.png)
+![Categories](./Images/categories.png)
+![Products](./Images/products.png)
+![Product Details User](./Images/user-details-product.png)
+![Order Details User](./Images/user-details-order.png)
+![Home Page Admin](./Images/admin-home.png)
+![Product Manager Admin](./Images/admin-product-manager.png)
+![Create Product Admin](./Images/admin-create-product.png)
+![Variant Manager Admin](./Images/admin-variant-manager.png)
+![Product Details Admin](./Images/admin-details-product.png)
+![Edin Product Admin](./Images/admin-edit-product.png)
+![Order Manager Admin](./Images/admin-order-manager.png)
+![Order Details Admin](./Images/admin-details-order.png)
