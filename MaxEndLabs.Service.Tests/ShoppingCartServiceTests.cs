@@ -33,7 +33,6 @@ namespace MaxEndLabs.Service.Tests
         public async Task GetAllCartItemsAsync_HasUser_ReturnCorrectPopulatedDto()
         {
             //Arrange
-
             var cartItemList = new List<CartItem>
             {
                 new CartItem
@@ -159,9 +158,7 @@ namespace MaxEndLabs.Service.Tests
             var result = await shoppingCartService.GetAllCartItemsAsync(_userId);
 
             //Assert
-
             Assert.That(result.CartItems[0].UnitPrice, Is.EqualTo(expectedUnitPrice));
-
         }
 
         [Test]
@@ -206,9 +203,7 @@ namespace MaxEndLabs.Service.Tests
             var result = await shoppingCartService.GetAllCartItemsAsync(_userId);
 
             //Assert
-
             Assert.That(result.TotalPrice, Is.EqualTo(expectedTotal));
-
         }
 
         [Test]
@@ -222,6 +217,7 @@ namespace MaxEndLabs.Service.Tests
             shoppingCartRepositoryMock.Setup(scr => scr.GetCartItemsByUserIdAsync(_userId))
                 .ReturnsAsync((List<CartItem>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await shoppingCartService.GetAllCartItemsAsync(_userId));
         }
@@ -357,6 +353,7 @@ namespace MaxEndLabs.Service.Tests
 
             shoppingCartRepositoryMock.Setup(scr => scr.SaveChangesAsync()).ReturnsAsync(0);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await shoppingCartService.AddProductToShoppingCartAsync(dto));
         }
@@ -417,10 +414,9 @@ namespace MaxEndLabs.Service.Tests
                     scr.GetCartItemAsync(dto.CartId, dto.ProductId, dto.ProductVariantId))
                 .ReturnsAsync(cartItem);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await shoppingCartService.RemoveCartItemFromShoppingCartAsync(dto));
-
-
         }
 
         [Test]
@@ -438,6 +434,7 @@ namespace MaxEndLabs.Service.Tests
                     scr.GetCartItemAsync(dto.CartId, dto.ProductId, dto.ProductVariantId))
                 .ReturnsAsync((CartItem?)null);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await shoppingCartService.RemoveCartItemFromShoppingCartAsync(dto));
         }
@@ -450,6 +447,7 @@ namespace MaxEndLabs.Service.Tests
                     scr.GetCartItemsByCartIdAsync(_shoppingCartId))
                 .ReturnsAsync((List<CartItem>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(_shoppingCartId));
         }
@@ -462,6 +460,7 @@ namespace MaxEndLabs.Service.Tests
                     scr.GetCartItemsByCartIdAsync(_shoppingCartId))
                 .ReturnsAsync(new List<CartItem>());
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(_shoppingCartId));
         }
@@ -481,6 +480,7 @@ namespace MaxEndLabs.Service.Tests
                     scr.GetCartItemsByCartIdAsync(_shoppingCartId))
                 .ReturnsAsync(cartItemList);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await shoppingCartService.DeleteAllCartItemsFromShoppingCartAsync(_shoppingCartId));
         }
@@ -565,6 +565,7 @@ namespace MaxEndLabs.Service.Tests
 
             shoppingCartRepositoryMock.Setup(scr => scr.SaveChangesAsync()).ReturnsAsync(0);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await shoppingCartService.GetOrCreateShoppingCartAsync(_userId));
         }

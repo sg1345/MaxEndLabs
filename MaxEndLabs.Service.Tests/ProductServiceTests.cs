@@ -285,7 +285,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(r => r.GetCountAsync(searchTerm))
                 .ReturnsAsync(It.IsAny<int>());
 
-
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductSearchAsync(searchTerm, page, pageSize));
         }
 
@@ -361,6 +361,7 @@ namespace MaxEndLabs.Service.Tests
             categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
                 .ReturnsAsync((List<Category>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetAllCategoriesAsync());
         }
 
@@ -371,6 +372,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetAllProductsAsync())
                 .ReturnsAsync((List<Product>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetAllProductsAsync());
         }
 
@@ -513,6 +515,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetProductsByCategoryIdAsync(_categoryId1))
                 .ReturnsAsync((List<Product>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.GetProductsByCategoryAsync(categorySlug));
         }
@@ -526,6 +529,7 @@ namespace MaxEndLabs.Service.Tests
             categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(categorySlug))
                 .ReturnsAsync((Category?)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.GetProductsByCategoryAsync(categorySlug));
         }
@@ -540,6 +544,7 @@ namespace MaxEndLabs.Service.Tests
                     pr.GetProductAsync(productSlug, true, true, true))
                 .ReturnsAsync((Product)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.GetProductDetailsAsync(productSlug, true));
         }
@@ -623,6 +628,7 @@ namespace MaxEndLabs.Service.Tests
             categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
                 .ReturnsAsync((List<Category>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductCreateDtoAsync());
         }
 
@@ -666,8 +672,9 @@ namespace MaxEndLabs.Service.Tests
         [Test]
         [TestCase(null, null)]
         [TestCase("not null", "not null")]
-        public async Task? AddProductAsync_CreateNewProduct_ReturnProductSlugCorrectly(string? description, string? mainImageUrl)
+        public async Task AddProductAsync_CreateNewProduct_ReturnProductSlugCorrectly(string? description, string? mainImageUrl)
         {
+            //Arrange
             ProductCreateDto dto = new ProductCreateDto()
             {
                 CategoryId = _categoryId1,
@@ -778,6 +785,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetProductAsync(productSlug, true, true, true))
                 .ReturnsAsync((Product)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductAsync(productSlug, true));
         }
 
@@ -792,6 +800,7 @@ namespace MaxEndLabs.Service.Tests
 
             productRepositoryMock.Setup(pr => pr.GetProductVariantsByProductIdAsync(dto.ProductId))
                 .ReturnsAsync((IEnumerable<ProductVariant>)null!);
+            
             //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.ManageProductVariantsAsync(dto));
         }
@@ -800,7 +809,6 @@ namespace MaxEndLabs.Service.Tests
         public async Task ManageProductVariantsAsync_ShouldHandle_DeleteUpdateAndAdd()
         {
             //Arrange
-
             var existingVariants = new List<ProductVariant>
             {
                 new ProductVariant { Id = _variantId1, ProductId = _productId, VariantName = "Old - To Delete", IsDeleted = false },
@@ -869,6 +877,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetProductAsync(productSlug, true, false, false))
                 .ReturnsAsync((Product)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductEditDtoAsync(productSlug));
         }
 
@@ -885,6 +894,7 @@ namespace MaxEndLabs.Service.Tests
                     pr.GetAllCategoriesAsync())
                 .ReturnsAsync((IEnumerable<Category>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await productService.GetProductEditDtoAsync(productSlug));
         }
 
@@ -933,8 +943,10 @@ namespace MaxEndLabs.Service.Tests
                 .ReturnsAsync(product);
             categoryRepositoryMock.Setup(cr => cr.GetAllCategoriesAsync())
                 .ReturnsAsync(categories);
+
             //Act
             var result = await productService.GetProductEditDtoAsync(productSlug);
+            
             //Assert
             var resultCategoriesArr = result.Categories.ToArray();
             var expectedCategoriesArr = expected.Categories.ToArray();
@@ -1095,6 +1107,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.SaveChangesAsync())
                 .ReturnsAsync(0);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await productService.EditProductAsync(receivedDto));
         }
@@ -1127,6 +1140,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetProductAsync(receivedDto.Id))
                 .ReturnsAsync(product);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.EditProductAsync(receivedDto));
         }
@@ -1135,7 +1149,6 @@ namespace MaxEndLabs.Service.Tests
         public void EditProductAsync_ProductsDoesNotExist_ThrowEntityNotFoundException()
         {
             //Arrange
-
             var receivedDto = new ProductFormDto { Id = _productId, CategoryId = _categoryId3 };
 
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
@@ -1144,6 +1157,7 @@ namespace MaxEndLabs.Service.Tests
             productRepositoryMock.Setup(pr => pr.GetProductAsync(receivedDto.Id))
                 .ReturnsAsync((Product)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.EditProductAsync(receivedDto));
         }
@@ -1157,6 +1171,7 @@ namespace MaxEndLabs.Service.Tests
             var category = categoryRepositoryMock.Setup(cr => cr.GetCategoryAsync(receivedDto.CategoryId))
                 .ReturnsAsync((Category)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.EditProductAsync(receivedDto));
         }
@@ -1171,7 +1186,7 @@ namespace MaxEndLabs.Service.Tests
                     pr.GetProductAsync(productSlug, true, false, true))
                 .ReturnsAsync((Product)null!);
 
-
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.SoftDeleteProductAsync(productSlug));
         }
@@ -1192,7 +1207,7 @@ namespace MaxEndLabs.Service.Tests
                     scr.GetCartItemsByProductSlugAsync(product.Slug))
                 .ReturnsAsync((IEnumerable<CartItem>)null!);
 
-
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.SoftDeleteProductAsync(productSlug));
         }
@@ -1406,6 +1421,7 @@ namespace MaxEndLabs.Service.Tests
                 .Setup(r => r.GetProductAsync(fakeSlug, false, false, true))
                 .ReturnsAsync((Product?)null);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await productService.RestoreProductAsync(fakeSlug));
         }

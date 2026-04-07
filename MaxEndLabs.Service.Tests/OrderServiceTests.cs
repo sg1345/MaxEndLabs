@@ -182,7 +182,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(r => r.GetCountAsync(userId))
                 .ReturnsAsync(It.IsAny<int>());
 
-
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrdersForUserAsync(userId, page, pageSize));
         }
 
@@ -378,7 +378,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(r => r.GetCountAsync(searchType, searchTerm))
                 .ReturnsAsync(It.IsAny<int>());
 
-
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderSearchAsync(searchTerm, searchType, page, pageSize));
         }
 
@@ -632,6 +632,7 @@ namespace MaxEndLabs.Service.Tests
             shoppingCartRepositoryMock.Setup(scr => scr.GetShoppingCartIdAsync(userId))
                 .ReturnsAsync(shoppingCartIdNotFound);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderCreateDtoAsync(userId));
         }
 
@@ -648,6 +649,7 @@ namespace MaxEndLabs.Service.Tests
             shoppingCartRepositoryMock.Setup(scr => scr.GetCartItemsByUserIdAsync(userId))
                 .ReturnsAsync((List<CartItem>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderCreateDtoAsync(userId));
         }
 
@@ -743,6 +745,7 @@ namespace MaxEndLabs.Service.Tests
             shoppingCartRepositoryMock.Setup(scr => scr.GetCartItemsByUserIdAsync(orderDto.UserId))
                 .ReturnsAsync(new List<CartItem>());
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.CreateOrderAsync(orderDto));
         }
 
@@ -763,6 +766,7 @@ namespace MaxEndLabs.Service.Tests
             shoppingCartRepositoryMock.Setup(scr => scr.GetCartItemsByUserIdAsync(orderDto.UserId))
                 .ReturnsAsync((List<CartItem>)null!);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.CreateOrderAsync(orderDto));
         }
 
@@ -824,6 +828,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.SaveChangesAsync())
                 .ReturnsAsync(0);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () => await orderService.CreateOrderAsync(orderDto));
         }
 
@@ -1030,8 +1035,8 @@ namespace MaxEndLabs.Service.Tests
             //Act
             var result = await orderService.CreateOrderAsync(orderDto);
 
-            var resultOrderItems = capturedOrder.OrderItems.ToList();
             //Assert
+            var resultOrderItems = capturedOrder.OrderItems.ToList();
             Assert.Multiple(() =>
             {
                 Assert.That(resultOrderItems[0].UnitPrice, Is.EqualTo(expectedPriceOne));
@@ -1172,6 +1177,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, false, true, true))
                 .ReturnsAsync((Order?)null);
 
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderDetailsAsync(orderId));
         }
 
@@ -1419,7 +1425,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
-            // Act & Assert
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.MarkOrderAsPaidAsync(orderId));
         }
 
@@ -1437,7 +1443,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.SaveChangesAsync())
                 .ReturnsAsync(0); 
 
-            // Act & Assert
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await orderService.MarkOrderAsPaidAsync(orderId));
         }
@@ -1451,7 +1457,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
-            // Act & Assert
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await orderService.GetOrderStatusAsync(orderId));
         }
 
@@ -1515,7 +1521,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync(order);
 
-            // Act & Assert
+            //Act & Assert
             Assert.ThrowsAsync<BadRequestException>(async () =>
                 await orderService.ChangeOrderStatus(newStatus, orderId));
         }
@@ -1531,7 +1537,7 @@ namespace MaxEndLabs.Service.Tests
                     GetOrderByIdAsync(orderId, true, false, false))
                 .ReturnsAsync((Order?)null);
 
-            // Act & Assert
+            //Act & Assert
             Assert.ThrowsAsync<EntityNotFoundException>(async () =>
                 await orderService.ChangeOrderStatus(newStatus, orderId));
         }
@@ -1550,7 +1556,7 @@ namespace MaxEndLabs.Service.Tests
             orderRepositoryMock.Setup(or => or.SaveChangesAsync())
                 .ReturnsAsync(0); 
 
-            // Act & Assert
+            //Act & Assert
             Assert.ThrowsAsync<EntityPersistFailureException>(async () =>
                 await orderService.ChangeOrderStatus(newStatus, orderId));
         }

@@ -143,7 +143,7 @@ namespace MaxEndLabs.Data.Configuration
 					CreatedAt = new DateOnly(2026, 2, 10),
 					UpdatedAt = new DateOnly(2026, 2, 10),
 					IsPublished = true
-				},//
+				},
                 new Product
                 {
                     Id = Guid.Parse("3b89e3a0-8d5a-4e2b-9e45-8f6a9c1d3e2a"),
@@ -169,7 +169,7 @@ namespace MaxEndLabs.Data.Configuration
                     CreatedAt = new DateOnly(2026, 2, 10),
                     UpdatedAt = new DateOnly(2026, 2, 10),
                     IsPublished = true
-                },//
+                },
                 new Product
                 {
                     Id = Guid.Parse("9e8d7c6b-5a4f-3e2d-1c9b-8a7b6c5d4e3f"),
