@@ -45,7 +45,14 @@ namespace MaxEndLabs.Web.Controllers
 			return View();
 		}
 
-		[HttpGet]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Euro2026()
+        {
+            return View();
+        }
+
+        [HttpGet]
 		[AllowAnonymous]
 		public IActionResult AboutUs()
 		{
