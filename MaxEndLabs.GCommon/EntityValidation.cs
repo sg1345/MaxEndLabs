@@ -73,5 +73,12 @@
         {
 			public const int FullNameMaxLength = 250;
         }
+
+        public static class NewsArticle
+        {
+            public const int TeaserTittleMaxLength = 100;
+            public const int ContentTitleMaxLength = 200;
+            public const int SummaryMaxLength = 500;
+        }
 	}
 }

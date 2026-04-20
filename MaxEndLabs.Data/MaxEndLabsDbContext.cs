@@ -21,6 +21,7 @@
         public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
         public virtual DbSet<Order> Orders { get; set; } = null!;
 		public virtual DbSet<OrderItem> OrderItems { get; set; } = null!;
+        public virtual DbSet<NewsArticle> NewsArticles { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
