@@ -35,13 +35,9 @@
 -   [About the Project](#about-the-project)
 -   [Technologies Used](#technologies-used)
 -   [Prerequisites](#prerequisites)
--   [Getting Started](#getting-started)
 -   [Project Structure](#project-structure)
 -   [Features](#features)
 -   [Usage](#usage)
--   [Configuration](#configuration)
--   [Secret Keys Configuration](#secret-keys-configuration)
--   [Contributing](#contributing)
 -   [License](#license)
 -   [Contact](#contact)
 
@@ -87,25 +83,6 @@ control and secure user interactions.
 -   Visual Studio 2022 or VS Code
 -   SQL Server (LocalDB or full SQL Server)
 -   Git
-
-------------------------------------------------------------------------
-
-## 🚀 Getting Started
-
-Follow these steps to get the project running locally.
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/sg1345/MaxEndLabs
-cd MaxEndLabs
-```
-
-### 2. Run the application
-
-```bash
-dotnet run --project MaxEndLabs
-```
 
 ------------------------------------------------------------------------
 
@@ -198,41 +175,6 @@ To explore a fully populated customer dashboard, log in with:
 
 -   **Email: test@labs.com**
 -   **Password: admin**
-
-------------------------------------------------------------------------
-
-## ⚙️ Configuration
-
-``` json
-{
-  "DatabaseProvider": "SqlServer",
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=aspnet_MaxEndLabs_2026;Trusted_Connection=True;Encrypt=False;",
-    "PostgresConnection": "Host=dpg-d79vb4k50q8c73b967s0-a;maxendlabs_dbnewgen;Username=maxendlabs_dbnewgen_user;Password=oN6X9w2Qs5l0RCTxj1xRaCHnGLxMLc4I;Port=5432;SSL Mode=Require;Trust Server Certificate=true"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
-  "GoogleReCaptcha": {
-    "SiteKey": "",
-    "SecretKey": ""
-  },
-  "Stripe": {
-    "SecretKey": "",
-    "PublishableKey": ""
-  }
-}
-```
-
-------------------------------------------------------------------------
-
-## 🤝 Contributing
-
-Fork the repository and create a pull request.
 
 ------------------------------------------------------------------------
 
