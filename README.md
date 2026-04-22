@@ -230,20 +230,6 @@ To explore a fully populated customer dashboard, log in with:
 
 ------------------------------------------------------------------------
 
-## 🔑 Secret Keys Configuration
-
-Please set the following Environment Variables in your IDE 
-(Visual Studio/VS Code) before running the project:
-
-| Environment Variable Name | Value |
-| :--- | :--- |
-| **Stripe__SecretKey** | `sk_test_51TBnryPsf4pfhoRSGR5vAM4TuqXfs9O8eQ7KjSBX2ut13bgmq40TSMhZuHQhTLzBMm5tvPgj0i0Qqjc3S8swM4Nj00m4bXPAAA` |
-| **Stripe__PublishableKey** | `pk_test_51TBnryPsf4pfhoRSXTAZ7CxTrn1Nt9fQgOBcdL3jPKXbJl05iu5uzEy5z8ygc2fOek7EQq4875Id0HpkcN42oT5h00ilFIILSf` |
-| **GoogleReCaptcha__SiteKey** | `6Lf3BpQsAAAAAFXo0dIMuCEakNWG8dCNenga8TmG` |
-| **GoogleReCaptcha__SecretKey** | `6Lf3BpQsAAAAANp82boiFqoLLaBtuMUzy2NF9Grz` |
-
-------------------------------------------------------------------------
-
 ## 🤝 Contributing
 
 Fork the repository and create a pull request.
