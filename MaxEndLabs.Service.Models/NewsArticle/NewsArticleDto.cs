@@ -8,7 +8,8 @@ namespace MaxEndLabs.Service.Models.NewsArticle
 {
     public class NewsArticleDto : NewsArticleDetailsDto
     {
-        public DateTime PublishedAt { get; set; }
-        public bool IsPublished { get; set; }
+        public string TeaserTitle { get; set; } = null!;
+        public string Summary { get; set; } = null!;
+        public string CoverImageUrl { get; set; } = null!;
     }
 }
