@@ -6,7 +6,7 @@ namespace MaxEndLabs.Data.Repository
 {
     public class NewsArticleRepository : BaseRepository, INewsArticleRepository
     {
-        protected NewsArticleRepository(MaxEndLabsDbContext dbContext) 
+        public NewsArticleRepository(MaxEndLabsDbContext dbContext) 
             : base(dbContext)
         {
         }
@@ -27,7 +27,7 @@ namespace MaxEndLabs.Data.Repository
 
         public async Task AddNewsArticleAsync(NewsArticle newsArticle)
         {
-           await DbContext!.AddAsync(newsArticle);
+           await DbContext!.NewsArticles.AddAsync(newsArticle);
         }
     }
 }

@@ -1,0 +1,90 @@
+﻿
+@model NewsArticleFormViewModel
+
+@{
+    ViewData["Title"] = "Create News Article";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <form asp-action="Create" method="post">
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <h5 class="border-bottom pb-2 mb-3">Headlines</h5>
+                        <div class="row g-3 mb-4">
+                            <!-- Teaser Title -->
+                            <div class="col-md-6">
+                                <label asp-for="TeaserTitle" class="form-label text-muted fw-bold">Teaser Title (Card Headline)</label>
+                                <input asp-for="TeaserTitle" class="form-control" placeholder="E.g., Big Changes Coming..." />
+                                <span asp-validation-for="TeaserTitle" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Content Title -->
+                            <div class="col-md-6">
+                                <label asp-for="ContentTitle" class="form-label text-muted fw-bold">Main Article Title</label>
+                                <input asp-for="ContentTitle" class="form-control" placeholder="Full headline for the article page" />
+                                <span asp-validation-for="ContentTitle" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <h5 class="border-bottom pb-2 mb-3">Content</h5>
+                        <div class="mb-3">
+                            <!-- Summary -->
+                            <label asp-for="Summary" class="form-label text-muted fw-bold">Short Summary</label>
+                            <textarea asp-for="Summary" class="form-control" rows="3" placeholder="A brief overview for the preview cards..."></textarea>
+                            <span asp-validation-for="Summary" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <!-- Main Content -->
+                            <label asp-for="Content" class="form-label text-muted fw-bold">Full Article Content</label>
+                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="Write the main article body here..."></textarea>
+                            <span asp-validation-for="Content" class="text-danger small"></span>
+                        </div>
+
+                        <h5 class="border-bottom pb-2 mb-3">Media</h5>
+                        <div class="row g-3 mb-4">
+                            <!-- Cover Image URL -->
+                            <div class="col-md-6">
+                                <label asp-for="CoverImageUrl" class="form-label text-muted fw-bold">Cover Image URL</label>
+                                <input asp-for="CoverImageUrl" class="form-control" placeholder="https://..." type="url" />
+                                <span asp-validation-for="CoverImageUrl" class="text-danger small"></span>
+                                <div class="form-text">Shown on the preview cards.</div>
+                            </div>
+
+                            <!-- Article Image URL -->
+                            <div class="col-md-6">
+                                <label asp-for="ArticleImageUrl" class="form-label text-muted fw-bold">Main Article Image URL</label>
+                                <input asp-for="ArticleImageUrl" class="form-control" placeholder="https://..." type="url" />
+                                <span asp-validation-for="ArticleImageUrl" class="text-danger small"></span>
+                                <div class="form-text">Shown at the top of the full article.</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Create Article</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include Client-Side Validation -->
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

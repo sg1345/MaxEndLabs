@@ -64,6 +64,8 @@ namespace MaxEndLabs.Services.Core
                 TeaserTitle = newNewsArticle.TeaserTitle
             };
 
+            await _newsArticleRepository.AddNewsArticleAsync(newsArticle);
+
             await EnsureSaveChangesAsync();
         }
 

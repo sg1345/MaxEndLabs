@@ -77,8 +77,11 @@
         public static class NewsArticle
         {
             public const int TeaserTittleMaxLength = 100;
+            public const int TeaserTittleMinLength = 1;
             public const int ContentTitleMaxLength = 200;
+            public const int ContentTitleMinLength = 1;
             public const int SummaryMaxLength = 500;
+            public const int SummaryMinLength = 1;
         }
 	}
 }

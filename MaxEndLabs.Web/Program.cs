@@ -78,7 +78,10 @@ namespace MaxEndLabs.Web
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-			builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
+            builder.Services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
+
+            builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
