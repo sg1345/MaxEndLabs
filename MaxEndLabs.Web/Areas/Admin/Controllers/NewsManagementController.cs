@@ -15,9 +15,36 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             _newsService = newsService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string searchTerm = "", int page = 1)
         {
-            return Ok("entered");
+            try
+            {
+                var productDto = await _newsService.GetNewsArticleSummariesAsync();
+
+                var model = new NewsArticlePaginationViewModel
+                {
+                    SearchTerm = searchTerm,
+                    CurrentPage = 3,
+                    TotalPages = 10,
+                    HasNextPage = true,
+                    HasPreviousPage = true,
+                    Articles = productDto.Select(a => new NewsArticleSummaryViewModel
+                    {
+                        Id = a.Id,
+                        CoverImageUrl = a.CoverImageUrl,
+                        TeaserTitle = a.TeaserTitle,
+                        Summary = a.Summary
+                    })
+                };
+
+                ViewBag.CurrentPage = page;
+                return View(model);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         [HttpGet]
@@ -55,6 +82,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
                 await _newsService.AddNewsArticle(newsCreateDto);
 
+                //add TempData for the Output Message
                 return RedirectToAction("Index");
             }
             catch (Exception e)

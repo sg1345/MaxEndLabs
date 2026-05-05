@@ -1,0 +1,161 @@
+﻿@model NewsArticlePaginationViewModel
+@{
+    ViewData["Title"] = "News Management";
+}
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">News Article Management</h2>
+    </div>
+
+    <!-- Search & Actions Bar -->
+    <div class="d-flex gap-2 mb-4 align-items-start">
+
+        <!-- Search Form (Integrated) -->
+        <div class="flex-grow-1">
+            <form asp-action="Index" id="newsSearchForm" method="get" class="m-0">
+                <div class="row g-0">
+                    <div class="col-md-8">
+                        <div class="input-group shadow-sm">
+                            <input type="text" name="searchTerm" id="searchTerm"
+                                   class="form-control" placeholder="Search article headlines or summaries..."
+                                   value="@Model.SearchTerm">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Create Button -->
+        <a asp-action="Create" class="btn btn-dark shadow-sm d-flex align-items-center justify-content-center"
+           style="height: 38px; min-width: 160px; white-space: nowrap;">
+            <i class="fa-solid fa-plus me-2"></i> Create Article
+        </a>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div id="newsManagerBoxFullWrapper">
+        <div class="news-list-container">
+
+            @if (Model.Articles != null && Model.Articles.Any())
+            {
+                <!-- Article Cards Loop -->
+                <div class="mb-4">
+                    @foreach (var article in Model.Articles)
+                    {
+                        <div class="card shadow-sm mb-3 border-0 bg-light">
+                            <div class="row g-0 align-items-center">
+
+                                <!-- Thumbnail -->
+                                <div class="col-md-2 col-4 overflow-hidden rounded-start" style="height: 120px;">
+                                    @if (!string.IsNullOrEmpty(article.CoverImageUrl))
+                                    {
+                                        <img src="@article.CoverImageUrl" alt="@article.TeaserTitle" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center text-white-50">
+                                            <i class="fa-regular fa-image fa-2x"></i>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Content -->
+                                <div class="col-md-7 col-8">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <h5 class="card-title mb-0 fw-bold text-dark me-3">@article.TeaserTitle</h5>
+
+                                            <!-- Optional: Add Published/Draft badge here if you have IsPublished on your view model -->
+                                        </div>
+                                        <!-- Line clamping prevents the card from getting too tall -->
+                                        <p class="card-text text-muted mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                            @article.Summary
+                                        </p>
+                                        <small class="text-secondary">
+                                            <i class="fa-regular fa-clock me-1"></i> ID: @article.Id
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="col-md-3 col-12 d-flex justify-content-md-end justify-content-start align-items-center p-3">
+                                    <div class="btn-group shadow-sm">
+                                        <a class="btn btn-sm btn-light border text-secondary"
+                                           asp-action="Details" asp-route-id="@article.Id" title="View">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-light border text-primary"
+                                           asp-action="Edit" asp-route-id="@article.Id" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-light border text-danger"
+                                           asp-action="Delete" asp-route-id="@article.Id" title="Delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                <div id="articlePaginationContainer">
+                    <div class="bg-transparent pb-4 d-flex justify-content-center">
+                        <nav aria-label="Article pagination">
+                            <ul class="pagination pagination-sm mb-0 shadow-sm">
+                                <!-- First Page / Previous Page -->
+                                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link border-0" asp-action="Index" asp-route-page="1" asp-route-searchTerm="@Model.SearchTerm">
+                                        <i class="fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                    <a class="page-link border-0" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-searchTerm="@Model.SearchTerm">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Page Numbers -->
+                                @for (int i = Model.CurrentPage - 1; i <= Model.CurrentPage + 1; i++)
+                                {
+                                    if (i > 0 && i <= Model.TotalPages)
+                                    {
+                                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                            <a class="page-link border-0 rounded-3 mx-1" asp-action="Index" asp-route-page="@i" asp-route-searchTerm="@Model.SearchTerm">@i</a>
+                                        </li>
+                                    }
+                                }
+
+                                <!-- Next Page / Last Page -->
+                                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                    <a class="page-link border-0" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-searchTerm="@Model.SearchTerm">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link border-0" asp-action="Index" asp-route-page="@Model.TotalPages" asp-route-searchTerm="@Model.SearchTerm">
+                                        <i class="fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="text-center py-5 bg-light rounded border border-light">
+                    <i class="fa-regular fa-newspaper fa-3x text-muted mb-3 opacity-50"></i>
+                    <p class="text-muted mb-0">No news articles found.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
