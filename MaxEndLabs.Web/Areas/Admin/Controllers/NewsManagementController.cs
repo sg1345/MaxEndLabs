@@ -3,6 +3,7 @@ using MaxEndLabs.Service.Models.NewsArticle;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels.NewsArticles;
 using Microsoft.AspNetCore.Mvc;
+using static MaxEndLabs.Web.Common.PaginationConstants;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers
 {
@@ -19,16 +20,17 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
         {
             try
             {
-                var productDto = await _newsService.GetNewsArticleSummariesAsync();
+                var paginationDto = await _newsService
+                    .GetNewsArticleSummariesAsync(searchTerm, page, PageSizeNewsArticleManager);
 
                 var model = new NewsArticlePaginationViewModel
                 {
                     SearchTerm = searchTerm,
-                    CurrentPage = 3,
-                    TotalPages = 10,
-                    HasNextPage = true,
-                    HasPreviousPage = true,
-                    Articles = productDto.Select(a => new NewsArticleSummaryViewModel
+                    CurrentPage = paginationDto.CurrentPage,
+                    TotalPages = paginationDto.TotalPages,
+                    HasNextPage = paginationDto.HasNextPage,
+                    HasPreviousPage = paginationDto.HasPreviousPage,
+                    Articles = paginationDto.Articles.Select(a => new NewsArticleSummaryViewModel
                     {
                         Id = a.Id,
                         CoverImageUrl = a.CoverImageUrl,
