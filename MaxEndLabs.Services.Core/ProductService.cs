@@ -44,7 +44,8 @@ namespace MaxEndLabs.Services.Core
         public async Task<ProductPaginationDto> GetProductSearchAsync(string searchTerm, int page, int pageSize)
         {
             int skip = (page - 1) * pageSize;
-            var products = await _productRepository.GetSearchProductsAsync(searchTerm, skip, pageSize);
+            var products = await _productRepository
+                .GetSearchProductsAsync(searchTerm, skip, pageSize);
             var count = await _productRepository.GetCountAsync(searchTerm);
 
             if (products == null)

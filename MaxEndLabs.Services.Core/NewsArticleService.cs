@@ -16,22 +16,33 @@ namespace MaxEndLabs.Services.Core
             _newsArticleRepository = newsArticleRepository;
         }
 
-        public async Task<IEnumerable<NewsArticleSummaryDto>> GetNewsArticleSummariesAsync()
+        public async Task<NewsArticlePaginationDto> GetNewsArticleSummariesAsync(string searchTerm, int page, int pageSize)
         {
-            var newsArticles = await _newsArticleRepository.GetAllNewsArticlesAsync();
+            int skip = (page - 1) * pageSize;
+            var newsArticles = await _newsArticleRepository
+                .GetNewsArticlesSearchAsync(searchTerm, skip,pageSize);
+            var count = await _newsArticleRepository.GetCountAsync(searchTerm);
 
             if(newsArticles == null)
                 throw new EntityNotFoundException();
 
-            return newsArticles
-                .OrderByDescending(na => na.PublishedAt)
-                .Select(na => new NewsArticleSummaryDto
+            bool hasPreviousPage = page > 1;
+            int totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new NewsArticlePaginationDto
+                {
+                CurrentPage = page,
+                TotalPages = totalPages,
+                HasPreviousPage = hasPreviousPage,
+                HasNextPage = page < totalPages,
+                Articles = newsArticles.Select(na => new NewsArticleSummaryDto
                 {
                     Id = na.Id,
-                    Summary = na.Summary,
                     TeaserTitle = na.TeaserTitle,
-                    CoverImageUrl = na.CoverImageUrl
-                });
+                    CoverImageUrl = na.CoverImageUrl,
+                    Summary = na.Summary
+                })
+            };
         }
 
         public async Task<NewsArticleDetailsDto> GetNewsArticleDetailsAsync(Guid id)
