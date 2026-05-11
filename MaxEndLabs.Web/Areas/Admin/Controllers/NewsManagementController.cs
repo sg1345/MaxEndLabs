@@ -16,6 +16,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             _newsService = newsService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(string searchTerm = "", int page = 1)
         {
             try

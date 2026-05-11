@@ -49,22 +49,11 @@
                     {
                         <div class="card shadow-sm mb-3 border-0 bg-light">
                             <div class="row g-0 align-items-center">
-
-                                <!-- Thumbnail -->
                                 <div class="col-md-2 col-4 overflow-hidden rounded-start" style="height: 120px;">
-                                    @if (!string.IsNullOrEmpty(article.CoverImageUrl))
-                                    {
-                                        <img src="@article.CoverImageUrl" alt="@article.TeaserTitle" class="img-fluid w-100 h-100" style="object-fit: cover;">
-                                    }
-                                    else
-                                    {
-                                        <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center text-white-50">
-                                            <i class="fa-regular fa-image fa-2x"></i>
-                                        </div>
-                                    }
+                                   
+	                                <img src="@article.CoverImageUrl" alt="@article.TeaserTitle" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                                    
                                 </div>
-
-                                <!-- Content -->
                                 <div class="col-md-7 col-8">
                                     <div class="card-body py-2">
                                         <div class="d-flex align-items-center mb-1">
@@ -104,12 +93,10 @@
                     }
                 </div>
 
-                <!-- Pagination -->
                 <div id="articlePaginationContainer">
                     <div class="bg-transparent pb-4 d-flex justify-content-center">
                         <nav aria-label="Article pagination">
                             <ul class="pagination pagination-sm mb-0 shadow-sm">
-                                <!-- First Page / Previous Page -->
                                 <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                                     <a class="page-link border-0" asp-action="Index" asp-route-page="1" asp-route-searchTerm="@Model.SearchTerm">
                                         <i class="fa-solid fa-angles-left"></i>
@@ -121,7 +108,6 @@
                                     </a>
                                 </li>
 
-                                <!-- Page Numbers -->
                                 @for (int i = Model.CurrentPage - 1; i <= Model.CurrentPage + 1; i++)
                                 {
                                     if (i > 0 && i <= Model.TotalPages)
@@ -132,7 +118,6 @@
                                     }
                                 }
 
-                                <!-- Next Page / Last Page -->
                                 <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
                                     <a class="page-link border-0" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-searchTerm="@Model.SearchTerm">
                                         <i class="fa-solid fa-chevron-right"></i>
@@ -150,7 +135,6 @@
             }
             else
             {
-                <!-- Empty State -->
                 <div class="text-center py-5 bg-light rounded border border-light">
                     <i class="fa-regular fa-newspaper fa-3x text-muted mb-3 opacity-50"></i>
                     <p class="text-muted mb-0">No news articles found.</p>
