@@ -51,6 +51,30 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            try
+            {
+                var dto = await _newsService.GetNewsArticleDetailsAsync(id);
+
+                var model = new NewsArticleDetailsViewModel
+                {
+                    Id = dto.Id,
+                    ContentTitle = dto.ContentTitle,
+                    ArticleImageUrl = dto.ArticleImageUrl,
+                    Content = dto.Content
+                };
+
+                return View(model);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound();
+            }
+
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             try
