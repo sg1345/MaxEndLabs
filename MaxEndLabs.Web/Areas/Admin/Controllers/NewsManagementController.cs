@@ -4,6 +4,8 @@ using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels.NewsArticles;
 using Microsoft.AspNetCore.Mvc;
 using static MaxEndLabs.Web.Common.PaginationConstants;
+using static MaxEndLabs.GCommon.OutputMessages.NewsArticle;
+using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers
 {
@@ -43,10 +45,9 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
                 ViewBag.CurrentPage = page;
                 return View(model);
             }
-            catch (Exception e)
+            catch (EntityNotFoundException e)
             {
-                Console.WriteLine(e);
-                throw;
+                return View(new NewsArticlePaginationViewModel());
             }
         }
 
@@ -109,13 +110,17 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
                 await _newsService.AddNewsArticle(newsCreateDto);
 
-                //add TempData for the Output Message
+                TempData[SuccessTempDataKey] = NewsArticleCreated;
                 return RedirectToAction("Index");
             }
-            catch (Exception e)
+            catch (EntityNotFoundException e)
             {
-                Console.WriteLine(e);
-                throw;
+                return NotFound();
+            }
+            catch (EntityPersistFailureException e)
+            {
+                TempData[ErrorTempDataKey] = NewsArticleFailedToCreate;
+                return View("Index");
             }
         }
     }
