@@ -3,6 +3,9 @@ using MaxEndLabs.Service.Models.NewsArticle;
 using MaxEndLabs.Services.Core.Contracts;
 using MaxEndLabs.ViewModels.NewsArticles;
 using Microsoft.AspNetCore.Mvc;
+using static MaxEndLabs.Web.Common.PaginationConstants;
+using static MaxEndLabs.GCommon.OutputMessages.NewsArticle;
+using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers
 {
@@ -15,9 +18,61 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             _newsService = newsService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(string searchTerm = "", int page = 1)
         {
-            return Ok("entered");
+            try
+            {
+                var paginationDto = await _newsService
+                    .GetNewsArticleSummariesAsync(searchTerm, page, PageSizeNewsArticleManager);
+
+                var model = new NewsArticlePaginationViewModel
+                {
+                    SearchTerm = searchTerm,
+                    CurrentPage = paginationDto.CurrentPage,
+                    TotalPages = paginationDto.TotalPages,
+                    HasNextPage = paginationDto.HasNextPage,
+                    HasPreviousPage = paginationDto.HasPreviousPage,
+                    Articles = paginationDto.Articles.Select(a => new NewsArticleSummaryViewModel
+                    {
+                        Id = a.Id,
+                        CoverImageUrl = a.CoverImageUrl,
+                        TeaserTitle = a.TeaserTitle,
+                        Summary = a.Summary
+                    })
+                };
+
+                ViewBag.CurrentPage = page;
+                return View(model);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return View(new NewsArticlePaginationViewModel());
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            try
+            {
+                var dto = await _newsService.GetNewsArticleDetailsAsync(id);
+
+                var model = new NewsArticleDetailsViewModel
+                {
+                    Id = dto.Id,
+                    ContentTitle = dto.ContentTitle,
+                    ArticleImageUrl = dto.ArticleImageUrl,
+                    Content = dto.Content
+                };
+
+                return View(model);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound();
+            }
+
         }
 
         [HttpGet]
@@ -55,12 +110,17 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 
                 await _newsService.AddNewsArticle(newsCreateDto);
 
+                TempData[SuccessTempDataKey] = NewsArticleCreated;
                 return RedirectToAction("Index");
             }
-            catch (Exception e)
+            catch (EntityNotFoundException e)
             {
-                Console.WriteLine(e);
-                throw;
+                return NotFound();
+            }
+            catch (EntityPersistFailureException e)
+            {
+                TempData[ErrorTempDataKey] = NewsArticleFailedToCreate;
+                return View("Index");
             }
         }
     }

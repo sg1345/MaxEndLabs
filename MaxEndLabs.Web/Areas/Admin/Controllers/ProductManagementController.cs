@@ -26,7 +26,8 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 		{
 			try
 			{
-				var productDto = await _productService.GetProductSearchAsync(searchTerm, page, PageSizeProductManager);
+				var productDto = await _productService
+                    .GetProductSearchAsync(searchTerm, page, PageSizeProductManager);
 
 				var model = new ProductPaginationViewModel
 				{

@@ -5,5 +5,6 @@
 		public static int PageSizeHomePage = 5;
 		public static int PageSizeOrderManager = 10;
 		public static int PageSizeProductManager = 10;
+		public static int PageSizeNewsArticleManager = 10;
     }
 }

@@ -9,7 +9,8 @@ namespace MaxEndLabs.Data.Repository.Contracts
 {
     public interface INewsArticleRepository
     {
-        Task<IEnumerable<NewsArticle>> GetAllNewsArticlesAsync();
+        Task<IEnumerable<NewsArticle>?> GetNewsArticlesSearchAsync(string? SearchTerm, int skip, int take);
+        Task<int> GetCountAsync(string? searchTerm);
         Task<NewsArticle?> GetNewsArticleByIdAsync(Guid id);
         Task AddNewsArticleAsync(NewsArticle newsArticle);
         Task<int> SaveChangesAsync();
