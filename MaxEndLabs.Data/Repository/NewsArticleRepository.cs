@@ -11,11 +11,50 @@ namespace MaxEndLabs.Data.Repository
         {
         }
 
-        public async Task<IEnumerable<NewsArticle>> GetAllNewsArticlesAsync()
+        public async Task<IEnumerable<NewsArticle>?> GetNewsArticlesSearchAsync(string? searchTerm, int skip, int take)
         {
-           return await DbContext.NewsArticles
+            IQueryable<NewsArticle> query = DbContext.NewsArticles
                 .AsNoTracking()
-                .ToListAsync();
+                .OrderBy(na => na.TeaserTitle)
+                .ThenBy(na => na.TeaserTitle)
+                .ThenByDescending(na => na.PublishedAt);
+
+            if (searchTerm != null)
+            {
+                return await query
+                    .Where(na => na.ContentTitle.Contains(searchTerm) || na.TeaserTitle.Contains(searchTerm))
+                    .Skip(skip)
+                    .Take(take)
+                    .ToArrayAsync();
+            }
+            else if (string.IsNullOrEmpty(searchTerm))
+            {
+                return await query
+                    .Skip(skip)
+                    .Take(take)
+                    .ToArrayAsync();
+            }
+
+            return null;
+        }
+
+        public async Task<int> GetCountAsync(string? searchTerm)
+        {
+            IQueryable<NewsArticle> query = DbContext.NewsArticles
+                .AsNoTracking();
+
+            if (searchTerm != null)
+            {
+                return await query
+                    .CountAsync(na => na.ContentTitle.Contains(searchTerm) || na.TeaserTitle.Contains(searchTerm));
+            }
+            else if (string.IsNullOrEmpty(searchTerm))
+            {
+                return await query
+                    .CountAsync();
+            }
+
+            return 0;
         }
 
         public async Task<NewsArticle?> GetNewsArticleByIdAsync(Guid id)

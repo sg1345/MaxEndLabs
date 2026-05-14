@@ -4,7 +4,7 @@ namespace MaxEndLabs.Services.Core.Contracts
 {
     public interface INewsArticleService
     {
-        Task<IEnumerable<NewsArticleSummaryDto>> GetNewsArticleSummariesAsync();
+        Task<NewsArticlePaginationDto> GetNewsArticleSummariesAsync(string searchTerm, int page, int pageSize);
         Task<NewsArticleDetailsDto> GetNewsArticleDetailsAsync(Guid id);
 
         Task AddNewsArticle(NewsArticleDto newNewsArticle);

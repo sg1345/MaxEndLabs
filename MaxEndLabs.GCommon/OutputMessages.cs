@@ -21,7 +21,7 @@ namespace MaxEndLabs.GCommon
 		public static class Product
 		{
 			public static string ProductCreated = "Product created!";
-			public static string FailedToCreateProduct = "Failed to Create Product!";
+			public static string FailedToCreateProduct = "Failed to create a product!";
 			public static string ProductEdited= "Product edited!";
 			public static string NoChangesWereMade = "No Changes were made!";
 			public static string VariantUpdated = "Variants updated!";
@@ -44,5 +44,12 @@ namespace MaxEndLabs.GCommon
             public static string ServerError =
                 "We encountered a technical issue with this product's data. Our team has been notified.";
         }
-	}
+
+        public static class NewsArticle
+        {
+            public static string NewsArticleCreated = "News article created!";
+            public static string NewsArticleFailedToCreate = "Failed to create a news article";
+        }
+
+    }
 }
