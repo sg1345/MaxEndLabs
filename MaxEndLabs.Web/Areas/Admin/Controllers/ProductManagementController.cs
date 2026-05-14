@@ -53,7 +53,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			}
 			catch (EntityNotFoundException e)
 			{
-				return NotFound();
+				return View(new ProductPaginationEntityViewModel());
 			}
 			
 		}
@@ -95,7 +95,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			catch(InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -172,7 +172,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
 			catch (EntityPersistFailureException e)
 			{
 				TempData[ErrorTempDataKey] = FailedToCreateProduct;
-				return View("Index","ProductManagement");
+				return View("Index");
 			}
 		}
 
@@ -209,7 +209,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
 
         }
@@ -300,7 +300,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
 
         }
@@ -363,7 +363,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -390,7 +390,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -416,7 +416,7 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
             catch (InvalidOperationException e)
             {
                 TempData[ErrorTempDataKey] = ServerError;
-                return View("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
         }
 	}
