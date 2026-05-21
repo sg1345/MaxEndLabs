@@ -11,10 +11,18 @@ namespace MaxEndLabs.Data.Repository
         {
         }
 
-        public async Task<IEnumerable<NewsArticle>?> GetNewsArticlesSearchAsync(string? searchTerm, int skip, int take)
+        public async Task<IEnumerable<NewsArticle>?> GetNewsArticlesSearchAsync(string? searchTerm, int skip, int take, bool isFiltered)
         {
             IQueryable<NewsArticle> query = DbContext.NewsArticles
-                .AsNoTracking()
+                .AsNoTracking();
+
+            if (!isFiltered)
+            {
+                query = query
+                    .IgnoreQueryFilters();
+            }
+             
+            query = query
                 .OrderBy(na => na.TeaserTitle)
                 .ThenBy(na => na.TeaserTitle)
                 .ThenByDescending(na => na.PublishedAt);

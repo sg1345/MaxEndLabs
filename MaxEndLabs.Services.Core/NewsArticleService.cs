@@ -20,7 +20,7 @@ namespace MaxEndLabs.Services.Core
         {
             int skip = (page - 1) * pageSize;
             var newsArticles = await _newsArticleRepository
-                .GetNewsArticlesSearchAsync(searchTerm, skip,pageSize);
+                .GetNewsArticlesSearchAsync(searchTerm, skip,pageSize, false);
             var count = await _newsArticleRepository.GetCountAsync(searchTerm);
 
             if(newsArticles == null)
