@@ -8,6 +8,7 @@ namespace MaxEndLabs.Data.Repository.Contracts
         Task<int> GetCountAsync(string? searchTerm);
         Task<NewsArticle?> GetNewsArticleByIdAsync(Guid id);
         Task AddNewsArticleAsync(NewsArticle newsArticle);
+        void UpdateNewsArticleAsync(NewsArticle newsArticle);
         Task<int> SaveChangesAsync();
     }
 }

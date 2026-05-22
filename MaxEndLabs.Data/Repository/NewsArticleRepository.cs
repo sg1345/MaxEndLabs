@@ -72,6 +72,11 @@ namespace MaxEndLabs.Data.Repository
                 .SingleOrDefaultAsync(na => na.Id.Equals(id));
         }
 
+        public void UpdateNewsArticleAsync(NewsArticle newsArticle)
+        {
+            DbContext.NewsArticles.Update(newsArticle);
+        }
+
         public async Task AddNewsArticleAsync(NewsArticle newsArticle)
         {
            await DbContext!.NewsArticles.AddAsync(newsArticle);
