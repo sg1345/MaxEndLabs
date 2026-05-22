@@ -6,7 +6,7 @@ namespace MaxEndLabs.Services.Core.Contracts
     {
         Task<NewsArticlePaginationDto> GetNewsArticleSummariesAsync(string searchTerm, int page, int pageSize);
         Task<NewsArticleDetailsDto> GetNewsArticleDetailsAsync(Guid id);
-
         Task AddNewsArticle(NewsArticleDto newNewsArticle);
+        Task SoftDeleteNewsArticle(Guid id);
     }
 }
