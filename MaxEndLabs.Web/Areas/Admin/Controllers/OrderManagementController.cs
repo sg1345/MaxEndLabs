@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using static MaxEndLabs.Web.Common.PaginationConstants;
 using static MaxEndLabs.GCommon.ApplicationConstants;
 using static MaxEndLabs.GCommon.OutputMessages.Order;
+using static MaxEndLabs.GCommon.OutputMessages.GlobalMessage;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers
 {

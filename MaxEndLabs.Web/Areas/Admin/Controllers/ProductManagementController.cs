@@ -8,6 +8,7 @@ using MaxEndLabs.ViewModels.Product;
 using Microsoft.AspNetCore.Mvc;
 using static MaxEndLabs.Web.Common.PaginationConstants;
 using static MaxEndLabs.GCommon.OutputMessages.Product;
+using static MaxEndLabs.GCommon.OutputMessages.GlobalMessage;
 using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers

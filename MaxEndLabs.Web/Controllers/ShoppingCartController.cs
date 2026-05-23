@@ -6,6 +6,7 @@ using MaxEndLabs.ViewModels.ShoppingCart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static MaxEndLabs.GCommon.OutputMessages.ShoppingCart;
+using static MaxEndLabs.GCommon.OutputMessages.GlobalMessage;
 using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Controllers
