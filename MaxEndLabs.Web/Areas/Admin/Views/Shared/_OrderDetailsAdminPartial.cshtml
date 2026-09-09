@@ -64,16 +64,16 @@
                                     </div>
                                 </div>
                             </td>
-                        <td>@item.Price €</td>
+                        <td>@item.Price.ToString("C", new CultureInfo("de-DE"))</td>
                             <td>@item.Quantity</td>
-                        <td class="text-end fw-bold">@item.LineTotal €</td>
+                        <td class="text-end fw-bold">@item.LineTotal.ToString("C", new CultureInfo("de-DE"))</td>
                         </tr>
                 }
             </tbody>
         </table>
     </div>
     <div class="text-end fw-bold fs-5 text-success">
-        Grand Total: @Model.TotalAmount €
+        Grand Total: @Model.TotalAmount.ToString("C", new CultureInfo("de-DE"))
     </div>
 </div>
 

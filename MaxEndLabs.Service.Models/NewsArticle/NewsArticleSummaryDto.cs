@@ -13,5 +13,6 @@ namespace MaxEndLabs.Service.Models.NewsArticle
         public string TeaserTitle { get; set; } = null!;
         public string Summary { get; set; } = null!;
         public string CoverImageUrl { get; set; } = null!;
+        public bool IsPublished { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Stripe.Checkout;
 using static MaxEndLabs.GCommon.ApplicationConstants;
 using static MaxEndLabs.GCommon.OutputMessages.Order;
+using static MaxEndLabs.GCommon.OutputMessages.GlobalMessage;
 
 namespace MaxEndLabs.Web.Controllers
 {

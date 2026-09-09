@@ -20,7 +20,7 @@ namespace MaxEndLabs.Services.Core
         {
             int skip = (page - 1) * pageSize;
             var newsArticles = await _newsArticleRepository
-                .GetNewsArticlesSearchAsync(searchTerm, skip,pageSize);
+                .GetNewsArticlesSearchAsync(searchTerm, skip,pageSize, false);
             var count = await _newsArticleRepository.GetCountAsync(searchTerm);
 
             if(newsArticles == null)
@@ -40,7 +40,8 @@ namespace MaxEndLabs.Services.Core
                     Id = na.Id,
                     TeaserTitle = na.TeaserTitle,
                     CoverImageUrl = na.CoverImageUrl,
-                    Summary = na.Summary
+                    Summary = na.Summary,
+                    IsPublished = na.IsPublished          
                 })
             };
         }
@@ -76,6 +77,23 @@ namespace MaxEndLabs.Services.Core
             };
 
             await _newsArticleRepository.AddNewsArticleAsync(newsArticle);
+
+            await EnsureSaveChangesAsync();
+        }
+
+        public async Task SoftDeleteNewsArticle(Guid id)
+        {
+            var newsArticle = await _newsArticleRepository.GetNewsArticleByIdAsync(id);
+
+            if(newsArticle == null) 
+                throw new EntityNotFoundException();
+
+            if (newsArticle.IsPublished)
+            {
+                newsArticle.IsPublished = false;
+
+                _newsArticleRepository.UpdateNewsArticleAsync(newsArticle);
+            }
 
             await EnsureSaveChangesAsync();
         }

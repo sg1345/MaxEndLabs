@@ -5,6 +5,7 @@ using MaxEndLabs.ViewModels.NewsArticles;
 using Microsoft.AspNetCore.Mvc;
 using static MaxEndLabs.Web.Common.PaginationConstants;
 using static MaxEndLabs.GCommon.OutputMessages.NewsArticle;
+using static MaxEndLabs.GCommon.OutputMessages.GlobalMessage;
 using static MaxEndLabs.GCommon.ApplicationConstants;
 
 namespace MaxEndLabs.Web.Areas.Admin.Controllers
@@ -38,7 +39,8 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
                         Id = a.Id,
                         CoverImageUrl = a.CoverImageUrl,
                         TeaserTitle = a.TeaserTitle,
-                        Summary = a.Summary
+                        Summary = a.Summary,
+                        IsPublished = a.IsPublished,
                     })
                 };
 
@@ -113,14 +115,39 @@ namespace MaxEndLabs.Web.Areas.Admin.Controllers
                 TempData[SuccessTempDataKey] = NewsArticleCreated;
                 return RedirectToAction("Index");
             }
-            catch (EntityNotFoundException e)
+            catch (EntityNotFoundException)
             {
                 return NotFound();
             }
-            catch (EntityPersistFailureException e)
+            catch (EntityPersistFailureException)
             {
                 TempData[ErrorTempDataKey] = NewsArticleFailedToCreate;
                 return View("Index");
+            }
+        }
+       
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _newsService.SoftDeleteNewsArticle(id);
+
+                TempData[SuccessTempDataKey] = NewsArticleRemoved;
+                return RedirectToAction("Index");
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (EntityPersistFailureException)
+            {
+                TempData[ErrorTempDataKey] = NewsArticleFailedToRemove;
+                return RedirectToAction("Index");
+            }
+            catch (InvalidOperationException)
+            {
+                TempData[ErrorTempDataKey] = ServerError;
+                return RedirectToAction("Index");
             }
         }
     }

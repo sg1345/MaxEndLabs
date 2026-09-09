@@ -39,6 +39,7 @@
             builder.ApplyConfiguration(new CartItemConfiguration());
             builder.ApplyConfiguration(new OrderItemConfiguration());
             builder.ApplyConfiguration(new OrderConfiguration());
+            builder.ApplyConfiguration(new NewsArticleConfiguration());
         }
 	}
 }
